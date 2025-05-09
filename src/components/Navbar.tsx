@@ -35,7 +35,7 @@ const Navbar = () => {
                 alt="REVIVE WARDROBE" 
                 className="h-12"
               />
-              <span className="ml-2 text-lg font-serif text-revive-black hidden sm:inline-block">REVIVE WARDROBE</span>
+              <span className="ml-2 text-lg font-serif text-revive-black">REVIVE WARDROBE</span>
             </a>
 
             {/* Mobile Menu Button - Visible only on mobile */}
@@ -53,7 +53,7 @@ const Navbar = () => {
                         alt="REVIVE WARDROBE" 
                         className="h-10"
                       />
-                      <span className="ml-2 text-sm font-serif text-revive-black">REVIVE WARDROBE</span>
+                      <span className="ml-2 text-lg font-serif text-revive-black">REVIVE WARDROBE</span>
                     </div>
                   </div>
 

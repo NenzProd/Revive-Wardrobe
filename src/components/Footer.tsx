@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 const Footer = () => {
   return (
@@ -57,14 +59,13 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-serif mb-4 text-white">Contact Us</h3>
             <address className="not-italic text-gray-400 space-y-2">
-              <p>123 Fashion Avenue</p>
-              <p>New York, NY 10001</p>
-              <p>United States</p>
+              <p>Ras Al Khaimah</p>
+              <p>United Arab Emirates</p>
               <p className="pt-2">
-                <a href="tel:+12125551234" className="hover:text-revive-gold transition-colors">+1 (212) 555-1234</a>
+                <a href="tel:+971521919358" className="hover:text-revive-gold transition-colors">+971521919358</a>
               </p>
               <p>
-                <a href="mailto:hello@revivewardrobe.com" className="hover:text-revive-gold transition-colors">hello@revivewardrobe.com</a>
+                <a href="mailto:info@revivewardrobe.com" className="hover:text-revive-gold transition-colors">info@revivewardrobe.com</a>
               </p>
             </address>
           </div>
@@ -74,6 +75,9 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-10 pt-8 text-center">
           <div className="text-gray-400 text-sm">
             © {new Date().getFullYear()} REVIVE WARDROBE. All rights reserved.
+          </div>
+          <div className="text-gray-400 text-sm mt-2">
+            Stitched with <FontAwesomeIcon icon={faHeart} className="text-red-500" /> by <a href="https://tensketch.com" className="hover:text-revive-gold transition-colors">TenSketch</a>
           </div>
         </div>
       </div>
