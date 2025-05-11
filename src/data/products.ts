@@ -1,232 +1,195 @@
+import { ZainabChottani, CrimsonLawn, CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear, BridalCollection } from '../assets/assets.js'
 
-import { Product } from '../types/product';
-import {
-  ZainabChottani, 
-  CrimsonLawn, 
-  CrimsonLuxury, 
-  CHARIZMAAGHAZE,
-  SilkSleepwear,
-  BridalCollection,
-  GracefulAbayas,
-  EthnicElegance,
-  IntimateCollection
-} from '../assets/assets';
+export interface Product {
+  id: number
+  name: string
+  price: number
+  imageUrl: string
+  images: string[]
+  isNew?: boolean
+  isSale?: boolean
+  slug: string
+  featured?: boolean
+  description: string
+  isStitched: boolean
+  salePrice?: number
+  material: string
+  careInstructions: string[]
+  deliveryEstimate: string
+  sizes?: string[]
+  categories: string[]
+  tags: string[]
+  popularity?: number
+}
 
-// Mock product data
-const products: Product[] = [
+export const products: Product[] = [
   {
     id: 1,
-    name: "Zainab Chottani – Lawn Suit with Chiffon Dupatta (Unstitched)",
-    slug: "zainab-chottani-lawn-suit",
+    name: "Zainab Chottani – Lawn Suit",
     price: 3400,
-    description: "Breathe elegance into your summer with this lightweight lawn ensemble. Featuring delicate prints and a sheer chiffon dupatta, it's the ideal blend of comfort and charm — ready to be tailored your way.",
-    material: "Premium lawn fabric with chiffon dupatta",
-    careInstructions: [
-      "Hand wash with mild detergent",
-      "Do not bleach",
-      "Iron on medium heat",
-      "Dry in shade"
-    ],
     imageUrl: ZainabChottani,
-    images: [ZainabChottani, CrimsonLawn, EthnicElegance],
-    categories: ["fabric-lawn", "type-unstitched"],
-    tags: ["summer", "casual", "lawn"],
+    images: [ZainabChottani, CrimsonLawn, CrimsonLuxury],
     isNew: true,
-    isStitched: false,
-    deliveryEstimate: "3-5 business days",
-    popularity: 85,
-    createdAt: "2023-06-15T10:00:00Z"
+    slug: 'zainab-chottani-lawn-suit',
+    featured: true,
+    description: 'Elegant lawn suit with intricate embroidery. Perfect for special occasions and formal gatherings.',
+    isStitched: true,
+    material: 'Premium lawn fabric with chiffon dupatta',
+    careInstructions: [
+      'Hand wash with mild detergent',
+      'Do not bleach',
+      'Iron on medium heat',
+      'Dry in shade'
+    ],
+    deliveryEstimate: '3-5 business days',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    categories: ['fabric-lawn', 'type-stitched'],
+    tags: ['summer', 'casual', 'lawn'],
+    popularity: 85
   },
   {
     id: 2,
-    name: "Crimson – Lawn Cotton Suit with Organza Dupatta, Chikankari Work",
-    slug: "crimson-lawn-cotton-suit",
-    price: 4300,
-    description: "Soft cotton meets the finesse of Chikankari embroidery in this versatile 3-piece suit. Paired with an ethereal organza dupatta, it's a celebration of heritage with a modern twist.",
-    material: "Cotton lawn with organza dupatta",
-    careInstructions: [
-      "Gentle machine wash in cold water",
-      "Dry clean recommended for dupatta",
-      "Iron on medium heat",
-      "Store in a cool, dry place"
-    ],
+    name: "Crimson – Lawn Cotton Suit",
+    price: 7999.00,
     imageUrl: CrimsonLawn,
     images: [CrimsonLawn, ZainabChottani, CrimsonLuxury],
-    categories: ["fabric-cotton", "type-unstitched"],
-    tags: ["embroidered", "formal", "cotton"],
-    isStitched: false,
-    sizes: ["XS", "S", "M", "L", "XL"],
-    deliveryEstimate: "4-6 business days",
-    popularity: 75,
-    createdAt: "2023-05-20T10:00:00Z"
+    slug: 'crimson-lawn-cotton-suit',
+    featured: true,
+    description: 'Premium cotton lawn suit with modern design. Features intricate embroidery and comfortable fit.',
+    isStitched: true,
+    material: 'Cotton lawn with organza dupatta',
+    careInstructions: [
+      'Gentle machine wash in cold water',
+      'Dry clean recommended for dupatta',
+      'Iron on medium heat',
+      'Store in a cool, dry place'
+    ],
+    deliveryEstimate: '4-6 business days',
+    sizes: ['S', 'M', 'L', 'XL'],
+    categories: ['fabric-cotton', 'type-stitched'],
+    tags: ['embroidered', 'formal', 'cotton'],
+    popularity: 75
   },
   {
     id: 3,
-    name: "Crimson Luxury – Full Embroidered Lawn with Organza Dupatta & Cambric Trouser",
-    slug: "crimson-luxury-embroidered-lawn",
-    price: 5950,
-    description: "Luxury woven into every detail. This fully embroidered masterpiece is complemented by a rich organza dupatta and structured cambric bottoms — designed for occasions where you want to make a lasting impression.",
-    material: "Embroidered lawn with organza dupatta and cambric trouser",
-    careInstructions: [
-      "Dry clean only",
-      "Store hanging to avoid creasing",
-      "Keep away from direct sunlight"
-    ],
+    name: "Crimson Luxury – Full Embroidered Lawn",
+    price: 12999.00,
     imageUrl: CrimsonLuxury,
     images: [CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear],
-    categories: ["fabric-lawn", "fabric-organza", "type-unstitched"],
-    tags: ["luxury", "embroidered", "formal"],
-    isStitched: false,
-    deliveryEstimate: "5-7 business days",
-    popularity: 90,
-    createdAt: "2023-07-05T10:00:00Z"
+    slug: 'crimson-luxury-full-embroidered-lawn',
+    featured: true,
+    description: 'Luxurious embroidered lawn collection. Perfect for special occasions with premium quality fabric.',
+    isStitched: true,
+    material: 'Embroidered lawn with organza dupatta',
+    careInstructions: [
+      'Dry clean only',
+      'Store hanging to avoid creasing',
+      'Keep away from direct sunlight'
+    ],
+    deliveryEstimate: '5-7 business days',
+    sizes: ['S', 'M', 'L'],
+    categories: ['fabric-lawn', 'type-stitched'],
+    tags: ['luxury', 'embroidered', 'formal'],
+    popularity: 90
   },
   {
     id: 4,
-    name: "CHARIZMA AGHAZE NOU – Luxury Collection",
-    slug: "charizma-aghaze-nou-luxury",
-    price: 8750,
-    salePrice: 7250,
-    description: "Artistry that speaks volumes. Intricately crafted for the modern muse, this luxe suit radiates sophistication from neckline to hemline. Own the elegance — now at an exclusive price.",
-    material: "Premium silk blend with custom embroidery",
-    careInstructions: [
-      "Dry clean only",
-      "Steam to remove wrinkles",
-      "Store in garment bag"
-    ],
+    name: "CHARIZMA AGHAZE NOU",
+    price: 10999.00,
     imageUrl: CHARIZMAAGHAZE,
     images: [CHARIZMAAGHAZE, BridalCollection, CrimsonLuxury],
-    categories: ["fabric-silk", "type-stitched"],
-    tags: ["luxury", "formal", "party"],
     isSale: true,
+    salePrice: 8999.00,
+    slug: 'charizma-aghaze-nou',
+    featured: true,
+    description: 'Exclusive collection with premium fabric. Features intricate embroidery and modern design.',
     isStitched: true,
-    sizes: ["S", "M", "L"],
-    deliveryEstimate: "3-5 business days",
-    popularity: 95,
-    createdAt: "2023-08-10T10:00:00Z"
+    material: 'Premium silk blend with custom embroidery',
+    careInstructions: [
+      'Dry clean only',
+      'Steam to remove wrinkles',
+      'Store in garment bag'
+    ],
+    deliveryEstimate: '3-5 business days',
+    sizes: ['S', 'M', 'L'],
+    categories: ['fabric-silk', 'type-stitched'],
+    tags: ['luxury', 'formal', 'party'],
+    popularity: 95
   },
   {
     id: 5,
-    name: "Silk Sleepwear - Premium Collection",
-    slug: "silk-sleepwear-premium",
-    price: 3400,
-    description: "Indulge in luxury with our premium silk sleepwear collection. Designed for ultimate comfort with elegant detailing for a touch of sophistication.",
-    material: "100% Pure Silk",
-    careInstructions: [
-      "Hand wash with cold water",
-      "Do not bleach",
-      "Iron on low heat or steam",
-      "Hang dry in shade"
-    ],
+    name: "Zainab Chottani - Unstitched",
+    price: 3400.00,
     imageUrl: SilkSleepwear,
-    images: [SilkSleepwear, IntimateCollection],
-    categories: ["fabric-silk", "type-stitched"],
-    tags: ["intimate", "sleepwear", "luxury"],
-    isStitched: true,
-    sizes: ["S", "M", "L", "XL"],
-    deliveryEstimate: "2-4 business days",
-    popularity: 80,
-    createdAt: "2023-04-25T10:00:00Z"
+    images: [SilkSleepwear, ZainabChottani, CrimsonLawn],
+    slug: 'zainab-chottani-unstitched',
+    featured: true,
+    description: 'Unstitched fabric collection. Premium quality fabric ready for custom tailoring.',
+    isStitched: false,
+    material: 'Premium lawn fabric',
+    careInstructions: [
+      'Hand wash with mild detergent',
+      'Do not bleach',
+      'Iron on medium heat',
+      'Dry in shade'
+    ],
+    deliveryEstimate: '3-5 business days',
+    categories: ['fabric-lawn', 'type-unstitched'],
+    tags: ['unstitched', 'fabric', 'custom'],
+    popularity: 80
   },
   {
     id: 6,
-    name: "Bridal Collection - Luxury Unstitched",
-    slug: "bridal-collection-luxury",
-    price: 12999,
-    description: "Make your special day unforgettable with our exquisite bridal collection. This luxury unstitched fabric features intricate embroidery and handcrafted embellishments.",
-    material: "Premium silk with hand embroidery and crystal work",
-    careInstructions: [
-      "Professional dry clean only",
-      "Store in cool, dry place",
-      "Handle with care to preserve embellishments"
-    ],
+    name: "Crimson Luxury - Unstitched",
+    price: 12999.00,
     imageUrl: BridalCollection,
     images: [BridalCollection, CrimsonLuxury, CHARIZMAAGHAZE],
-    categories: ["fabric-silk", "type-unstitched"],
-    tags: ["bridal", "luxury", "formal"],
     isNew: true,
+    slug: 'crimson-luxury-unstitched',
+    featured: true,
+    description: 'Premium unstitched collection. Luxury fabric perfect for custom tailoring.',
     isStitched: false,
-    deliveryEstimate: "7-10 business days",
-    popularity: 98,
-    createdAt: "2023-09-01T10:00:00Z"
-  },
-  {
-    id: 7,
-    name: "Modest Elegance Abaya",
-    slug: "modest-elegance-abaya",
-    price: 5500,
-    description: "Embrace modest fashion with our elegant abaya design. Featuring subtle embellishments and flowing fabric for a graceful silhouette.",
-    material: "Premium nida fabric with light embroidery",
+    material: 'Premium silk with hand embroidery',
     careInstructions: [
-      "Gentle machine wash in cold water",
-      "Iron on medium heat",
-      "Hang to dry"
+      'Professional dry clean only',
+      'Store in cool, dry place',
+      'Handle with care to preserve embellishments'
     ],
-    imageUrl: GracefulAbayas,
-    images: [GracefulAbayas, EthnicElegance],
-    categories: ["fabric-nida", "type-stitched"],
-    tags: ["modest", "abaya", "formal"],
-    isStitched: true,
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    deliveryEstimate: "3-5 business days",
-    popularity: 85,
-    createdAt: "2023-07-15T10:00:00Z"
-  },
-  {
-    id: 8,
-    name: "Ethnic Heritage Collection",
-    slug: "ethnic-heritage-collection",
-    price: 7800,
-    description: "A tribute to our rich cultural heritage, this collection features traditional motifs with a contemporary approach. Perfect for special occasions.",
-    material: "Hand-woven silk with traditional embroidery",
-    careInstructions: [
-      "Dry clean recommended",
-      "Steam to remove wrinkles",
-      "Store folded with tissue paper"
-    ],
-    imageUrl: EthnicElegance,
-    images: [EthnicElegance, ZainabChottani, CrimsonLuxury],
-    categories: ["fabric-silk", "type-unstitched"],
-    tags: ["ethnic", "traditional", "formal"],
-    isStitched: false,
-    deliveryEstimate: "5-7 business days",
-    popularity: 88,
-    createdAt: "2023-08-20T10:00:00Z"
+    deliveryEstimate: '5-7 business days',
+    categories: ['fabric-silk', 'type-unstitched'],
+    tags: ['luxury', 'unstitched', 'custom'],
+    popularity: 88
   }
-];
+]
 
 // Get all products
 export const getAllProducts = (): Product[] => {
-  return products;
-};
+  return products
+}
 
 // Get product by ID
 export const getProductById = (id: number): Product | undefined => {
-  return products.find(product => product.id === id);
-};
+  return products.find(product => product.id === id)
+}
 
 // Get product by slug
 export const getProductBySlug = (slug: string): Product | undefined => {
-  return products.find(product => product.slug === slug);
-};
+  return products.find(product => product.slug === slug)
+}
 
 // Get featured products
 export const getFeaturedProducts = (): Product[] => {
-  // Return products with high popularity
-  return products
-    .filter(product => (product.popularity || 0) > 80)
-    .slice(0, 6);
-};
+  return products.filter(product => product.featured)
+}
 
 // Get related products
 export const getRelatedProducts = (productId: number): Product[] => {
-  const currentProduct = getProductById(productId);
+  const currentProduct = getProductById(productId)
   
   if (!currentProduct) {
-    return [];
+    return []
   }
   
-  // Get products with similar categories or tags
   return products
     .filter(product => 
       product.id !== productId && (
@@ -234,5 +197,5 @@ export const getRelatedProducts = (productId: number): Product[] => {
         product.tags.some(tag => currentProduct.tags.includes(tag))
       )
     )
-    .slice(0, 4);
-};
+    .slice(0, 4)
+}

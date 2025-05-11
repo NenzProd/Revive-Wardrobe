@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -7,6 +6,7 @@ import FilterSidebar from '../components/FilterSidebar';
 import { useSearchParams } from 'react-router-dom';
 import Newsletter from '../components/Newsletter';
 import { Sliders } from 'lucide-react';
+import { products } from '../data/products';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -81,6 +81,7 @@ const Shop = () => {
           {/* Product Grid - Always use grid view */}
           <div className="md:w-3/4">
             <ProductGrid 
+              products={products}
               viewMode="grid" 
               category={category} 
               sortOption={sortOption}

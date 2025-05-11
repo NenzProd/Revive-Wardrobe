@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, Heart, } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '../types/product';
 import { useCartStore } from '../stores/useCartStore';
@@ -14,6 +14,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const {
     id,
@@ -35,6 +36,12 @@ const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
       title: "Added to wishlist",
       description: `${name} has been added to your wishlist`,
     });
+  };
+
+  const handleView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/product/${slug}`);
   };
 
   if (layout === 'list') {
@@ -147,6 +154,13 @@ const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
               className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
             >
               <Heart size={18} />
+            </button>
+            <button 
+              onClick={handleView}
+              aria-label="Add to wishlist"
+              className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
+            >
+              <Eye size={18} />
             </button>
           </div>
         </div>
