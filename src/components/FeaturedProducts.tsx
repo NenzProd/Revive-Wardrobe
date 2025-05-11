@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { ZainabChottani, CrimsonLawn, CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear, BridalCollection } from '../assets/assets.js';
+import { priceSymbol } from '../config/constants';
 
 interface Product {
   id: number;
@@ -53,7 +55,7 @@ const ProductCard: React.FC<Product> = ({ id, name, price, imageUrl, isNew, isSa
       <div className="p-4 border-t border-gray-100">
         <h3 className="font-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors">{name}</h3>
         <div className="flex justify-between items-center">
-          <p className="text-lg font-semibold text-revive-red">₹{price}</p>
+          <p className="text-lg font-semibold text-revive-red">{priceSymbol} {price}</p>
           <button className="bg-revive-red text-white px-4 py-1 rounded text-sm hover:bg-opacity-90 transition-all">
             Add to Cart
           </button>
