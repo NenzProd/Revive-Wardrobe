@@ -1,3 +1,4 @@
+
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import FeaturedCategories from '../components/FeaturedCategories';
@@ -7,11 +8,9 @@ import BlogPreview from '../components/BlogPreview';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 
-
-
 const Index = () => {
   return (
-    <div className="min-h-screen bg-revive-white">
+    <div className="min-h-screen bg-revive-white pt-[88px]">
       <Navbar />
       <HeroSection />
       <FeaturedCategories />

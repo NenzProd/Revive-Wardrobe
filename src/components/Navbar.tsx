@@ -1,34 +1,14 @@
-
-import { useState, useEffect } from "react";
-import { Heart, Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import { useCartStore } from "../stores/useCartStore";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const { itemCount } = useCartStore();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <>
-      <nav
-        className={cn(
-          "fixed top-0 left-0 w-full z-50 transition-all duration-300",
-          isScrolled
-            ? "bg-white/95 shadow-md backdrop-blur-sm py-3 opacity-100 translate-y-0"
-            : "bg-transparent py-5 opacity-0 -translate-y-full pointer-events-none"
-        )}
-      >
+      <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 shadow-md backdrop-blur-sm py-3">
         <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center">
           {/* Logo and Mobile Menu */}
           <div className="flex w-full md:w-auto justify-between items-center mb-4 md:mb-0">

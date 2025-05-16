@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -26,6 +27,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const { toast } = useToast();
   const { addToCart } = useCartStore();
+  const navigate = useNavigate();
   
   // Fetch product data based on slug
   const product = getProductBySlug(slug || '');
@@ -56,6 +58,9 @@ const ProductDetail = () => {
     }
     
     addToCart(product, quantity, selectedSize || undefined);
+
+    // redirect to cart page
+     navigate('/cart'); 
     
     toast({
       title: "Added to cart",
@@ -71,7 +76,7 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">
