@@ -19,6 +19,7 @@ export interface Product {
   colors?: string[];
   deliveryEstimate?: string;
   popularity?: number;
+  featured?: boolean;
   createdAt: string;
 }
 

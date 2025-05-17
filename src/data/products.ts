@@ -1,25 +1,26 @@
 import { ZainabChottani, CrimsonLawn, CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear, BridalCollection } from '../assets/assets.js'
 
 export interface Product {
-  id: number
-  name: string
-  price: number
-  imageUrl: string
-  images: string[]
-  isNew?: boolean
-  isSale?: boolean
-  slug: string
-  featured?: boolean
-  description: string
-  isStitched: boolean
-  salePrice?: number
-  material: string
-  careInstructions: string[]
-  deliveryEstimate: string
-  sizes?: string[]
-  categories: string[]
-  tags: string[]
-  popularity?: number
+  id: number;
+  name: string;
+  price: number;
+  imageUrl: string;
+  images: string[];
+  isNew?: boolean;
+  isSale?: boolean;
+  slug: string;
+  featured?: boolean;
+  description: string;
+  isStitched: boolean;
+  salePrice?: number;
+  material: string;
+  careInstructions: string[];
+  deliveryEstimate: string;
+  sizes?: string[];
+  categories: string[];
+  tags: string[];
+  popularity?: number;
+  createdAt: string;
 }
 
 export const products: Product[] = [
@@ -45,7 +46,8 @@ export const products: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     categories: ['fabric-lawn', 'type-stitched'],
     tags: ['summer', 'casual', 'lawn'],
-    popularity: 85
+    popularity: 85,
+    createdAt: '2023-01-15'
   },
   {
     id: 2,
@@ -68,7 +70,8 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     categories: ['fabric-cotton', 'type-stitched'],
     tags: ['embroidered', 'formal', 'cotton'],
-    popularity: 75
+    popularity: 75,
+    createdAt: '2023-02-20'
   },
   {
     id: 3,
@@ -90,7 +93,8 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L'],
     categories: ['fabric-lawn', 'type-stitched'],
     tags: ['luxury', 'embroidered', 'formal'],
-    popularity: 90
+    popularity: 90,
+    createdAt: '2023-03-10'
   },
   {
     id: 4,
@@ -114,7 +118,8 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L'],
     categories: ['fabric-silk', 'type-stitched'],
     tags: ['luxury', 'formal', 'party'],
-    popularity: 95
+    popularity: 95,
+    createdAt: '2023-04-05'
   },
   {
     id: 5,
@@ -136,7 +141,8 @@ export const products: Product[] = [
     deliveryEstimate: '3-5 business days',
     categories: ['fabric-lawn', 'type-unstitched'],
     tags: ['unstitched', 'fabric', 'custom'],
-    popularity: 80
+    popularity: 80,
+    createdAt: '2023-05-15'
   },
   {
     id: 6,
@@ -158,7 +164,8 @@ export const products: Product[] = [
     deliveryEstimate: '5-7 business days',
     categories: ['fabric-silk', 'type-unstitched'],
     tags: ['luxury', 'unstitched', 'custom'],
-    popularity: 88
+    popularity: 88,
+    createdAt: '2023-06-20'
   }
 ]
 

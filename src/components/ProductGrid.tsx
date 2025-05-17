@@ -15,7 +15,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ 
-  viewMode, 
+  viewMode = 'grid', 
   category = 'all', 
   sortOption = 'newest',
   minPrice = 0,
@@ -26,61 +26,69 @@ const ProductGrid = ({
   const [products, setProducts] = useState<Product[]>([]);
   
   useEffect(() => {
-    let filteredProducts = getAllProducts();
-    
-    // Apply category filter if not 'all'
-    if (category !== 'all') {
-      filteredProducts = filteredProducts.filter(product => 
-        product.categories.includes(category)
-      );
-    }
-    
-    // Apply price range filter
-    filteredProducts = filteredProducts.filter(product => {
-      const price = product.salePrice || product.price;
-      return price >= minPrice && price <= maxPrice;
-    });
-    
-    // Apply colors filter
-    if (colors.length > 0) {
-      filteredProducts = filteredProducts.filter(product => 
-        product.colors?.some(color => colors.includes(`color-${color.toLowerCase()}`))
-      );
-    }
-    
-    // Apply type filter (stitched/unstitched)
-    if (types.length > 0) {
+    const fetchProducts = () => {
+      let filteredProducts = getAllProducts() as unknown as Product[];
+      
+      // Apply category filter if not 'all'
+      if (category !== 'all') {
+        filteredProducts = filteredProducts.filter(product => 
+          product.categories.includes(category)
+        );
+      }
+      
+      // Apply price range filter
       filteredProducts = filteredProducts.filter(product => {
-        if (types.includes('type-stitched') && product.isStitched) return true;
-        if (types.includes('type-unstitched') && !product.isStitched) return true;
-        return false;
+        const price = product.salePrice || product.price;
+        return price >= minPrice && price <= maxPrice;
       });
-    }
-    
-    // Apply sorting
-    switch (sortOption) {
-      case 'price_low':
-        filteredProducts.sort((a, b) => {
-          const priceA = a.salePrice || a.price;
-          const priceB = b.salePrice || b.price;
-          return priceA - priceB;
+      
+      // Apply colors filter
+      if (colors.length > 0) {
+        filteredProducts = filteredProducts.filter(product => 
+          product.colors?.some(color => colors.includes(`color-${color.toLowerCase()}`))
+        );
+      }
+      
+      // Apply type filter (stitched/unstitched)
+      if (types.length > 0) {
+        filteredProducts = filteredProducts.filter(product => {
+          if (types.includes('type-stitched') && product.isStitched) return true;
+          if (types.includes('type-unstitched') && !product.isStitched) return true;
+          return false;
         });
-        break;
-      case 'price_high':
-        filteredProducts.sort((a, b) => {
-          const priceA = a.salePrice || a.price;
-          const priceB = b.salePrice || b.price;
-          return priceB - priceA;
-        });
-        break;
-      case 'popular':
-        filteredProducts.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-        break;
-      default: // newest
-        filteredProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }
+      }
+      
+      // Apply sorting
+      switch (sortOption) {
+        case 'price_low':
+          filteredProducts.sort((a, b) => {
+            const priceA = a.salePrice || a.price;
+            const priceB = b.salePrice || b.price;
+            return priceA - priceB;
+          });
+          break;
+        case 'price_high':
+          filteredProducts.sort((a, b) => {
+            const priceA = a.salePrice || a.price;
+            const priceB = b.salePrice || b.price;
+            return priceB - priceA;
+          });
+          break;
+        case 'popular':
+          filteredProducts.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+          break;
+        default: // newest
+          filteredProducts.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+          });
+      }
+      
+      return filteredProducts;
+    };
     
-    setProducts(filteredProducts);
+    setProducts(fetchProducts());
   }, [category, sortOption, minPrice, maxPrice, colors, types]);
 
   return (

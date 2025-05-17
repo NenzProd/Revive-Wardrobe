@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { ArrowRight, Calendar } from 'lucide-react';
-import {blog1,blog3,blog2} from '../assets/assets.js'
+import { Link } from 'react-router-dom';
+import {blog1, blog3, blog2} from '../assets/assets.js'
 
 interface BlogPostProps {
   title: string;
@@ -28,12 +30,12 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, aut
         </div>
         <h3 className="text-xl font-serif mb-3 group-hover:text-revive-red transition-colors">{title}</h3>
         <p className="text-gray-600 mb-4 line-clamp-2">{excerpt}</p>
-        <a 
-          href={link} 
+        <Link 
+          to={link} 
           className="inline-flex items-center text-revive-red hover:text-revive-black transition-colors"
         >
           Read More <ArrowRight size={16} className="ml-1" />
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -83,9 +85,9 @@ const BlogPreview = () => {
           ))}
         </div>
         <div className="text-center mt-10">
-          <a href="/blog" className="btn-outline inline-block">
+          <Link to="/blog" className="btn-outline inline-block">
             View All Articles
-          </a>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -34,7 +35,7 @@ const Shop = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
+    <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">
@@ -81,8 +82,7 @@ const Shop = () => {
           {/* Product Grid - Always use grid view */}
           <div className="md:w-3/4">
             <ProductGrid 
-              products={products}
-              viewMode="grid" 
+              viewMode="grid"
               category={category} 
               sortOption={sortOption}
               minPrice={minPrice}

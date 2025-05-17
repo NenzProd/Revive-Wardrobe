@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CarouselSlide {
@@ -31,7 +30,7 @@ const HeroSection = () => {
       backgroundImage: "/beach-background.gif",
       heading: "Elegance Redefined",
       description:
-        "Discover our collection of premium intimate wear designed to make you feel confident and beautiful. Our luxurious fabrics and thoughtful designs celebrate the art of self-expression.",
+        "Indulge in a set designed for two — where heart details, soft mesh, and satin bows meet confidence and comfort. Whether gifting or getting close, this matching lingerie duo turns moments into memories.",
       modelsImage: "/models-image.png",
       productImage: "/product-image.png",
       buttonText: "Explore Collection",
@@ -41,7 +40,7 @@ const HeroSection = () => {
       backgroundImage: "/beach-background.gif",
       heading: "Perfect Pairs",
       description:
-        "Our matching sets are crafted for those special moments when connection matters most. Designed with love and attention to every detail, these pieces create memories that last.",
+        "Indulge in a set designed for two — where heart details, soft mesh, and satin bows meet confidence and comfort. Whether gifting or getting close, this matching lingerie duo turns moments into memories.",
       modelsImage: "/models-image.png",
       productImage: "/product-image.png",
       buttonText: "Shop Matching Sets",
@@ -64,7 +63,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -79,14 +78,14 @@ const HeroSection = () => {
             <div className="absolute inset-0 z-0">
               <img
                 src={slide.backgroundImage}
-                alt="Beach background"
+                alt="Background"
                 className="object-cover w-full h-full"
               />
             </div>
 
             {/* Content Container */}
-            <div className="relative z-10 flex flex-col md:flex-row items-center h-full px-6 md:px-16 lg:px-24">
-              {/* Left side - Models */}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 py-8 md:flex-row md:items-center md:px-16 lg:px-24">
+              {/* Left side - Models (hidden on mobile) */}
               <div className="hidden md:block md:w-1/2 h-full relative">
                 <div className="absolute bottom-0 left-0">
                   <img
@@ -98,27 +97,27 @@ const HeroSection = () => {
               </div>
 
               {/* Right side - Text content */}
-              <div className="w-full md:w-1/2 flex flex-col items-start md:items-start text-white space-y-6 bg-black/30 backdrop-blur-sm p-6 rounded-lg">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight">
+              <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-white space-y-6 bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-lg max-w-full md:max-w-md mx-auto">
+                <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight text-center md:text-left break-words w-full">
                   {slide.heading}
                 </h1>
-                <p className="text-lg md:text-xl max-w-md">
+                <p className="text-base xs:text-lg md:text-xl max-w-xs sm:max-w-md text-center md:text-left">
                   {slide.description}
                 </p>
 
-                {/* Product image */}
-                <div className="hidden md:block mt-8 mb-8">
+                {/* Product image - moved below description on mobile */}
+                <div className="w-full flex justify-center">
                   <img
                     src={slide.productImage}
                     alt="Product image showing matching underwear"
-                    className="object-contain max-h-[150px]"
+                    className="object-contain max-h-[120px] md:max-h-[150px]"
                   />
                 </div>
 
                 {/* CTA Button */}
                 <a
                   href="/shop"
-                  className="bg-revive-red hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition-colors duration-300 inline-block mt-6"
+                  className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 md:py-3 md:px-8 rounded-full transition-colors duration-300 inline-block mt-4 md:mt-6 text-base md:text-lg"
                 >
                   {slide.buttonText}
                 </a>
