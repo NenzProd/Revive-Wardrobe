@@ -1,14 +1,18 @@
+
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { slide1, slide2, slide3 } from "@/assets/assets";
 
 interface CarouselSlide {
   id: number;
-  backgroundImage: string;
-  heading: string;
+  title: string;
   description: string;
-  modelsImage: string;
-  productImage: string;
-  buttonText: string;
+  offer: string;
+  ctaText: string;
+  backgroundImage: string;
+  link: string;
 }
 
 const HeroSection = () => {
@@ -17,33 +21,30 @@ const HeroSection = () => {
   const slides: CarouselSlide[] = [
     {
       id: 1,
-      backgroundImage: "/beach-background.gif",
-      heading: "Love, Matched Perfectly",
-      description:
-        "Indulge in a set designed for two — where heart details, soft mesh, and satin bows meet confidence and comfort. Whether gifting or getting close, this matching lingerie duo turns moments into memories.",
-      modelsImage: "/models-image.png",
-      productImage: "/product-image.png",
-      buttonText: "Unwrap Intimacy",
+      title: "Russian Couple – \"I Licked It / So It's Mine\"",
+      description: "Playfully claim your partner — one cheeky message at a time. Because love tastes better with laughter.",
+      offer: "Get 10% OFF this wild set — Limited stock!",
+      ctaText: "Shop the Fun Set",
+      backgroundImage: slide1,
+      link: "/shop"
     },
     {
       id: 2,
-      backgroundImage: "/beach-background.gif",
-      heading: "Elegance Redefined",
-      description:
-        "Indulge in a set designed for two — where heart details, soft mesh, and satin bows meet confidence and comfort. Whether gifting or getting close, this matching lingerie duo turns moments into memories.",
-      modelsImage: "/models-image.png",
-      productImage: "/product-image.png",
-      buttonText: "Explore Collection",
+      title: "French Couple – \"PINKPLAY\" Black & Lace Set",
+      description: "When sporty meets sexy — crafted for bold lovers. Elevate date nights with signature style.",
+      offer: "Flat ₹200 OFF — Only this week!",
+      ctaText: "Get the Luxe Look",
+      backgroundImage: slide2,
+      link: "/shop?category=luxury"
     },
     {
       id: 3,
-      backgroundImage: "/beach-background.gif",
-      heading: "Perfect Pairs",
-      description:
-        "Indulge in a set designed for two — where heart details, soft mesh, and satin bows meet confidence and comfort. Whether gifting or getting close, this matching lingerie duo turns moments into memories.",
-      modelsImage: "/models-image.png",
-      productImage: "/product-image.png",
-      buttonText: "Shop Matching Sets",
+      title: "Chinese Couple – \"Hands Tearing Fabric\" Lace Set",
+      description: "Unleash the tease with our most playful design yet. Perfect for couples who flirt with fire.",
+      offer: "Save 15% on this flirty favorite!",
+      ctaText: "Flirt & Shop Now",
+      backgroundImage: slide3,
+      link: "/shop?category=flirty"
     },
   ];
 
@@ -63,65 +64,37 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden bg-revive-black">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            index === currentSlide
-              ? "opacity-100"
-              : "opacity-0 pointer-events-none"
+          className={`absolute inset-0 flex flex-col md:flex-row transition-opacity duration-500 ${
+            index === currentSlide ? "opacity-100 z-10" : "opacity-0 -z-10"
           }`}
         >
-          <div className="relative w-full h-full">
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0">
-              <img
-                src={slide.backgroundImage}
-                alt="Background"
-                className="object-cover w-full h-full"
-              />
-            </div>
-
-            {/* Content Container */}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 py-8 md:flex-row md:items-center md:px-16 lg:px-24">
-              {/* Left side - Models (hidden on mobile) */}
-              <div className="hidden md:block md:w-1/2 h-full relative">
-                <div className="absolute bottom-0 left-0">
-                  <img
-                    src={slide.modelsImage}
-                    alt="Models wearing matching underwear"
-                    className="object-contain max-h-[500px]"
-                  />
-                </div>
-              </div>
-
-              {/* Right side - Text content */}
-              <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-white space-y-6 bg-black/30 backdrop-blur-sm p-4 md:p-6 rounded-lg max-w-full md:max-w-md mx-auto">
-                <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight text-center md:text-left break-words w-full">
-                  {slide.heading}
-                </h1>
-                <p className="text-base xs:text-lg md:text-xl max-w-xs sm:max-w-md text-center md:text-left">
-                  {slide.description}
-                </p>
-
-                {/* Product image - moved below description on mobile */}
-                <div className="w-full flex justify-center">
-                  <img
-                    src={slide.productImage}
-                    alt="Product image showing matching underwear"
-                    className="object-contain max-h-[120px] md:max-h-[150px]"
-                  />
-                </div>
-
-                {/* CTA Button */}
-                <a
-                  href="/shop"
-                  className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 md:py-3 md:px-8 rounded-full transition-colors duration-300 inline-block mt-4 md:mt-6 text-base md:text-lg"
+          {/* Left side - Image */}
+          <div className="w-full md:w-1/2 h-1/2 md:h-full">
+            <div 
+              className="w-full h-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.backgroundImage})` }}
+              aria-label={`Slide ${index + 1} background`}
+            />
+          </div>
+          
+          {/* Right side - Content */}
+          <div className="w-full md:w-1/2 h-1/2 md:h-full flex items-center justify-center bg-revive-black text-white p-8">
+            <div className="max-w-md space-y-6">
+              <h2 className="text-3xl md:text-4xl font-serif">{slide.title}</h2>
+              <p className="text-lg opacity-90">{slide.description}</p>
+              <p className="text-revive-gold text-xl font-medium">{slide.offer}</p>
+              <Link to={slide.link}>
+                <Button 
+                  variant="default" 
+                  className="mt-4 bg-revive-red hover:bg-revive-red/90"
                 >
-                  {slide.buttonText}
-                </a>
-              </div>
+                  {slide.ctaText}
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
