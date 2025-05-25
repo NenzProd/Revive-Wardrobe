@@ -61,9 +61,9 @@ const Footer = () => {
             <address className="not-italic text-gray-400 space-y-2">
               <p>Ras Al Khaimah</p>
               <p>United Arab Emirates</p>
-              <p className="pt-2">
+              {/* <p className="pt-2">
                 <a href="tel:+971521919358" className="hover:text-revive-gold transition-colors">+971521919358</a>
-              </p>
+              </p> */}
               <p>
                 <a href="mailto:info@revivewardrobe.com" className="hover:text-revive-gold transition-colors">info@revivewardrobe.com</a>
               </p>
