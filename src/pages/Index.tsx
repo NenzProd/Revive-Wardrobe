@@ -1,6 +1,7 @@
 
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
+import SignatureCollection from '../components/SignatureCollection';
 import FeaturedCategories from '../components/FeaturedCategories';
 import FeaturedProducts from '../components/FeaturedProducts';
 import StitchingPromo from '../components/StitchingPromo';
@@ -13,6 +14,7 @@ const Index = () => {
     <div className="min-h-screen bg-revive-white">
       <Navbar />
       <HeroSection />
+      <SignatureCollection />
       <FeaturedCategories />
       <FeaturedProducts />
       <StitchingPromo />

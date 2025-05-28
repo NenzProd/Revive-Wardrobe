@@ -16,6 +16,9 @@ import bg from './img/bg.png'
 import slide1 from './img/slide1.jpg'
 import slide2 from './img/slide2.jpeg'
 import slide3 from './img/slide3.jpg'
+import productImage1 from './img/product-image1.png'
+import productImage2 from './img/product-image2.png'
+import productImage3 from './img/product-image3.png'
 
 
 
@@ -38,4 +41,7 @@ export {
   slide1,
   slide2,
   slide3,
+  productImage1,
+  productImage2,
+  productImage3
 }

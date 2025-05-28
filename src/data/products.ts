@@ -1,4 +1,4 @@
-import { ZainabChottani, CrimsonLawn, CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear, BridalCollection } from '../assets/assets.js'
+import { ZainabChottani, CrimsonLawn, CrimsonLuxury, CHARIZMAAGHAZE, SilkSleepwear, BridalCollection,productImage1,productImage2,productImage3 } from '../assets/assets.js'
 
 export interface Product {
   id: number;
@@ -166,6 +166,82 @@ export const products: Product[] = [
     tags: ['luxury', 'unstitched', 'custom'],
     popularity: 88,
     createdAt: '2023-06-20'
+  },
+  {
+    id: 7,
+    name: "Pink Play - Couple Lingerie Set",
+    price: 4999.00,
+    imageUrl: productImage2,
+    images: [productImage1, productImage2, productImage3],
+    isNew: true,
+    slug: 'pink-play-couple-lingerie',
+    featured: true,
+    description: 'Playful pink lingerie set designed for couples. Soft, romantic, and comfortable for intimate moments.',
+    isStitched: true,
+    material: 'Premium silk blend with lace accents',
+    careInstructions: [
+      'Hand wash with delicate detergent',
+      'Air dry only',
+      'Do not bleach',
+      'Store flat or hanging'
+    ],
+    deliveryEstimate: '2-4 business days',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    categories: ['couple-lingerie', 'type-stitched'],
+    tags: ['couple', 'lingerie', 'romantic', 'pink', 'intimate'],
+    popularity: 92,
+    createdAt: '2023-07-01'
+  },
+  {
+    id: 8,
+    name: "I Licked It/ So It's Mine - Playful Set",
+    price: 5499.00,
+    imageUrl: productImage1,
+    images: [productImage1, productImage2, productImage3],
+    isSale: true,
+    salePrice: 4299.00,
+    slug: 'i-licked-it-so-its-mine-set',
+    featured: true,
+    description: 'Bold and playful couple lingerie with cheeky messaging. Perfect for adding fun to your intimate wardrobe.',
+    isStitched: true,
+    material: 'Soft cotton blend with printed design',
+    careInstructions: [
+      'Machine wash cold',
+      'Tumble dry low',
+      'Iron on low heat if needed',
+      'Wash with similar colors'
+    ],
+    deliveryEstimate: '2-4 business days',
+    sizes: ['S', 'M', 'L', 'XL'],
+    categories: ['couple-lingerie', 'type-stitched'],
+    tags: ['couple', 'lingerie', 'playful', 'bold', 'fun'],
+    popularity: 87,
+    createdAt: '2023-07-15'
+  },
+  {
+    id: 9,
+    name: "Hands Tearing Lace - Sensual Collection",
+    price: 6999.00,
+    imageUrl: productImage3,
+    images: [productImage1, productImage2, productImage3],
+    isNew: true,
+    slug: 'hands-tearing-lace-sensual',
+    featured: true,
+    description: 'Elegant and sensual lace lingerie designed for passionate moments. Delicate craftsmanship meets bold design.',
+    isStitched: true,
+    material: 'Premium French lace with satin accents',
+    careInstructions: [
+      'Hand wash only with gentle detergent',
+      'Do not wring or twist',
+      'Lay flat to dry',
+      'Store carefully to preserve lace'
+    ],
+    deliveryEstimate: '3-5 business days',
+    sizes: ['XS', 'S', 'M', 'L'],
+    categories: ['couple-lingerie', 'type-stitched'],
+    tags: ['couple', 'lingerie', 'lace', 'sensual', 'elegant'],
+    popularity: 95,
+    createdAt: '2023-08-01'
   }
 ]
 
@@ -205,4 +281,9 @@ export const getRelatedProducts = (productId: number): Product[] => {
       )
     )
     .slice(0, 4)
+}
+
+// Get couple lingerie products
+export const getCoupleLingerie = (): Product[] => {
+  return products.filter(product => product.categories.includes('couple-lingerie'))
 }

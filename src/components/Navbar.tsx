@@ -74,14 +74,7 @@ const Navbar = () => {
                               Shop
                             </Link>
                           </li>
-                          <li>
-                            <Link
-                              to="/wishlist"
-                              className="block py-2 text-revive-black hover:text-revive-red transition-colors font-medium"
-                            >
-                              Wishlist
-                            </Link>
-                          </li>
+                          
                           <li>
                             <Link
                               to="/account"
@@ -187,22 +180,8 @@ const Navbar = () => {
                   Shop
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/wishlist"
-                  className="px-2 py-2 text-revive-black hover:text-revive-red transition-colors"
-                >
-                  Wishlist
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/account"
-                  className="px-2 py-2 text-revive-black hover:text-revive-red transition-colors"
-                >
-                  Account
-                </Link>
-              </li>
+             
+              
               <li>
                 <Link
                   to="/blog"
@@ -224,12 +203,6 @@ const Navbar = () => {
 
           {/* Icons - Right */}
           <div className="flex items-center space-x-6">
-            <button
-              aria-label="Search"
-              className="text-revive-gold hover:text-revive-red transition-colors"
-            >
-              <Search size={20} />
-            </button>
             <Link
               to="/account"
               aria-label="Profile"
