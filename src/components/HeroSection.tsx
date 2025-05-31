@@ -79,11 +79,11 @@ const HeroSection = () => {
           {/* Mobile Layout */}
           <div className="flex flex-col h-full md:hidden">
             {/* Model Image - First on mobile */}
-            <div className="w-full h-[50vh] relative mt-12">
+            <div className="w-full h-[40vh] relative mt-12">
               <img 
                 src={slide.modelImage}
                 alt={`Model for ${slide.title}`}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-top"
               />
             </div>
             
