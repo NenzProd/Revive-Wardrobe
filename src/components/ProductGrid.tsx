@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import { getAllProducts } from '../data/products';
@@ -12,6 +11,7 @@ interface ProductGridProps {
   maxPrice?: number;
   colors?: string[];
   types?: string[];
+  products?: Product[];
 }
 
 const ProductGrid = ({ 
@@ -21,11 +21,16 @@ const ProductGrid = ({
   minPrice = 0,
   maxPrice = 100000,
   colors = [],
-  types = []
+  types = [],
+  products: externalProducts
 }: ProductGridProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   
   useEffect(() => {
+    if (externalProducts) {
+      setProducts(externalProducts)
+      return
+    }
     const fetchProducts = () => {
       let filteredProducts = getAllProducts() as unknown as Product[];
       
@@ -89,7 +94,7 @@ const ProductGrid = ({
     };
     
     setProducts(fetchProducts());
-  }, [category, sortOption, minPrice, maxPrice, colors, types]);
+  }, [category, sortOption, minPrice, maxPrice, colors, types, externalProducts]);
 
   return (
     <div>

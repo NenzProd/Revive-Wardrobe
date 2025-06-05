@@ -1,13 +1,29 @@
 import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "../stores/useCartStore";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Navbar = () => {
   const { itemCount } = useCartStore();
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchActive, setSearchActive] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+
+  const handleSearch = () => {
+    if (searchInput.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchInput.trim())}`)
+      setSearchActive(false)
+      setSearchInput('')
+    }
+  }
+
+  const handleSearchKeyDown = e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
 
   return (
     <>
@@ -27,7 +43,17 @@ const Navbar = () => {
                 placeholder="Search products..."
                 className="flex-1 py-1 px-2 text-sm focus:outline-none"
                 autoFocus
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
+              <button
+                aria-label="Go"
+                className="text-revive-gold hover:text-revive-red transition-colors font-bold px-2"
+                onClick={handleSearch}
+              >
+                <Search size={20} />
+              </button>
             </div>
           ) : (
             <>
@@ -203,6 +229,23 @@ const Navbar = () => {
 
           {/* Icons - Right */}
           <div className="flex items-center space-x-6">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none w-40 md:w-56"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+            />
+            <button
+              aria-label="Go"
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-revive-gold hover:text-revive-red"
+              onClick={handleSearch}
+            >
+              <Search size={18} />
+            </button>
+          </div>
             <Link
               to="/account"
               aria-label="Profile"

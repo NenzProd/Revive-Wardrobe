@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -20,6 +19,7 @@ const Shop = () => {
   const maxPrice = parseInt(searchParams.get('maxPrice') || '25000');
   const colors = searchParams.getAll('color');
   const types = searchParams.getAll('type');
+  const search = searchParams.get('search')?.toLowerCase() || '';
 
   const toggleFilter = () => {
     setFilterOpen(!filterOpen);
@@ -33,6 +33,11 @@ const Shop = () => {
     // Force a reload of the current page to apply the new sort
     window.location.reload();
   };
+
+  // Filter products by search
+  const filteredProducts = search
+    ? products.filter(p => p.name.toLowerCase().includes(search))
+    : products;
 
   return (
     <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
@@ -89,6 +94,7 @@ const Shop = () => {
               maxPrice={maxPrice}
               colors={colors}
               types={types}
+              products={filteredProducts}
             />
           </div>
         </div>
