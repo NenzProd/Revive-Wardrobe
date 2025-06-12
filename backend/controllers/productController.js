@@ -4,7 +4,7 @@ import productModel from "../models/productModel.js"
 
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, subCategory, bestseller } = req.body
+        const { name, description, price, category, fabric, type, bestseller, stock, slug, sizes } = req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -24,9 +24,13 @@ const addProduct = async (req, res) => {
             name,
             description,
             category,
+            fabric,
             price: Number(price),
-            subCategory,
+            type,
             bestseller: bestseller === "true" ? true : false,
+            stock: Number(stock),
+            slug,
+            sizes: typeof sizes === 'string' ? JSON.parse(sizes) : sizes,
             image: imagesUrl,
             date: Date.now()
         }
@@ -74,4 +78,52 @@ const singleProduct = async (req, res) => {
     }
 }
 
-export {addProduct, listProduct, removeProduct, singleProduct}
+const editProduct = async (req, res) => {
+    try {
+        const { id, name, description, price, category, fabric, type, bestseller, stock, slug, sizes } = req.body
+        if (!id) return res.json({ success: false, message: 'Product ID is required' })
+        const product = await productModel.findById(id)
+        if (!product) return res.json({ success: false, message: 'Product not found' })
+
+        // Handle images
+        const oldImages = product.image || []
+        const files = req.files || {}
+        const imageFiles = [
+          files.image1 && files.image1[0],
+          files.image2 && files.image2[0],
+          files.image3 && files.image3[0],
+          files.image4 && files.image4[0]
+        ]
+        const imagesUrl = await Promise.all(imageFiles.map(async (file, idx) => {
+          if (file) {
+            const result = await cloudinary.uploader.upload(file.path, { resource_type: 'image' })
+            return result.secure_url
+          } else {
+            return oldImages[idx] || null
+          }
+        }))
+        const filteredImagesUrl = imagesUrl.filter(Boolean)
+
+        const updateFields = {}
+        if (name !== undefined) updateFields.name = name
+        if (description !== undefined) updateFields.description = description
+        if (price !== undefined) updateFields.price = Number(price)
+        if (category !== undefined) updateFields.category = category
+        if (fabric !== undefined) updateFields.fabric = fabric
+        if (type !== undefined) updateFields.type = type
+        if (bestseller !== undefined) updateFields.bestseller = bestseller
+        if (stock !== undefined) updateFields.stock = Number(stock)
+        if (slug !== undefined) updateFields.slug = slug
+        if (sizes !== undefined) updateFields.sizes = typeof sizes === 'string' ? JSON.parse(sizes) : sizes
+        // Only update image if any file was uploaded
+        if (imageFiles.some(Boolean)) updateFields.image = filteredImagesUrl
+
+        await productModel.findByIdAndUpdate(id, updateFields)
+        res.json({ success: true, message: 'Product updated' })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+export {addProduct, listProduct, removeProduct, singleProduct, editProduct}

@@ -21,7 +21,7 @@ const razorpayInstance = new razorpay({
 
 const placeOrder = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, email, phone, items, amount, address } = req.body;
         
         if (!items || items.length === 0) {
             return res.json({success: false, message: "No items in cart"});
@@ -29,6 +29,8 @@ const placeOrder = async (req, res) => {
 
         const orderData = {
             userId,
+            email,
+            phone,
             items: items.map(item => ({
                 productId: item._id,
                 name: item.name,
@@ -61,7 +63,7 @@ const placeOrder = async (req, res) => {
 
 const placeOrderStripe = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, email, phone, items, amount, address } = req.body;
         const { origin } = req.headers
 
         if (!items || items.length === 0) {
@@ -70,6 +72,8 @@ const placeOrderStripe = async (req, res) => {
 
         const orderData = {
             userId,
+            email,
+            phone,
             items: items.map(item => ({
                 productId: item._id,
                 name: item.name,
@@ -149,7 +153,7 @@ const verifyStripe = async (req, res) => {
 
 const placeOrderRazorpay = async (req, res) => {
     try {
-        const { userId, items, amount, address } = req.body;
+        const { userId, email, phone, items, amount, address } = req.body;
 
         if (!items || items.length === 0) {
             return res.json({success: false, message: "No items in cart"});
@@ -157,6 +161,8 @@ const placeOrderRazorpay = async (req, res) => {
 
         const orderData = {
             userId,
+            email,
+            phone,
             items: items.map(item => ({
                 productId: item._id,
                 name: item.name,
