@@ -29,10 +29,9 @@ const App = () => {
       { token === "" ? <Login setToken={setToken} />: 
       <>
       <Navbar setToken={setToken} />
-      <hr />
       <div className='flex w-full'>
         <Sidebar />
-        <div className='w-[70%] mx-auto ml-[max(5vw, 25px)] my-8 text-gray-600 text-base'>
+        <div className='flex-1 px-4 md:px-6 py-8 ml-16 md:ml-0 transition-all duration-300'>
           <Routes>
             <Route path='/' element={<Dashboard token={token} />} />
             <Route path='/add' element={<Add token={token} />} />

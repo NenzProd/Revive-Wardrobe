@@ -94,11 +94,6 @@ function Edit ({ token }) {
     setSlug(e.target.value)
   }
 
-  function handleSizesChange (e) {
-    const options = Array.from(e.target.selectedOptions, o => o.value)
-    setSizes(options)
-  }
-
   async function handleSubmit (e) {
     e.preventDefault()
     try {
@@ -130,112 +125,215 @@ function Edit ({ token }) {
     }
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div></div>
 
   return (
-    <form onSubmit={handleSubmit} className='flex flex-col w-full items-start gap-3'>
-      <div>
-        <p className='mb-2'>Upload Image</p>
-        <div className='flex gap-2'>
-          {[0, 1, 2, 3].map(idx => (
-            <label htmlFor={`image${idx + 1}`} key={idx}>
-              <img
-                className='w-25'
-                src={(() => {
-                  const imgFile = [image1, image2, image3, image4][idx]
-                  if (imgFile) return URL.createObjectURL(imgFile)
-                  if (currentImages[idx]) return currentImages[idx]
-                  return assets.upload_area
-                })()}
-                alt=''
+    <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
+      <h2 className="text-xl md:text-2xl font-semibold mb-6 text-gray-800">Edit Product</h2>
+      
+      <form onSubmit={handleSubmit} className="flex flex-col w-full gap-6">
+        {/* Image Upload Section */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium text-gray-700 mb-3">Product Images</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[0, 1, 2, 3].map(idx => (
+              <label 
+                htmlFor={`image${idx + 1}`} 
+                key={idx}
+                className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
+              >
+                <img
+                  className="w-full h-full object-cover"
+                  src={(() => {
+                    const imgFile = [image1, image2, image3, image4][idx]
+                    if (imgFile) return URL.createObjectURL(imgFile)
+                    if (currentImages[idx]) return currentImages[idx]
+                    return assets.upload_area
+                  })()}
+                  alt=""
+                />
+                <input
+                  onChange={e => handleImageChange(idx, e.target.files[0])}
+                  type="file"
+                  id={`image${idx + 1}`}
+                  hidden
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Basic Information */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium text-gray-700 mb-3">Basic Information</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+              <input 
+                id="name" 
+                name="name" 
+                onChange={handleChange} 
+                value={form.name} 
+                className="w-full px-3 py-2 bg-white" 
+                type="text" 
+                placeholder="Enter product name" 
+                required 
               />
+            </div>
+            
+            <div>
+              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
               <input
-                onChange={e => handleImageChange(idx, e.target.files[0])}
-                type='file'
-                id={`image${idx + 1}`}
-                hidden
+                id="slug"
+                onChange={handleSlugChange}
+                value={slug}
+                className="w-full px-3 py-2 bg-white"
+                type="text"
+                placeholder="product-url-slug"
+                required
               />
+            </div>
+          </div>
+          
+          <div className="mt-4">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Product Description</label>
+            <textarea
+              id="description"
+              name="description"
+              onChange={handleChange}
+              value={form.description}
+              className="w-full px-3 py-2 bg-white min-h-[100px]"
+              placeholder="Enter product description"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Product Details */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium text-gray-700 mb-3">Product Details</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                id="category"
+                name="category"
+                onChange={handleChange}
+                value={form.category}
+                className="w-full px-3 py-2 bg-white"
+              >
+                <option value="Ethnic Elegance">Ethnic Elegance</option>
+                <option value="Graceful Abayas">Graceful Abayas</option>
+                <option value="Intimate Collection">Intimate Collection</option>
+                <option value="Stitching Services">Stitching Services</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <select
+                id="type"
+                name="type"
+                onChange={handleChange}
+                value={form.type}
+                className="w-full px-3 py-2 bg-white"
+              >
+                <option value="Stitched">Stitched</option>
+                <option value="Unstitched">Unstitched</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="fabric" className="block text-sm font-medium text-gray-700 mb-1">Fabric</label>
+              <select
+                id="fabric"
+                name="fabric"
+                onChange={handleChange}
+                value={form.fabric}
+                className="w-full px-3 py-2 bg-white"
+                required
+              >
+                <option value="Lawn">Lawn</option>
+                <option value="Chiffon">Chiffon</option>
+                <option value="Silk">Silk</option>
+                <option value="Cotton">Cotton</option>
+                <option value="Organza">Organza</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+              <input
+                id="price"
+                name="price"
+                onChange={handleChange}
+                value={form.price}
+                className="w-full px-3 py-2 bg-white"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter price"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+              <input
+                id="stock"
+                name="stock"
+                onChange={handleChange}
+                value={form.stock}
+                className="w-full px-3 py-2 bg-white"
+                type="number"
+                min="0"
+                placeholder="Enter stock quantity"
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="mt-4">
+            <label htmlFor="sizes" className="block text-sm font-medium text-gray-700 mb-1">Available Sizes</label>
+            <Select
+              id="sizes"
+              isMulti
+              options={sizeOptions}
+              value={sizeOptions.filter(opt => sizes.includes(opt.value))}
+              onChange={selected => setSizes(selected.map(opt => opt.value))}
+              className="w-full bg-white"
+              classNamePrefix="react-select"
+              placeholder="Select sizes..."
+            />
+          </div>
+          
+          <div className="mt-4 flex items-center">
+            <input
+              id="bestseller"
+              name="bestseller"
+              onChange={handleChange}
+              checked={form.bestseller}
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 rounded"
+            />
+            <label className="ml-2 text-sm text-gray-700 cursor-pointer" htmlFor="bestseller">
+              Add to Best Seller
             </label>
-          ))}
+          </div>
         </div>
-      </div>
-      <div className='w-full'>
-        <p className='mb-2'>Product Name</p>
-        <input name='name' onChange={handleChange} value={form.name} className='w-full max-w-[500px] px-3 py-2 ' type='text' placeholder='Type here' required />
-      </div>
-      <div className='w-full'>
-        <p className='mb-2'>Product Description</p>
-        <textarea name='description' onChange={handleChange} value={form.description} className='w-full max-w-[500px] px-3 py-2 ' type='text' placeholder='Type context here' required />
-      </div>
-      <div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
-        <div>
-          <p className='mb-2'>Category</p>
-          <select name='category' onChange={handleChange} value={form.category} className='w-full px-3 py-2'>
-            <option value='Ethnic Elegance'>Ethnic Elegance</option>
-            <option value='Graceful Abayas'>Graceful Abayas</option>
-            <option value='Intimate Collection'>Intimate Collection</option>
-            <option value='Stitching Services'>Stitching Services</option>
-          </select>
-        </div>
-        <div>
-          <p className='mb-2'>Type</p>
-          <select name='type' onChange={handleChange} value={form.type} className='w-full px-3 py-2'>
-            <option value='Stitched'>Stitched</option>
-            <option value='Unstitched'>Unstitched</option>
-          </select>
-        </div>
-        <div>
-        <p className='mb-2'>Fabric</p>
-        <select name='fabric' onChange={handleChange} value={form.fabric} className='w-full px-3 py-2' required>
-          <option value='Lawn'>Lawn</option>
-          <option value='Chiffon'>Chiffon</option>
-          <option value='Silk'>Silk</option>
-          <option value='Cotton'>Cotton</option>
-          <option value='Organza'>Organza</option>
-        </select>
-      </div>
-       
-      </div>
-      <div className='flex flex-col sm:flex-row gap-2 w-full sm:gap-8'>
-      <div>
-          <p className='mb-2'>Product Price</p>
-          <input name='price' onChange={handleChange} value={form.price} className='w-full max-w-[500px] px-3 py-2' type='number' placeholder='25' required />
-        </div>
-        <div>
-        <p className='mb-2'>Stock</p>
-        <input name='stock' onChange={handleChange} value={form.stock} className='w-full max-w-[500px] px-3 py-2' type='number' min='0' placeholder='Stock quantity' required />
-        </div>
-      </div>
-      <div className='flex gap-2 mt-2'>
-        <input name='bestseller' onChange={handleChange} checked={form.bestseller} type='checkbox' id='bestseller' />
-        <label className='cursor-pointer' htmlFor='bestseller'>Add to Best Seller</label>
-      </div>
-      <div className='w-full'>
-        <p className='mb-2'>Slug</p>
-        <input
-          onChange={handleSlugChange}
-          value={slug}
-          className='w-full max-w-[500px] px-3 py-2'
-          type='text'
-          placeholder='slug-for-product'
-          required
-        />
-      </div>
-      <div className='w-full'>
-        <p className='mb-2'>Sizes</p>
-        <Select
-          isMulti
-          options={sizeOptions}
-          value={sizeOptions.filter(opt => sizes.includes(opt.value))}
-          onChange={selected => setSizes(selected.map(opt => opt.value))}
-          className='w-full max-w-[500px]'
-          classNamePrefix='react-select'
-          placeholder='Select sizes...'
-        />
-      </div>
-     
-      <button type='submit' className='w-28 py-3 mt-4 bg-black text-white'>UPDATE</button>
-    </form>
+
+        <button 
+          type="submit" 
+          className="mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start"
+        >
+          Update Product
+        </button>
+      </form>
+    </div>
   )
 }
 

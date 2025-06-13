@@ -1,14 +1,25 @@
-
-
-
+import { useState } from 'react'
+import { Menu } from 'lucide-react'
 
 const Navbar = ({setToken}) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  
   return (
-    <div className='flex items-center py-2 px-[4%] justify-between'>
-      <p className="font-display text-2xl text-primary">
-            Revive Wardrobe Admin
-          </p>
-      <button onClick={()=>setToken('')} className='bg-gray-600 text-white px-5 py-2 sm:px-7 sm:py-2 rounded-full text-xs sm:text-sm'>Logout</button>
+    <div className='sticky top-0 z-50 bg-white shadow-md py-3 px-4 md:px-6'>
+      <div className='flex items-center justify-between'>
+        <p className="font-display text-xl md:text-2xl font-semibold text-primary">
+          Revive Wardrobe Admin
+        </p>
+        
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={()=>setToken('')} 
+            className='bg-gradient-to-r from-gray-700 to-gray-900 text-white px-4 py-1.5 md:px-6 md:py-2 rounded-md text-sm transition-all hover:shadow-lg'
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
