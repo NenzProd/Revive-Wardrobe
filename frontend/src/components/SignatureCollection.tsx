@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useProductList } from '../hooks/useProduct';
 import { priceSymbol } from '../config/constants';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const SignatureCollection = () => {
   const { toast } = useToast();
@@ -19,7 +20,41 @@ const SignatureCollection = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <section className="py-16 bg-gradient-to-br from-pink-50 to-rose-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4 text-revive-black">
+              Revive Wardrobe's Signature: Couple Lingerie Collection
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              Discover our exclusive collection of intimate wear designed for couples. 
+              Elegant, playful, and sensual pieces to enhance your romantic moments.
+            </p>
+            <div className="w-24 h-1 bg-revive-red mx-auto"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, idx) => (
+              <div key={idx} className="group bg-white rounded-xl overflow-hidden shadow-lg transition-all duration-500">
+                <div className="relative overflow-hidden">
+                  <div className="h-96 overflow-hidden bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                </div>
+                <div className="p-6 bg-white">
+                  <Skeleton className="h-6 w-3/4 mb-3" />
+                  <Skeleton className="h-5 w-1/2 mb-4" />
+                  <Skeleton className="h-6 w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Skeleton className="h-10 w-60 mx-auto" />
+          </div>
+        </div>
+      </section>
+    );
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center">{error}</div>;

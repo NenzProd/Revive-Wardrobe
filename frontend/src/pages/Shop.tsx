@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import Newsletter from '../components/Newsletter';
 import { Sliders } from 'lucide-react';
 import { useProductList } from '../hooks/useProduct'
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -47,7 +48,44 @@ const Shop = () => {
   });
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8 flex-grow">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-serif mb-4">Our Collection</h1>
+            <div className="w-24 h-1 bg-revive-red mx-auto mb-6"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Explore our curated collection of elegant attire designed to bring out the best in you.
+            </p>
+          </div>
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className={`${filterOpen ? 'block' : 'hidden'} md:block md:w-1/4`}>
+              <FilterSidebar onClose={() => setFilterOpen(false)} />
+            </div>
+            <div className="md:w-3/4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(9)].map((_, idx) => (
+                  <div key={idx} className="group bg-white rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+                    <div className="relative overflow-hidden">
+                      <div className="h-80 overflow-hidden">
+                        <Skeleton className="w-full h-full" />
+                      </div>
+                    </div>
+                    <div className="p-4 border-t border-gray-100">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-5 w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <Newsletter />
+        <Footer />
+      </div>
+    )
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center">{error}</div>;

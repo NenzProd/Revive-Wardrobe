@@ -4,6 +4,7 @@ import { Eye, Heart } from 'lucide-react'
 import { priceSymbol } from '../config/constants'
 import { useToast } from '@/hooks/use-toast'
 import { useProductList } from '../hooks/useProduct'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const ProductCard = ({ product }: { product: any }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -116,7 +117,36 @@ const FeaturedProducts = () => {
   const rows = [featuredProducts.slice(0, 3), featuredProducts.slice(3, 6)];
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Products</h2>
+            <div className="w-24 h-1 bg-revive-red mx-auto"></div>
+          </div>
+          {[0, 1].map(rowIdx => (
+            <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {[0, 1, 2].map(idx => (
+                <div key={idx} className="group bg-white rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+                  <div className="relative overflow-hidden">
+                    <div className="h-80 overflow-hidden">
+                      <Skeleton className="w-full h-full" />
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-100">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-5 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div className="text-center mt-10">
+            <Skeleton className="h-10 w-40 mx-auto" />
+          </div>
+        </div>
+      </section>
+    )
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center">{error}</div>;
