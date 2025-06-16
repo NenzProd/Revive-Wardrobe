@@ -20,6 +20,8 @@ import { priceSymbol } from '../config/constants';
 
 import { useCartStore } from '../stores/useCartStore';
 import { useProductBySlug } from '../hooks/useProduct';
+import logo from '/logo.png'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -33,7 +35,16 @@ const ProductDetail = () => {
   const { product, loading, error } = useProductBySlug(slug || '');
   
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <img
+          src={logo}
+          alt="Loading..."
+          className="w-32 h-32 animate-pulse opacity-80"
+          style={{ filter: 'drop-shadow(0 2px 8px rgba(220,38,38,0.15))' }}
+        />
+      </div>
+    )
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center">{error}</div>;
