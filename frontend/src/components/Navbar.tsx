@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag } from "lucide-react";
+import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag, Info } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "../stores/useCartStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -119,6 +119,14 @@ const Navbar = () => {
                           </li>
                           <li>
                             <Link
+                              to="/about"
+                              className="block py-2 text-revive-black hover:text-revive-red transition-colors font-medium"
+                            >
+                              About Us
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
                               to="/contact"
                               className="block py-2 text-revive-black hover:text-revive-red transition-colors font-medium"
                             >
@@ -218,6 +226,14 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
+                  to="/about"
+                  className="px-2 py-2 text-revive-black hover:text-revive-red transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/contact"
                   className="px-2 py-2 text-revive-black hover:text-revive-red transition-colors"
                 >
@@ -303,6 +319,15 @@ const Navbar = () => {
           >
             <Heart size={20} />
             <span className="text-xs mt-1">Wishlist</span>
+          </Link>
+          <Link
+            to="/about"
+            className={`flex flex-col items-center p-2 ${
+              location.pathname === "/about" ? "text-revive-red" : "text-revive-gold"
+            }`}
+          >
+            <Info size={20} />
+            <span className="text-xs mt-1">About</span>
           </Link>
           <Link
             to="/account"

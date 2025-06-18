@@ -4,6 +4,7 @@ import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
+
 const Footer = () => {
   return (
     <footer className="bg-revive-black text-white pt-16 pb-8">
@@ -72,12 +73,25 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-10 pt-8 text-center">
-          <div className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} REVIVE WARDROBE. All rights reserved.
-          </div>
-          <div className="text-gray-400 text-sm mt-2">
-            Stitched with <FontAwesomeIcon icon={faHeart} className="text-red-500" /> by <a href="https://tensketch.com" className="hover:text-revive-gold transition-colors">TenSketch</a>
+        <div className="border-t border-gray-800 mt-10 pt-8">
+          <div className="flex flex-col md:flex-row items-center">
+            {/* Center copyright text */}
+            <div className="text-center flex-grow mb-4 md:mb-0">
+              <div className="text-gray-400 text-sm">
+                © 2025 REVIVE WARDROBE. All rights reserved.
+              </div>
+              <div className="text-gray-400 text-sm mt-2">
+                Stitched with <FontAwesomeIcon icon={faHeart} className="text-red-500" /> by <a href="https://tensketch.com" className="hover:text-revive-gold transition-colors">TenSketch</a>
+              </div>
+            </div>
+
+            {/* Payment Icons - keep in same place */}
+            <div className="flex space-x-3">
+              <img src="/pay_icons/american_express.svg" alt="American Express" className="h-7 w-10" />
+              <img src="/pay_icons/mastercard_icon.svg" alt="Mastercard" className="h-7 w-10" />
+              <img src="/pay_icons/unionPay_icon.svg" alt="UnionPay" className="h-7 w-10" />
+              <img src="/pay_icons/visa_icon.svg" alt="Visa" className="h-7 w-10 bg-current" />
+            </div>
           </div>
         </div>
       </div>
