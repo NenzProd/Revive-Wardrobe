@@ -119,6 +119,17 @@ const About = () => {
               Shop Now
             </a>
           </div>
+
+          {/* Visit Us Section */}
+          <div className="bg-white rounded-lg shadow-sm border p-6 mb-12">
+            <h2 className="text-2xl font-serif mb-6 text-center">Visit Us</h2>
+            <div className="prose max-w-none text-gray-700 text-center">
+              <p className="font-semibold">Revive Wardrobe FZ-LLC</p>
+              <p>Address: Compass Building, Al Shohada Road, Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates</p>
+              <p>Email: <a href="mailto:info@revivewardrobe.com" className="text-revive-red">info@revivewardrobe.com</a></p>
+              <p>Phone: <a href="tel:+971521919358" className="text-revive-red">+971 52 191 9358</a></p>
+            </div>
+          </div>
         </div>
       </div>
       

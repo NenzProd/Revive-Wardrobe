@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,23 +35,22 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-serif mb-4 text-white">Shop</h3>
             <ul className="space-y-2 text-gray-400">
+            <li><a href="/" className="hover:text-revive-gold transition-colors">Home</a></li>
               <li><a href="/about" className="hover:text-revive-gold transition-colors">About Us</a></li>
               <li><a href="/shop" className="hover:text-revive-gold transition-colors">Collections</a></li>
-              <li><a href="/categories" className="hover:text-revive-gold transition-colors">Categories</a></li>
-              <li><a href="/blog" className="hover:text-revive-gold transition-colors">Our Blog</a></li>
-              <li><a href="/lookbook" className="hover:text-revive-gold transition-colors">Lookbook</a></li>
+              <li><a href="/blog" className="hover:text-revive-gold transition-colors">Blog</a></li>
+              <li><a href="/contact" className="hover:text-revive-gold transition-colors">Contact</a></li>
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Policies Links */}
           <div>
-            <h3 className="text-xl font-serif mb-4 text-white">Customer Service</h3>
+            <h3 className="text-xl font-serif mb-4 text-white">Policies</h3>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="/contact" className="hover:text-revive-gold transition-colors">Contact Us</a></li>
-              <li><a href="/shipping" className="hover:text-revive-gold transition-colors">Shipping & Returns</a></li>
-              <li><a href="/faq" className="hover:text-revive-gold transition-colors">FAQ</a></li>
-              <li><a href="/size-guide" className="hover:text-revive-gold transition-colors">Size Guide</a></li>
-              <li><a href="/privacy" className="hover:text-revive-gold transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms" className="hover:text-revive-gold transition-colors">Terms & Conditions</a></li>
+              <li><a href="/privacy" className="hover:text-revive-gold transition-colors">Privacy & Cookie Policy</a></li>
+              <li><a href="/shipping" className="hover:text-revive-gold transition-colors">Shipping, Delivery & Payment Policies</a></li>
+              <li><a href="/returns" className="hover:text-revive-gold transition-colors">Returns, Refunds & Cancellation Policy</a></li>
             </ul>
           </div>
 
@@ -69,6 +67,15 @@ const Footer = () => {
                 <a href="mailto:info@revivewardrobe.com" className="hover:text-revive-gold transition-colors">info@revivewardrobe.com</a>
               </p>
             </address>
+            <div className="mt-6">
+              <p className="text-gray-400 mb-2">Pay easily with:</p>
+              <div className="flex space-x-3 items-center payment-icons">
+                <img src="/pay_icons/visa_icon.png" alt="Visa" className="h-6" />
+                <img src="/pay_icons/mastercard_icon.png" alt="MasterCard" className="h-6" />
+                <img src="/pay_icons/unionPay_icon.png" alt="UnionPay" className="h-6" />
+                <img src="/pay_icons/american_express.png" alt="American Express" className="h-6" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -83,15 +90,7 @@ const Footer = () => {
               <div className="text-gray-400 text-sm mt-2">
                 Stitched with <FontAwesomeIcon icon={faHeart} className="text-red-500" /> by <a href="https://tensketch.com" className="hover:text-revive-gold transition-colors">TenSketch</a>
               </div>
-            </div>
-
-            {/* Payment Icons - keep in same place */}
-            <div className="flex space-x-3">
-              <img src="/pay_icons/american_express.svg" alt="American Express" className="h-7 w-10" />
-              <img src="/pay_icons/mastercard_icon.svg" alt="Mastercard" className="h-7 w-10" />
-              <img src="/pay_icons/unionPay_icon.svg" alt="UnionPay" className="h-7 w-10" />
-              <img src="/pay_icons/visa_icon.svg" alt="Visa" className="h-7 w-10 bg-current" />
-            </div>
+            </div>            
           </div>
         </div>
       </div>

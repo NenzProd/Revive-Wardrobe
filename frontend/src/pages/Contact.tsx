@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -36,20 +35,20 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      content: 'support@revivewardrobe.com',
+      content: 'info@revivewardrobe.com',
       description: 'Get answers within 24 hours'
     },
-    // {
-    //   icon: Phone,
-    //   title: 'Call Us',
-    //   content: '+91 98765 43210',
-    //   description: 'Mon-Sat, 10AM-7PM IST'
-    // },
     {
       icon: MapPin,
       title: 'Visit Us',
-      content: 'United Arab Emirates',
+      content: 'Revive Wardrobe FZ-LLC\nCompass Building, Al Shohada Road, Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates',
       description: 'By appointment only'
+    },
+    {
+      icon: Phone,
+      title: 'Call Us',
+      content: '+971 52 191 9358',
+      description: 'Sun-Thu, 9AM-6PM UAE Time'
     }
   ];
 
