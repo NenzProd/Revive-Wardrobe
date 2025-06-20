@@ -1,8 +1,10 @@
-import React from 'react'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 function Returns () {
   return (
     <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Returns, Refunds & Cancellation Policy</h1>
         <div className="prose max-w-none text-gray-700 mx-auto">
@@ -26,6 +28,7 @@ function Returns () {
           </ul>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

@@ -1,8 +1,11 @@
 import React from 'react'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 function Shipping () {
   return (
     <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Shipping, Delivery & Payment Policies</h1>
         <div className="prose max-w-none text-gray-700 mx-auto">
@@ -29,6 +32,7 @@ function Shipping () {
           <p>Sanctioned countries such as Iran, Cuba, North Korea, Sudan, Syria, etc., are restricted from checkout.</p>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

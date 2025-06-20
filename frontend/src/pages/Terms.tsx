@@ -1,8 +1,11 @@
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import React from 'react'
 
 function Terms () {
   return (
     <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Terms & Conditions</h1>
         <div className="prose max-w-none text-gray-700 mx-auto">
@@ -24,6 +27,7 @@ function Terms () {
           </ul>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
