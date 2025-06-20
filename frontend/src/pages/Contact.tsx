@@ -48,6 +48,13 @@ const Contact = () => {
     },
     {
       icon: MapPin,
+      title: "Shop Address",
+      content:
+        "Revive Wardrobe FZ-LLC\nCompass Building, Al Shohada Road, Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates",
+      description: "For any queries or assistance, please contact us.",
+    },
+    {
+      icon: MapPin,
       title: "Warehouse Address",
       content:
         "Revive Wardrobe FZ-LLC\nCompass Building, Al Shohada Road, Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates",

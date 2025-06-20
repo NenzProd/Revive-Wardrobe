@@ -9,6 +9,9 @@ import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useCartStore } from "@/stores/useCartStore";
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+
 
 const Login = () => {
   const [loginMethod, setLoginMethod] = useState('email')
@@ -70,18 +73,11 @@ const Login = () => {
   }
 
   return (
+    <>
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8'>
+      <Navbar />
       <div className='w-full max-w-md'>
-        {/* Logo/Brand Section */}
-        <div className='text-center mb-8'>
-          <h1 className='font-serif text-4xl font-bold text-revive-black mb-2'>
-            REVIVE WARDROBE
-          </h1>
-          <p className='text-revive-black/70 text-sm'>
-            Rediscover Your Style
-          </p>
-        </div>
-
+        
         <Card className='shadow-2xl border-0 bg-white/95 backdrop-blur-sm'>
           <CardHeader className='text-center pb-6'>
             <CardTitle className='text-2xl font-serif text-revive-black'>Welcome Back</CardTitle>
@@ -199,8 +195,11 @@ const Login = () => {
             </div>
           </CardContent>
         </Card>
+      
       </div>
-    </div>
+      </div>
+      <Footer/>
+      </>
   )
 }
 
