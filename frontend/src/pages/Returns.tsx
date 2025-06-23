@@ -10,7 +10,7 @@ function Returns () {
         <div className="prose max-w-none text-gray-700 mx-auto">
           <h2 id="section1" className="text-xl font-bold mt-8 mb-2">1. Return Policy</h2>
           <ul className="list-disc ml-6">
-            <li>Returns accepted within 7 days for unopened, sealed, or wrong/damaged products.</li>
+            <li>Returns accepted within 3 days for unopened, sealed, wrong and damaged products.</li>
             <li>Notify us, return using a registered courier, and include original packaging.</li>
             <li>Items used/tampered with will not be accepted.</li>
             <li>Shipping & handling fees are non-refundable.</li>

@@ -13,12 +13,12 @@ function Shipping () {
           <p>We deliver within UAE and to other countries via third-party couriers.</p>
           <h2 id="section2" className="text-xl font-bold mt-8 mb-2">2. Delivery Timeline</h2>
           <ul className="list-disc ml-6">
-            <li>UAE: 1–2 working days</li>
+            <li>UAE: 1–3 working days</li>
             <li>International: 4–10 working days</li>
           </ul>
           <h2 id="section3" className="text-xl font-bold mt-8 mb-2">3. Delivery Fees</h2>
           <ul className="list-disc ml-6">
-            <li>UAE: Flat AED 10</li>
+            <li>UAE: Flat AED 20</li>
             <li>International: Shown at checkout based on location</li>
           </ul>
           <h2 id="section4" className="text-xl font-bold mt-8 mb-2">4. Delivery Proof</h2>

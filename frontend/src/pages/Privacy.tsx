@@ -16,7 +16,6 @@ function Privacy () {
           <p>www.revivewardrobe.com will not pass any debit/credit card details to third parties.</p>
           <h2 id="section3" className="text-xl font-bold mt-8 mb-2">3. Privacy Assurance</h2>
           <p>We take appropriate steps to ensure data security using hardware and software solutions.</p>
-          <p>However, we cannot guarantee 100% security of disclosed information online.</p>
           <h2 id="section4" className="text-xl font-bold mt-8 mb-2">4. Third-Party Links</h2>
           <p>We're not responsible for the privacy policies of third-party websites linked from ours.</p>
           <h2 id="section5" className="text-xl font-bold mt-8 mb-2">5. Policy Updates</h2>
