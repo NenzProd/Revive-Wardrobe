@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, Heart, } from 'lucide-react';
+import { Eye, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '../types/product';
 import { useCartStore } from '../stores/useCartStore';
@@ -9,9 +9,10 @@ import { priceSymbol } from '../config/constants';
 interface ProductCardProps {
   product: Product;
   layout?: 'grid' | 'list';
+  onAddToWishlist?: (product: Product) => void;
 }
 
-const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onAddToWishlist }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -27,6 +28,9 @@ const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
     type
   } = product;
   
+  const wishlist = useCartStore(state => state.wishlist);
+  const isInWishlist = wishlist.some(item => item._id === id);
+
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -105,15 +109,20 @@ const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
               )}
             </div>
             
-            <div className="flex space-x-2">
-              <button 
-                onClick={handleAddToWishlist}
-                aria-label="Add to wishlist"
-                className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all shadow-sm"
+            {onAddToWishlist && (
+              <button
+                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-gray-100 transition-colors z-10"
+                aria-label={isInWishlist ? 'In wishlist' : 'Add to wishlist'}
+                onClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  if (!isInWishlist) onAddToWishlist(product)
+                }}
+                disabled={isInWishlist}
               >
-                <Heart size={18} />
+                <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
               </button>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -153,13 +162,20 @@ const ProductCard = ({ product, layout = 'grid' }: ProductCardProps) => {
         {/* Quick actions - Only keep the wishlist heart */}
         <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex space-x-2">
-            <button 
-              onClick={handleAddToWishlist}
-              aria-label="Add to wishlist"
-              className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
-            >
-              <Heart size={18} />
-            </button>
+            {onAddToWishlist && (
+              <button
+                className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
+                aria-label={isInWishlist ? 'In wishlist' : 'Add to wishlist'}
+                onClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  if (!isInWishlist) onAddToWishlist(product)
+                }}
+                disabled={isInWishlist}
+              >
+                <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
+              </button>
+            )}
             <button 
               onClick={handleView}
               aria-label="Add to wishlist"

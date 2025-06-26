@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, ChevronLeft, BookText } from 'lucide-react'
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true)
@@ -77,6 +77,16 @@ const Sidebar = () => {
         >
           <ShoppingBag className='w-5 h-5' />
           <span className={`hidden md:block ${isOpen ? 'block' : 'hidden'} transition-all whitespace-nowrap`}>Orders</span>
+        </NavLink>
+
+        <NavLink 
+          className={({isActive}) => 
+            `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+          } 
+          to="/blog"
+        >
+          <BookText className='w-5 h-5' />
+          <span className={`hidden md:block ${isOpen ? 'block' : 'hidden'} transition-all whitespace-nowrap`}>Blog</span>
         </NavLink>
       </div>
     </div>

@@ -49,4 +49,41 @@
 - **Authentication**: JWT / Google OAuth (planned)
 
 
+sample product json
+{
+  "product": {
+    "name": "Zainab Chottani – Lawn Suit",
+    "description": "Elegant lawn suit with intricate embroidery.",
+    "category": "Ethnic Elegance",
+    "sub_category": "Lawn Suit",
+    "brand": "Zainab",
+    "currency": "AED",
+    "lead_time": "24",
+    "replenishment_period": "48",
+    "hs_code": "6109",
+    "country": "India",
+    "tax": "5%",
+    "filter_name": ["Size"],
+    "variants": [
+      {
+        "sku": "zainab-lawn-xs",
+        "barcode": "123456789012",
+        "retail_price": 3400,
+        "discount": 0,
+        "weight_unit": "Kg",
+        "filter_value": ["XS"],
+        "min_order_quantity": 1
+      },
+      {
+        "sku": "zainab-lawn-m",
+        "barcode": "123456789013",
+        "retail_price": 3400,
+        "discount": 0,
+        "weight_unit": "Kg",
+        "filter_value": ["M"],
+        "min_order_quantity": 1
+      }
+    ]
+  }
+}
 

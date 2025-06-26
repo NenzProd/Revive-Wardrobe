@@ -22,18 +22,38 @@ import { useCartStore } from '../stores/useCartStore';
 import { useProductBySlug } from '../hooks/useProduct';
 import logo from '/logo.png'
 import { Skeleton } from '@/components/ui/skeleton'
+import React from 'react';
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const { toast } = useToast();
   const { addToCart } = useCartStore();
+  const wishlist = useCartStore(state => state.wishlist)
+  const setWishlist = useCartStore.setState
   const navigate = useNavigate();
   
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || '');
   
+  // Set default size and price when product loads
+  React.useEffect(() => {
+    if (product && product.variants && product.variants.length > 0) {
+      setSelectedSize(product.variants[0].filter_value || null)
+      setDisplayPrice(product.variants[0].retail_price)
+    }
+  }, [product])
+
+  // Update price when selectedSize changes
+  React.useEffect(() => {
+    if (product && product.variants && selectedSize) {
+      const variant = product.variants.find(v => v.filter_value === selectedSize)
+      if (variant) setDisplayPrice(variant.retail_price)
+    }
+  }, [selectedSize, product])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -56,7 +76,6 @@ const ProductDetail = () => {
   const {
     id,
     name,
-    price,
     image,
     description,
     type,
@@ -67,19 +86,16 @@ const ProductDetail = () => {
   } = product;
 
   const handleAddToCart = () => {
-    if (sizes && sizes.length > 0 && !selectedSize) {
+    if (product.variants && product.variants.length > 0 && !selectedSize) {
       toast({
         title: "Please select a size",
         variant: "destructive",
       });
       return;
     }
-    
-    addToCart(product, quantity, selectedSize || undefined);
-
-    // redirect to cart page
-     navigate('/cart'); 
-    
+    const variant = product.variants.find(v => v.filter_value === selectedSize)
+    addToCart({ ...product, price: variant ? variant.retail_price : displayPrice }, quantity, selectedSize || undefined);
+    navigate('/cart');
     toast({
       title: "Added to cart",
       description: `${name} (${quantity}) has been added to your cart`,
@@ -87,6 +103,14 @@ const ProductDetail = () => {
   };
   
   const handleAddToWishlist = () => {
+    if (wishlist.some(item => item._id === product._id)) {
+      toast({
+        title: "Already in wishlist",
+        description: `${name} is already in your wishlist`,
+      });
+      return;
+    }
+    setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
     toast({
       title: "Added to wishlist",
       description: `${name} has been added to your wishlist`,
@@ -134,7 +158,7 @@ const ProductDetail = () => {
             <h1 className="text-3xl font-serif mb-4">{name}</h1>
             
             <div className="text-2xl font-bold text-revive-red mb-6">
-              {priceSymbol} {price.toLocaleString()}
+              {priceSymbol} {displayPrice !== null ? displayPrice.toLocaleString() : ''}
             </div>
             
             <div className="mb-6">
@@ -150,21 +174,21 @@ const ProductDetail = () => {
             </div>
             
             {/* Size Selection */}
-            {sizes && sizes.length > 0 && (
+            {product.variants && product.variants.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Size</h3>
                 <div className="flex gap-2 flex-wrap">
-                  {sizes.map((size) => (
+                  {product.variants.map((variant) => (
                     <button
-                      key={size}
+                      key={variant.filter_value}
                       className={`px-4 py-2 border ${
-                        selectedSize === size 
+                        selectedSize === variant.filter_value 
                           ? 'border-revive-red bg-revive-red text-white' 
                           : 'border-gray-300 hover:border-revive-red'
                       } rounded-md transition-colors`}
-                      onClick={() => setSelectedSize(size)}
+                      onClick={() => setSelectedSize(variant.filter_value)}
                     >
-                      {size}
+                      {variant.filter_value}
                     </button>
                   ))}
                 </div>
@@ -227,7 +251,7 @@ const ProductDetail = () => {
                 variant="outline" 
                 className="border-gray-300 hover:bg-gray-50"
                 onClick={handleAddToWishlist}
-                disabled={stock === 0}
+                disabled={stock === 0 || wishlist.some(item => item._id === product._id)}
               >
                 <Heart size={18} className="mr-2" />
                 Wishlist

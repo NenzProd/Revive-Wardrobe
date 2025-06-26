@@ -6,18 +6,23 @@ import { useToast } from '@/hooks/use-toast';
 import { useProductList } from '../hooks/useProduct';
 import { priceSymbol } from '../config/constants';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCartStore } from '../stores/useCartStore';
 
 const SignatureCollection = () => {
   const { toast } = useToast();
   const { products, loading, error } = useProductList();
   const coupleLingerie = products.filter((p: any) => p.bestseller === true);
+  const wishlist = useCartStore(state => state.wishlist)
+  const setWishlist = useCartStore.setState
 
-  const handleAddToWishlist = (productName: string) => {
-    toast({
-      title: "Added to wishlist",
-      description: `${productName} has been added to your wishlist`,
-    });
-  };
+  const handleAddToWishlist = (product: any) => {
+    if (wishlist.some(item => item._id === product._id)) {
+      toast({ title: 'Already in wishlist', description: `${product.name} is already in your wishlist.` })
+      return
+    }
+    setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
+    toast({ title: 'Added to wishlist', description: `${product.name} has been added to your wishlist` })
+  }
 
   if (loading) {
     return (
@@ -81,7 +86,7 @@ const SignatureCollection = () => {
             <ProductCard 
               key={product._id || product.id} 
               product={product} 
-              onAddToWishlist={handleAddToWishlist}
+              onAddToWishlist={() => handleAddToWishlist(product)}
             />
           ))}
         </div>
@@ -102,7 +107,7 @@ const SignatureCollection = () => {
 
 interface ProductCardProps {
   product: any;
-  onAddToWishlist: (name: string) => void;
+  onAddToWishlist: () => void;
 }
 
 const ProductCard = ({ product, onAddToWishlist }: ProductCardProps) => {
@@ -111,7 +116,7 @@ const ProductCard = ({ product, onAddToWishlist }: ProductCardProps) => {
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToWishlist(product.name);
+    onAddToWishlist();
   };
 
   const getProductImage = (product: any) => {

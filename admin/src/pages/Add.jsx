@@ -20,10 +20,20 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Ethnic Elegance");
   const [type, setType] = useState("Stitched");
   const [bestseller, setBestseller] = useState(false);
-  const [stock, setStock] = useState(0);
   const [slug, setSlug] = useState("");
-  const [sizes, setSizes] = useState([]);
   const [fabric, setFabric] = useState("Lawn");
+  const [variants, setVariants] = useState([
+    {
+      sku: '',
+      purchase_price: '',
+      retail_price: '',
+      discount: 0,
+      weight_unit: 'Kg',
+      filter_value: '',
+      min_order_quantity: 1,
+      stock: 0
+    }
+  ]);
 
   const sizeOptions = [
     { value: "XS", label: "XS" },
@@ -32,6 +42,12 @@ const Add = ({ token }) => {
     { value: "L", label: "L" },
     { value: "XL", label: "XL" },
   ];
+
+  // Helper to generate unique SKU per product and size
+  function generateSku (slug, filterValue) {
+    if (!slug || !filterValue) return ''
+    return `${slug.toUpperCase()}-${filterValue}`
+  }
 
   useEffect(() => {
     // Auto-generate slug from name
@@ -45,6 +61,7 @@ const Add = ({ token }) => {
     } else {
       setSlug("");
     }
+    // No longer auto-generate SKUs here, will do per variant below
   }, [name]);
 
   const onSubmitHandler = async (e) => {
@@ -53,16 +70,21 @@ const Add = ({ token }) => {
     try {
       const formData = new FormData();
 
+      // Ensure each variant has a unique SKU before submitting
+      const variantsWithSku = variants.map((variant) => ({
+        ...variant,
+        sku: generateSku(slug, variant.filter_value)
+      }))
+
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
       formData.append("category", category);
       formData.append("type", type);
       formData.append("bestseller", bestseller);
-      formData.append("stock", stock);
       formData.append("slug", slug);
-      formData.append("sizes", JSON.stringify(sizes));
       formData.append("fabric", fabric);
+      formData.append("variants", JSON.stringify(variantsWithSku));
 
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
@@ -84,10 +106,21 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
-        setStock(0);
         setSlug("");
-        setSizes([]);
         setFabric("Lawn");
+        setBestseller(false);
+        setVariants([
+          {
+            sku: '',
+            purchase_price: '',
+            retail_price: '',
+            discount: 0,
+            weight_unit: 'Kg',
+            filter_value: '',
+            min_order_quantity: 1,
+            stock: 0
+          }
+        ]);
       } else {
         toast.error(response.data.message);
       }
@@ -274,48 +307,104 @@ const Add = ({ token }) => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-              <input
-                id="price"
-                onChange={(e) => setPrice(e.target.value)}
-                value={price}
-                className="w-full px-3 py-2 bg-white"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Enter price"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-              <input
-                id="stock"
-                onChange={(e) => setStock(e.target.value)}
-                value={stock}
-                className="w-full px-3 py-2 bg-white"
-                type="number"
-                min="0"
-                placeholder="Enter stock quantity"
-                required
-              />
-            </div>
+            {/* Price removed as per requirements */}
           </div>
           
-          <div className="mt-4">
-            <label htmlFor="sizes" className="block text-sm font-medium text-gray-700 mb-1">Available Sizes</label>
-            <Select
-              id="sizes"
-              isMulti
-              options={sizeOptions}
-              value={sizeOptions.filter((opt) => sizes.includes(opt.value))}
-              onChange={(selected) => setSizes(selected.map((opt) => opt.value))}
-              className="w-full bg-white"
-              classNamePrefix="react-select"
-              placeholder="Select sizes..."
-            />
+          {/* Variants Section */}
+          <div className="mt-6">
+            <h4 className="font-semibold mb-2">Variants</h4>
+            {variants.map((variant, idx) => (
+              <div key={idx} className="border rounded-lg p-4 mb-4 bg-white">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                    <input type="text" className="w-full px-3 py-2 bg-gray-50" value={generateSku(slug, variant.filter_value)} readOnly />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.purchase_price} onChange={e => {
+                      const v = [...variants]
+                      v[idx].purchase_price = e.target.value
+                      setVariants(v)
+                    }} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Retail Price</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.retail_price} onChange={e => {
+                      const v = [...variants]
+                      v[idx].retail_price = e.target.value
+                      setVariants(v)
+                    }} required />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.discount} onChange={e => {
+                      const v = [...variants]
+                      v[idx].discount = e.target.value
+                      setVariants(v)
+                    }} min="0" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Weight Unit</label>
+                    <select className="w-full px-3 py-2 bg-gray-50" value={variant.weight_unit} onChange={e => {
+                      const v = [...variants]
+                      v[idx].weight_unit = e.target.value
+                      setVariants(v)
+                    }}>
+                      <option value="Kg">Kg</option>
+                      <option value="Lb">Lb</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Min Order Quantity</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.min_order_quantity} onChange={e => {
+                      const v = [...variants]
+                      v[idx].min_order_quantity = e.target.value
+                      setVariants(v)
+                    }} min="1" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Filter Value (e.g. Size)</label>
+                    <Select
+                      isMulti={false}
+                      options={sizeOptions}
+                      value={sizeOptions.find(opt => opt.value === variant.filter_value) || null}
+                      onChange={selected => {
+                        const v = [...variants]
+                        v[idx].filter_value = selected ? selected.value : ''
+                        setVariants(v)
+                      }}
+                      className="w-full bg-white"
+                      classNamePrefix="react-select"
+                      placeholder="Select filter value..."
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    {variants.length > 1 && (
+                      <button type="button" className="text-red-600 font-medium ml-2" onClick={() => {
+                        setVariants(variants.filter((_, i) => i !== idx))
+                      }}>Remove</button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button type="button" className="mt-2 px-4 py-2 bg-gray-200 rounded" onClick={() => setVariants([...variants, {
+              sku: '',
+              purchase_price: '',
+              retail_price: '',
+              discount: 0,
+              weight_unit: 'Kg',
+              filter_value: '',
+              min_order_quantity: 1,
+              stock: 0
+            }])}>
+              + Add Variant
+            </button>
           </div>
           
           <div className="mt-4 flex items-center">

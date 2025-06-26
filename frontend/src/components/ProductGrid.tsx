@@ -11,6 +11,7 @@ interface ProductGridProps {
   colors?: string[];
   types?: string[];
   products?: Product[];
+  onAddToWishlist?: (product: Product) => void;
 }
 
 const ProductGrid = ({ 
@@ -21,7 +22,8 @@ const ProductGrid = ({
   maxPrice = 100000,
   colors = [],
   types = [],
-  products: externalProducts = []
+  products: externalProducts = [],
+  onAddToWishlist
 }: ProductGridProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   
@@ -86,13 +88,13 @@ const ProductGrid = ({
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map(product => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onAddToWishlist={onAddToWishlist} />
           ))}
         </div>
       ) : (
         <div className="space-y-6">
           {products.map(product => (
-            <ProductCard key={product.id} product={product} layout="list" />
+            <ProductCard key={product.id} product={product} layout="list" onAddToWishlist={onAddToWishlist} />
           ))}
         </div>
       )}

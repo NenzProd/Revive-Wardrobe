@@ -9,6 +9,36 @@ import { priceSymbol } from '../config/constants'
 import axios from 'axios'
 import { useToast } from '@/hooks/use-toast'
 
+// Add Razorpay type declaration for TypeScript
+interface RazorpayResponse {
+  razorpay_payment_id: string
+  razorpay_order_id: string
+  razorpay_signature: string
+}
+interface RazorpayOptions {
+  key: string
+  amount: number
+  currency: string
+  name: string
+  description: string
+  order_id: string
+  handler: (response: RazorpayResponse) => void
+  prefill?: {
+    name?: string
+    email?: string
+    contact?: string
+  }
+  theme?: {
+    color?: string
+  }
+}
+// eslint-disable-next-line no-var
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => { open: () => void }
+  }
+}
+
 function Checkout () {
   const { cart, subtotal, shippingCost, total, token, backendUrl, user, clearCart } = useCartStore()
   const [addresses, setAddresses] = useState([])
@@ -21,7 +51,7 @@ function Checkout () {
   const [isSavingAddress, setIsSavingAddress] = useState(false)
   const [editAddressIdx, setEditAddressIdx] = useState(-1)
   const [removingIdx, setRemovingIdx] = useState(-1)
-  const [selectedPayment, setSelectedPayment] = useState('cod')
+  const [selectedPayment, setSelectedPayment] = useState('razorpay')
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -159,11 +189,60 @@ function Checkout () {
   // Payment methods
   const paymentMethods = [
     { id: 'razorpay', label: 'Razorpay', icon: <CreditCard size={18} className='mr-2' /> },
-    { id: 'cod', label: 'Cash on Delivery', icon: <Truck size={18} className='mr-2' /> },
-    { id: 'stripe', label: 'Stripe', icon: <Lock size={18} className='mr-2 text-gray-400' />, disabled: true, note: 'Coming Soon' }
+    // { id: 'cod', label: 'Cash on Delivery', icon: <Truck size={18} className='mr-2' /> },
+    // { id: 'stripe', label: 'Stripe', icon: <Lock size={18} className='mr-2 text-gray-400' />, disabled: true, note: 'Coming Soon' }
   ]
 
-  // Place Order Handler (COD)
+  // Razorpay payment integration (updated)
+  const initPay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'Revive Wardrobe',
+      description: 'Order Payment',
+      order_id: order.id,
+      handler: async (response) => {
+        try {
+          const verifyData = {
+            ...response,
+            userId: user._id,
+            email: user.email,
+            phone: user.phone,
+            items: cart,
+            amount: total,
+            address: addresses[selectedAddressIdx]
+          }
+          const { data } = await axios.post(
+            backendUrl + '/api/order/verifyRazorpay',
+            verifyData,
+            { headers: { token } }
+          )
+          if (data.success) {
+            clearCart()
+            toast({ title: 'Payment Successful', description: 'Your order has been placed.' })
+            navigate('/account')
+          } else {
+            toast({ title: 'Error', description: data.message || 'Payment verification failed.', variant: 'destructive' })
+          }
+        } catch (error) {
+          toast({ title: 'Error', description: error.message, variant: 'destructive' })
+        }
+      },
+      prefill: {
+        name: user?.name,
+        email: user?.email,
+        contact: user?.phone
+      },
+      theme: {
+        color: '#FFD700'
+      }
+    }
+    const rzp = new window.Razorpay(options)
+    rzp.open()
+  }
+
+  // Place Order Handler (COD & Razorpay, updated)
   const handlePlaceOrder = async () => {
     if (!token) {
       toast({ title: 'Error', description: 'You must be logged in to place an order.', variant: 'destructive' })
@@ -179,24 +258,39 @@ function Checkout () {
     }
     setIsPlacingOrder(true)
     try {
-      const res = await axios.post(
-        backendUrl + '/api/order/place',
-        {
-          userId: user._id,
-          email: user.email,
-          phone: user.phone,
-          items: cart,
-          amount: total,
-          address: addresses[selectedAddressIdx]
-        },
-        { headers: { token } }
-      )
-      if (res.data.success) {
-        clearCart()
-        toast({ title: 'Order Placed', description: 'Your order has been placed successfully.' })
-        navigate('/')
+      if (selectedPayment === 'razorpay') {
+        // Only create Razorpay order, not DB order
+        const responseRazorpay = await axios.post(
+          backendUrl + '/api/order/razorpay',
+          { amount: total },
+          { headers: { token } }
+        )
+        if (responseRazorpay.data.success) {
+          initPay(responseRazorpay.data.order)
+        } else {
+          toast({ title: 'Error', description: responseRazorpay.data.message || 'Failed to initiate payment.', variant: 'destructive' })
+        }
       } else {
-        toast({ title: 'Error', description: res.data.message || 'Failed to place order.', variant: 'destructive' })
+        // COD fallback
+        const res = await axios.post(
+          backendUrl + '/api/order/place',
+          {
+            userId: user._id,
+            email: user.email,
+            phone: user.phone,
+            items: cart,
+            amount: total,
+            address: addresses[selectedAddressIdx]
+          },
+          { headers: { token } }
+        )
+        if (res.data.success) {
+          clearCart()
+          toast({ title: 'Order Placed', description: 'Your order has been placed successfully.' })
+          navigate('/')
+        } else {
+          toast({ title: 'Error', description: res.data.message || 'Failed to place order.', variant: 'destructive' })
+        }
       }
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to place order.', variant: 'destructive' })

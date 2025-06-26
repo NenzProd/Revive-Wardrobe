@@ -8,10 +8,15 @@ import Newsletter from '../components/Newsletter';
 import { Sliders } from 'lucide-react';
 import { useProductList } from '../hooks/useProduct'
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCartStore } from '../stores/useCartStore';
+import { useToast } from '@/hooks/use-toast';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(false);
+  const { toast } = useToast();
+  const wishlist = useCartStore(state => state.wishlist)
+  const setWishlist = useCartStore.setState
   
   // Extract all filter parameters from URL
   const category = searchParams.get('category') || 'all';
@@ -46,6 +51,15 @@ const Shop = () => {
     const matchesType = typesParam.length > 0 ? typesParam.includes(p.type) : true
     return matchesSearch && matchesCategory && matchesFabric && matchesType
   });
+
+  const handleAddToWishlist = (product: any) => {
+    if (wishlist.some(item => item._id === product._id)) {
+      toast({ title: 'Already in wishlist', description: `${product.name} is already in your wishlist.` })
+      return
+    }
+    setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
+    toast({ title: 'Added to wishlist', description: `${product.name} has been added to your wishlist` })
+  }
 
   if (loading) {
     return (
@@ -147,6 +161,7 @@ const Shop = () => {
               colors={colors}
               types={typesParam}
               products={filteredProducts}
+              onAddToWishlist={handleAddToWishlist}
             />
           </div>
         </div>

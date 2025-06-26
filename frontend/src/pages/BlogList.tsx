@@ -1,10 +1,21 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowRight, Calendar, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { blog1, blog2, blog3 } from '../assets/assets.js';
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+interface Blog {
+  _id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  author: string;
+  slug: string;
+  category: string;
+}
 
 interface BlogPostProps {
   title: string;
@@ -15,63 +26,6 @@ interface BlogPostProps {
   link: string;
   category: string;
 }
-
-const blogPosts = [
-  {
-    title: "How to Choose the Right Abaya for Your Body Type",
-    excerpt: "A guide to flattering fits, trending cuts, and how to style your abaya with ease — so you always feel confident and covered.",
-    imageUrl: blog1,
-    date: "May 5, 2025",
-    author: "Amira Hassan",
-    link: "/blog/choose-right-abaya",
-    category: "Style Guide"
-  },
-  {
-    title: "Styling Unstitched Lawn for Summer 2025",
-    excerpt: "From tailoring tips to accessory pairings, learn how to make every unstitched suit uniquely yours.",
-    imageUrl: blog2,
-    date: "May 2, 2025",
-    author: "Zara Ahmed",
-    link: "/blog/styling-unstitched-lawn",
-    category: "Summer Fashion"
-  },
-  {
-    title: "Why Every Woman Needs a Signature Dupatta",
-    excerpt: "Discover the cultural charm and styling power of a statement dupatta — and how to wear it five modern ways.",
-    imageUrl: blog3,
-    date: "April 28, 2025",
-    author: "Priya Sharma",
-    link: "/blog/signature-dupatta-style",
-    category: "Accessories"
-  },
-  {
-    title: "Timeless Elegance: Traditional Wear for Modern Women",
-    excerpt: "Exploring how contemporary fashionistas are embracing cultural roots while adding their unique modern twist.",
-    imageUrl: blog2,
-    date: "April 22, 2025",
-    author: "Farah Khan",
-    link: "/blog/traditional-wear-modern-women",
-    category: "Fashion Trends"
-  },
-  {
-    title: "Caring for Your Premium Textiles: A Complete Guide",
-    excerpt: "Expert tips on washing, storing and maintaining luxury fabrics to ensure your favorite pieces last for years.",
-    imageUrl: blog1,
-    date: "April 18, 2025",
-    author: "Leila Mahmood",
-    link: "/blog/caring-premium-textiles",
-    category: "Fabric Care"
-  },
-  {
-    title: "The Art of Layering: Creating Dimension in Modest Fashion",
-    excerpt: "Master the technique of layering different pieces to create depth, interest, and personal style in your modest wardrobe.",
-    imageUrl: blog3,
-    date: "April 15, 2025",
-    author: "Nadia Rahman",
-    link: "/blog/art-of-layering",
-    category: "Styling Tips"
-  }
-];
 
 const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, author, link, category }) => {
   return (
@@ -103,6 +57,61 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, aut
 };
 
 const BlogList = () => {
+  const [blogs, setBlogs] = useState<BlogPostProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(search), 300)
+    return () => clearTimeout(handler)
+  }, [search])
+
+  useEffect(() => {
+    async function fetchBlogs() {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch(backendUrl + '/api/blog/list');
+        if (!res.ok) {
+          setError('Failed to load blogs (server error)');
+          setLoading(false);
+          return;
+        }
+        const data: { success: boolean; blogs: Blog[]; message?: string } = await res.json();
+        if (data.success) {
+          setBlogs(
+            data.blogs.map((b) => ({
+              title: b.title,
+              excerpt: b.excerpt,
+              imageUrl: b.image,
+              date: new Date(b.date).toLocaleDateString(),
+              author: b.author,
+              link: `/blog/${b.slug}`,
+              category: b.category
+            }))
+          );
+        } else {
+          setError(data.message || 'Failed to load blogs');
+        }
+      } catch (err) {
+        setError('Could not connect to blog API. Check your backend URL and CORS.');
+      }
+      setLoading(false);
+    }
+    fetchBlogs();
+  }, []);
+
+  const filteredBlogs = blogs.filter(blog => {
+    const q = debouncedSearch.toLowerCase();
+    return (
+      blog.title.toLowerCase().includes(q) ||
+      blog.excerpt.toLowerCase().includes(q) ||
+      blog.author.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -116,7 +125,6 @@ const BlogList = () => {
               Fashion insights, style guides, and behind-the-scenes glimpses into our world of elegance.
             </p>
           </div>
-          
           {/* Search Bar */}
           <div className="max-w-md mx-auto mb-12">
             <div className="relative">
@@ -124,28 +132,28 @@ const BlogList = () => {
                 type="text"
                 placeholder="Search articles..."
                 className="w-full border border-gray-300 rounded-full py-3 px-6 pr-12 focus:outline-none focus:ring-1 focus:ring-revive-red focus:border-revive-red"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
               />
-              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-revive-red transition-colors">
+              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-revive-red transition-colors" disabled>
                 <Search size={18} />
               </button>
             </div>
           </div>
-          
           {/* Blog Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <BlogPost key={index} {...post} />
-            ))}
-          </div>
-          
-          {/* Pagination */}
-          <div className="flex justify-center mt-12">
-            <div className="flex space-x-2">
-              <span className="w-10 h-10 flex items-center justify-center bg-revive-red text-white rounded-full cursor-pointer">1</span>
-              <span className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-full cursor-pointer">2</span>
-              <span className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded-full cursor-pointer">3</span>
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">Loading blogs...</div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-500">{error}</div>
+          ) : filteredBlogs.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">No blogs found.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredBlogs.map((post, index) => (
+                <BlogPost key={index} {...post} />
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
       <Footer />

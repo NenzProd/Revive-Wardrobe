@@ -393,7 +393,7 @@ export const useCartStore = create<CartState>()(
       }
     }),
     {
-      name: "cart-storage",
+      name: "rw-cart-storage",
     }
   )
 );

@@ -10,6 +10,9 @@ import { ToastContainer } from 'react-toastify';
 import { useEffect } from 'react'
 import Edit from './pages/Edit'
 import Dashboard from './pages/Dashboard'
+import Blog from './pages/Blog'
+import AddBlog from './pages/AddBlog'
+import EditBlog from './pages/EditBlog'
 
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
@@ -38,6 +41,9 @@ const App = () => {
             <Route path='/list' element={<List token={token} />} />
             <Route path='/orders' element={<Orders token={token} />} />
             <Route path='/edit/:id' element={<Edit token={token} />} />
+            <Route path='/blog' element={<Blog token={token} />} />
+            <Route path='/addblog' element={<AddBlog token={token} />} />
+            <Route path='/editblog/:id' element={<EditBlog token={token} />} />
           </Routes>
         </div>
       </div>

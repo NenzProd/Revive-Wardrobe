@@ -5,8 +5,9 @@ import { priceSymbol } from '../config/constants'
 import { useToast } from '@/hooks/use-toast'
 import { useProductList } from '../hooks/useProduct'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useCartStore } from '../stores/useCartStore'
 
-const ProductCard = ({ product }: { product: any }) => {
+const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishlist: (product: any) => void }) => {
   const [isHovered, setIsHovered] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -23,10 +24,7 @@ const ProductCard = ({ product }: { product: any }) => {
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    toast({
-      title: "Added to wishlist",
-      description: `${name} has been added to your wishlist`,
-    })
+    onAddToWishlist(product)
   }
 
   const handleView = (e: React.MouseEvent) => {
@@ -92,7 +90,7 @@ const ProductCard = ({ product }: { product: any }) => {
       {/* Product info */}
       <div className="p-4 border-t border-gray-100">
         <Link to={`/product/${slug}`}>
-          <h3 className="font-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors line-clamp-2">{name}</h3>
+          <h3 className="text-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors line-clamp-2">{name}</h3>
         </Link>
         <div className="flex justify-between items-center">
           {isSale && salePrice ? (
@@ -111,10 +109,22 @@ const ProductCard = ({ product }: { product: any }) => {
 
 const FeaturedProducts = () => {
   const { products, loading, error } = useProductList();
+  const wishlist = useCartStore(state => state.wishlist)
+  const setWishlist = useCartStore.setState
+  const { toast } = useToast()
   // Sort by date descending, take 6 most recent
   const sorted = [...products].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const featuredProducts = sorted.slice(0, 6);
   const rows = [featuredProducts.slice(0, 3), featuredProducts.slice(3, 6)];
+
+  const handleAddToWishlist = (product: any) => {
+    if (wishlist.some(item => item._id === product._id)) {
+      toast({ title: 'Already in wishlist', description: `${product.name} is already in your wishlist.` })
+      return
+    }
+    setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
+    toast({ title: 'Added to wishlist', description: `${product.name} has been added to your wishlist` })
+  }
 
   if (loading) {
     return (
@@ -162,7 +172,7 @@ const FeaturedProducts = () => {
         {rows.map((row, i) => (
           <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {row.map(product => (
-              <ProductCard key={product._id || product.id} product={product} />
+              <ProductCard key={product._id || product.id} product={product} onAddToWishlist={handleAddToWishlist} />
             ))}
           </div>
         ))}

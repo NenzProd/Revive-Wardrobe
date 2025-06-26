@@ -1,10 +1,11 @@
 import { v2 as cloudinary } from "cloudinary"
 import productModel from "../models/productModel.js"
+import axios from 'axios'
 
 
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, fabric, type, bestseller, stock, slug, sizes } = req.body
+        const { name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug, fabric } = req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -20,27 +21,66 @@ const addProduct = async (req, res) => {
             })
         )
         
-        const productData = {
+        let parsedVariants = []
+        if (variants) {
+          if (typeof variants === 'string') {
+            parsedVariants = JSON.parse(variants)
+          } else {
+            parsedVariants = variants
+          }
+        }
+
+        const depoterPayload = {
+          product: {
             name,
             description,
             category,
-            fabric,
-            price: Number(price),
-            type,
-            bestseller: bestseller === "true" ? true : false,
-            stock: Number(stock),
-            slug,
-            sizes: typeof sizes === 'string' ? JSON.parse(sizes) : sizes,
-            image: imagesUrl,
-            date: Date.now()
+            sub_category,
+            brand,
+            currency,
+            lead_time,
+            replenishment_period,
+            hs_code,
+            country,
+            tax,
+            filter_name,
+            variants: parsedVariants
+          }
         }
 
-        console.log(productData);
-
-        const product = new productModel(productData);
-        await product.save()
-
-        res.json({success: true, message:"Product added"})
+        const depoterRes = await axios.post(
+          'https://fms.depoter.com/WMS/API/product/',
+          depoterPayload,
+          { headers: { Key: '974e7b1d1ce1aadee33e' } }
+        )
+        if (depoterRes.data && depoterRes.data.status && depoterRes.data.status.response === true) {
+          const productData = {
+            name,
+            description,
+            category,
+            sub_category,
+            brand,
+            currency,
+            lead_time,
+            replenishment_period,
+            hs_code,
+            country,
+            tax,
+            filter_name,
+            variants: parsedVariants,
+            type,
+            bestseller: bestseller === 'true' || bestseller === true,
+            slug,
+            fabric,
+            image: imagesUrl,
+            date: Date.now()
+          }
+          const product = new productModel(productData)
+          await product.save()
+          res.json({ success: true, message: 'Product added', depoter: depoterRes.data.status.comment })
+        } else {
+          res.json({ success: false, message: depoterRes.data.status ? depoterRes.data.status.comment : 'Depoter error' })
+        }
     } catch (error) {
         console.log(error)
         res.json({success:false, message:error.message})
@@ -80,7 +120,7 @@ const singleProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
     try {
-        const { id, name, description, price, category, fabric, type, bestseller, stock, slug, sizes } = req.body
+        const { id, name, description, price, category, fabric, type, bestseller, slug, variants } = req.body
         if (!id) return res.json({ success: false, message: 'Product ID is required' })
         const product = await productModel.findById(id)
         if (!product) return res.json({ success: false, message: 'Product not found' })
@@ -112,9 +152,14 @@ const editProduct = async (req, res) => {
         if (fabric !== undefined) updateFields.fabric = fabric
         if (type !== undefined) updateFields.type = type
         if (bestseller !== undefined) updateFields.bestseller = bestseller
-        if (stock !== undefined) updateFields.stock = Number(stock)
         if (slug !== undefined) updateFields.slug = slug
-        if (sizes !== undefined) updateFields.sizes = typeof sizes === 'string' ? JSON.parse(sizes) : sizes
+        if (variants !== undefined) {
+          if (typeof variants === 'string') {
+            updateFields.variants = JSON.parse(variants)
+          } else {
+            updateFields.variants = variants
+          }
+        }
         // Only update image if any file was uploaded
         if (imageFiles.some(Boolean)) updateFields.image = filteredImagesUrl
 
