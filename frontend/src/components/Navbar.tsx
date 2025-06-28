@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag, Info } from "lucide-react";
+import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag, Info, Phone } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "../stores/useCartStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -159,6 +159,13 @@ const Navbar = () => {
                 >
                   <User size={20} />
                 </Link>
+                <a
+                  href="tel:+1234567890"
+                  aria-label="Call"
+                  className="text-revive-gold hover:text-revive-red transition-colors"
+                >
+                  <Phone size={20} />
+                </a>
                 <Link
                   to="/wishlist"
                   aria-label="Wishlist"
@@ -269,6 +276,13 @@ const Navbar = () => {
             >
               <User size={20} />
             </Link>
+            <a
+              href="tel:+971521919358"
+              aria-label="Call"
+              className="text-revive-gold hover:text-revive-red transition-colors"
+            >
+              <Phone size={20} />
+            </a>
             <Link
               to="/wishlist"
               aria-label="Wishlist"

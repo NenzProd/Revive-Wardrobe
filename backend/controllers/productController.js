@@ -120,7 +120,7 @@ const singleProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
     try {
-        const { id, name, description, price, category, fabric, type, bestseller, slug, variants } = req.body
+        const { id, name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug, fabric } = req.body
         if (!id) return res.json({ success: false, message: 'Product ID is required' })
         const product = await productModel.findById(id)
         if (!product) return res.json({ success: false, message: 'Product not found' })
@@ -144,27 +144,85 @@ const editProduct = async (req, res) => {
         }))
         const filteredImagesUrl = imagesUrl.filter(Boolean)
 
-        const updateFields = {}
-        if (name !== undefined) updateFields.name = name
-        if (description !== undefined) updateFields.description = description
-        if (price !== undefined) updateFields.price = Number(price)
-        if (category !== undefined) updateFields.category = category
-        if (fabric !== undefined) updateFields.fabric = fabric
-        if (type !== undefined) updateFields.type = type
-        if (bestseller !== undefined) updateFields.bestseller = bestseller
-        if (slug !== undefined) updateFields.slug = slug
-        if (variants !== undefined) {
+        // Parse variants
+        let parsedVariants = []
+        if (variants) {
           if (typeof variants === 'string') {
-            updateFields.variants = JSON.parse(variants)
+            parsedVariants = JSON.parse(variants)
           } else {
-            updateFields.variants = variants
+            parsedVariants = variants
           }
         }
-        // Only update image if any file was uploaded
-        if (imageFiles.some(Boolean)) updateFields.image = filteredImagesUrl
 
+        // Update product in Depoter
+        const depoterProductPayload = {
+          id: product.depoterId, // assuming you store depoterId in MongoDB
+          name,
+          description,
+          category,
+          sub_category,
+          brand,
+          currency,
+          lead_time,
+          replenishment_period,
+          hs_code,
+          country,
+          tax,
+          filter_name
+        }
+        const depoterProductRes = await axios.put(
+          'https://fms.depoter.com/WMS/API/product/',
+          depoterProductPayload,
+          { headers: { Key: '974e7b1d1ce1aadee33e' } }
+        )
+
+        // Update/add variants in Depoter
+        let depoterVariantResults = []
+        for (const variant of parsedVariants) {
+          if (variant.id) {
+            // Update existing variant
+            const depoterVariantPayload = { ...variant }
+            const result = await axios.put(
+              'https://fms.depoter.com/WMS/API/variant/',
+              depoterVariantPayload,
+              { headers: { Key: '974e7b1d1ce1aadee33e' } }
+            )
+            depoterVariantResults.push(result.data)
+          } else {
+            // Add new variant
+            const depoterVariantPayload = { ...variant, product_id: product.depoterId }
+            const result = await axios.post(
+              'https://fms.depoter.com/WMS/API/variant/',
+              depoterVariantPayload,
+              { headers: { Key: '974e7b1d1ce1aadee33e' } }
+            )
+            depoterVariantResults.push(result.data)
+          }
+        }
+
+        // Update MongoDB
+        const updateFields = {
+          name,
+          description,
+          category,
+          sub_category,
+          brand,
+          currency,
+          lead_time,
+          replenishment_period,
+          hs_code,
+          country,
+          tax,
+          filter_name,
+          variants: parsedVariants,
+          type,
+          bestseller: bestseller === 'true' || bestseller === true,
+          slug,
+          fabric,
+          image: filteredImagesUrl
+        }
         await productModel.findByIdAndUpdate(id, updateFields)
-        res.json({ success: true, message: 'Product updated' })
+        res.json({ success: true, message: 'Product updated', depoterProduct: depoterProductRes.data, depoterVariants: depoterVariantResults })
     } catch (error) {
         console.log(error)
         res.json({ success: false, message: error.message })

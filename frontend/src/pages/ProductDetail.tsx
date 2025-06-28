@@ -266,24 +266,7 @@ const ProductDetail = () => {
               </Button>
             </div>
             
-            {/* Stitching Service CTA */}
-            {type === 'Unstitched' && (
-              <div className="bg-revive-gold/10 border border-revive-gold rounded-lg p-4 mb-8">
-                <div className="flex items-center">
-                  <Scissors size={24} className="text-revive-gold mr-3" />
-                  <div>
-                    <h3 className="font-serif text-lg mb-1">Custom Stitching Available</h3>
-                    <p className="text-sm text-gray-600 mb-3">This unstitched fabric can be tailored to your measurements.</p>
-                    <a 
-                      href="/services/stitching" 
-                      className="text-sm font-medium text-revive-gold hover:underline"
-                    >
-                      Book a Consultation
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
+          
             
             {/* Product Tabs */}
             <Tabs defaultValue="details" className="w-full">

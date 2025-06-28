@@ -39,7 +39,7 @@ const placeOrder = async (req, res) => {
             amount,
             paymentMethod: "COD",
             payment: false,
-            status: "Pending",
+            status: "Order Placed",
             date: new Date()
         }
 
@@ -117,7 +117,7 @@ const verifyRazorpay = async (req, res) => {
             amount,
             paymentMethod: 'Razorpay',
             payment: true,
-            status: 'Pending',
+            status: 'Order Placed',
             date: new Date()
         }
 

@@ -3,24 +3,12 @@
 
 ## ✅ TODO - In Progress
 
-### 🔧 Functional Pages
-- [ ] **Wishlist Page**
-  - Display user's favorite products
-  - Allow easy removal or add-to-cart options
-
-- [ ] **Blog Page**
-  - Show company updates, promotions, and product insights
-  - Dynamic content rendering from CMS or database
-
 ### 🧮 Stock Management
 - [ ] **Reduce Stock on Order**
   - Implement logic to reduce stock based on selected **product size**
   - Show out-of-stock status for unavailable sizes
 
-### 💳 Payment Integration
-- [ ] **Razorpay Integration**
-  - Add secure checkout flow using Razorpay APIs
-  - Handle success and failure callbacks
+
 
 ---
 

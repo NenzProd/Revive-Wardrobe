@@ -364,7 +364,7 @@ const Account = () => {
                           <span
                             className={`inline-block px-3 py-1 rounded-full text-xs font-semibold
                               ${order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
-                                order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                order.status === 'Order Placed' ? 'bg-yellow-100 text-yellow-700' :
                                 order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
                                 order.status === 'Packing' ? 'bg-purple-100 text-purple-700' :
                                 order.status === 'Out for Delivery' ? 'bg-orange-100 text-orange-700' :
