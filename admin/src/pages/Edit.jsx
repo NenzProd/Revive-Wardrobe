@@ -49,6 +49,14 @@ function Edit ({ token }) {
     return `${slug.toUpperCase()}-${filterValue}`
   }
 
+  function getUsedFilterValues (excludeIdx) {
+    // Collect all filter_value from variants except the current one
+    return variants
+      .filter((_, i) => i !== excludeIdx)
+      .map(v => v.filter_value)
+      .filter(Boolean)
+  }
+
   useEffect(() => {
     async function fetchProduct () {
       try {
@@ -341,10 +349,13 @@ function Edit ({ token }) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Filter Value (e.g. Size)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Size(eg. XS)</label>
                     <Select
                       isMulti={false}
-                      options={sizeOptions}
+                      options={sizeOptions.map(opt => ({
+                        ...opt,
+                        isDisabled: getUsedFilterValues(idx).includes(opt.value)
+                      }))}
                       value={sizeOptions.find(opt => opt.value === variant.filter_value) || null}
                       onChange={selected => handleVariantSizeChange(idx, selected)}
                       className="w-full bg-white"
@@ -353,8 +364,8 @@ function Edit ({ token }) {
                     />
                   </div>
                   <div className="flex items-end">
-                    {/* Only allow removing new variants (no id) */}
-                    {(!('id' in variant) && variants.length > 1) && (
+                    {/* Only allow removing new variants (no deporterId/id) and if more than 1 variant */}
+                    {(!('deporterId' in variant || 'id' in variant) && variants.length > 1) && (
                       <button type="button" className="text-red-600 font-medium ml-2" onClick={() => handleRemoveVariant(idx)}>
                         Remove
                       </button>

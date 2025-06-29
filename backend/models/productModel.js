@@ -9,7 +9,8 @@ const variantSchema = new mongoose.Schema({
   weight_unit: { type: String, enum: ['Kg', 'Lb'], default: 'Kg' },
   filter_value: { type: String },                      // E.g. "XS"
   min_order_quantity: { type: Number, default: 1 },
-  stock: { type: Number, default: 0 }                    // ← Added stock field here
+  stock: { type: Number, default: 0 },
+  deporterId: { type: Number } // Depoter variant id
 });
 
 // Product Schema
@@ -32,7 +33,8 @@ const productSchema = new mongoose.Schema({
   tax: { type: String },
   filter_name: { type: String, default: 'Size' },                       // E.g. ["Size"]
   variants: [variantSchema],                             // Array of variant objects
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  deporterId: { type: Number } // Depoter product id
 });
 
 const productModel = mongoose.models.product || mongoose.model("product", productSchema);

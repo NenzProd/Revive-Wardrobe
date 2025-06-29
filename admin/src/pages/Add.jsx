@@ -49,6 +49,14 @@ const Add = ({ token }) => {
     return `${slug.toUpperCase()}-${filterValue}`
   }
 
+  // Helper to get used filter values except for the current variant
+  function getUsedFilterValues (excludeIdx) {
+    return variants
+      .filter((_, i) => i !== excludeIdx)
+      .map(v => v.filter_value)
+      .filter(Boolean)
+  }
+
   useEffect(() => {
     // Auto-generate slug from name
     if (name) {
@@ -368,10 +376,13 @@ const Add = ({ token }) => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Filter Value (e.g. Size)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Size(eg. XS)</label>
                     <Select
                       isMulti={false}
-                      options={sizeOptions}
+                      options={sizeOptions.map(opt => ({
+                        ...opt,
+                        isDisabled: getUsedFilterValues(idx).includes(opt.value)
+                      }))}
                       value={sizeOptions.find(opt => opt.value === variant.filter_value) || null}
                       onChange={selected => {
                         const v = [...variants]
