@@ -7,8 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { useToast } from "@/hooks/use-toast";
+import axios from 'axios'
 
 type Step = "enter-contact" | "verify-otp" | "reset-password";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const ForgotPassword = () => {
   const [step, setStep] = useState<Step>("enter-contact");
@@ -25,27 +28,30 @@ const ForgotPassword = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [error, setError] = useState('')
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setError('')
     try {
-      console.log("Sending OTP to:", contact);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "OTP Sent",
-        description: `Verification code sent to your ${contactMethod}`,
-      });
-      
-      setStep("verify-otp");
+      if (contactMethod !== 'email') {
+        setError('Only email-based reset is supported.')
+        setIsLoading(false)
+        return
+      }
+      const res = await axios.post(`${BACKEND_URL}/api/user/forgot-password`, { email: contact })
+      if (res.data.success) {
+        toast({
+          title: 'OTP Sent',
+          description: `Verification code sent to your email`,
+        });
+        setStep('verify-otp');
+      } else {
+        setError(res.data.message || 'Failed to send OTP')
+      }
     } catch (error) {
-      toast({
-        title: "Failed to Send OTP",
-        description: "Please try again.",
-        variant: "destructive",
-      });
+      setError(error.message)
     } finally {
       setIsLoading(false);
     }
@@ -53,23 +59,12 @@ const ForgotPassword = () => {
 
   const handleVerifyOTP = async () => {
     setIsLoading(true);
-
+    setError('')
     try {
-      console.log("Verifying OTP:", otp);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "OTP Verified",
-        description: "Please set your new password",
-      });
-      
-      setStep("reset-password");
+      // For now, just move to next step (backend will check OTP on reset)
+      setStep('reset-password');
     } catch (error) {
-      toast({
-        title: "Invalid OTP",
-        description: "Please check your code and try again.",
-        variant: "destructive",
-      });
+      setError('Invalid OTP')
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +72,6 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (passwords.newPassword !== passwords.confirmPassword) {
       toast({
         title: "Passwords Don't Match",
@@ -86,25 +80,25 @@ const ForgotPassword = () => {
       });
       return;
     }
-
     setIsLoading(true);
-
+    setError('')
     try {
-      console.log("Resetting password");
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Password Reset Successful",
-        description: "Your password has been updated successfully.",
-      });
-      
-      window.location.href = "/login";
+      const res = await axios.post(`${BACKEND_URL}/api/user/reset-password`, {
+        email: contact,
+        otp,
+        newPassword: passwords.newPassword
+      })
+      if (res.data.success) {
+        toast({
+          title: "Password Reset Successful",
+          description: "Your password has been updated successfully.",
+        });
+        window.location.href = "/login";
+      } else {
+        setError(res.data.message || 'Password reset failed')
+      }
     } catch (error) {
-      toast({
-        title: "Password Reset Failed",
-        description: "Please try again.",
-        variant: "destructive",
-      });
+      setError(error.message)
     } finally {
       setIsLoading(false);
     }
@@ -180,7 +174,7 @@ const ForgotPassword = () => {
                       Phone
                     </Button>
                   </div>
-                  
+                  {error && <div className='text-red-500 text-sm'>{error}</div>}
                   <div className="space-y-2">
                     <Label htmlFor="contact" className="text-revive-black font-medium">
                       {contactMethod === "email" ? "Email Address" : "Phone Number"}
@@ -223,6 +217,7 @@ const ForgotPassword = () => {
                     onChange={setOtp}
                     length={6}
                   />
+                  {error && <div className='text-red-500 text-sm'>{error}</div>}
                 </div>
 
                 <Button 
@@ -311,6 +306,7 @@ const ForgotPassword = () => {
                 >
                   {isLoading ? "Updating..." : "Change Password"}
                 </Button>
+                {error && <div className='text-red-500 text-sm'>{error}</div>}
               </form>
             )}
           </CardContent>

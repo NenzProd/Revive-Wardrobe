@@ -250,7 +250,7 @@ const Account = () => {
   
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!token) return;
+      if (!token || !user || !user._id) return;
       setOrdersLoading(true);
       try {
         const res = await axios.post(
@@ -455,7 +455,21 @@ const Account = () => {
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">Country</label>
-                      <input type="text" name="country" value={addressForm.country} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      <select
+                        name="country"
+                        value={addressForm.country}
+                        onChange={handleAddressInput}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                      >
+                        <option value="">Select Country</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Kuwait">Kuwait</option>
+                      </select>
                     </div>
                     <div className="flex gap-2 mt-4">
                       <button type="submit" className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300" disabled={isSavingAddress}>

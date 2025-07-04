@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema({
     deliveryAddress: { type: Object, default: {} },
     savedAddresses: { type: Array, default: [] },
     primaryAddress: { type: Object, default: {} },
+    verifyOtp: { type: String, default: '' },
+    verifyOtpExpireAt: { type: Number, default: 0 },
+    isAccountVerified: { type: Boolean, default: false },
+    resetOtp: { type: String, default: '' },
+    resetOtpExpireAt: { type: Number, default: 0 },
 }, { minimize: false })
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema)

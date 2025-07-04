@@ -11,6 +11,7 @@ import axios from "axios";
 import { useCartStore } from "@/stores/useCartStore";
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { OTPInput } from '@/components/auth/OTPInput'
 
 
 const Login = () => {
@@ -27,6 +28,10 @@ const Login = () => {
   const backendUrl = useCartStore(state => state.backendUrl)
   const fetchUser = useCartStore(state => state.fetchUser)
   const navigate = useNavigate()
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [otp, setOtp] = useState('')
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpError, setOtpError] = useState('')
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -55,11 +60,19 @@ const Login = () => {
         })
         navigate('/')
       } else {
+        if (response.data.message && response.data.message.includes('verify your email before logging in')) {
+          setShowOtpModal(true)
+          toast({
+            title: 'Email Not Verified',
+            description: 'Please enter the OTP sent to your email to verify your account.'
+          })
+      } else {
         toast({
           title: 'Login Failed',
           description: response.data.message,
           variant: 'destructive'
         })
+        }
       }
     } catch (error) {
       toast({
@@ -69,6 +82,35 @@ const Login = () => {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleOtpSubmit = async e => {
+    e.preventDefault()
+    setOtpLoading(true)
+    setOtpError('')
+    try {
+      // Only allow if identifier is an email
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailOrPhone)
+      if (!isEmail) {
+        setOtpError('OTP verification is only available for email accounts.')
+        setOtpLoading(false)
+        return
+      }
+      const res = await axios.post(
+        backendUrl + '/api/user/verify-email-otp',
+        { email: formData.emailOrPhone, otp }
+      )
+      if (res.data.success) {
+        setShowOtpModal(false)
+        toast({ title: 'Email Verified', description: 'Your account is now verified. Please log in.' })
+      } else {
+        setOtpError(res.data.message || 'Invalid OTP')
+      }
+    } catch (err) {
+      setOtpError(err.message)
+    } finally {
+      setOtpLoading(false)
     }
   }
 
@@ -86,7 +128,7 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>
-            <GoogleAuthButton />
+            <GoogleAuthButton isSignup={false} onSignupPhoneRequired={() => {}} />
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
                 <span className='w-full border-t border-revive-black/20' />
@@ -199,6 +241,32 @@ const Login = () => {
       </div>
       </div>
       <Footer/>
+      {showOtpModal && (
+        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
+          <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-80'>
+            <h2 className='text-lg font-semibold text-revive-black'>Verify Your Email</h2>
+            <p className='text-sm text-revive-black/70 mb-2'>Enter the OTP sent to <b>{formData.emailOrPhone}</b></p>
+            <OTPInput value={otp} onChange={setOtp} length={6} />
+            {otpError && <div className='text-red-500 text-sm'>{otpError}</div>}
+            <div className='flex justify-end'>
+              <button
+                type='button'
+                className='mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300'
+                onClick={() => setShowOtpModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type='submit'
+                className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90'
+                disabled={otpLoading || otp.length !== 6}
+              >
+                {otpLoading ? 'Verifying...' : 'Verify'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
       </>
   )
 }

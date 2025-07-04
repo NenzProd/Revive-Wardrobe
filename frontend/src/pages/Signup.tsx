@@ -11,6 +11,7 @@ import axios from 'axios'
 import { useCartStore } from '@/stores/useCartStore'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { OTPInput } from '@/components/auth/OTPInput'
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,14 @@ const Signup = () => {
   const token = useCartStore(state => state.token)
   const backendUrl = useCartStore(state => state.backendUrl)
   const navigate = useNavigate()
+  const [showPhoneModal, setShowPhoneModal] = useState(false)
+  const [pendingCredential, setPendingCredential] = useState(null)
+  const [googlePhone, setGooglePhone] = useState('')
+  const fetchUser = useCartStore(state => state.fetchUser)
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [otp, setOtp] = useState('')
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpError, setOtpError] = useState('')
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -46,11 +55,10 @@ const Signup = () => {
         }
       )
       if (response.data.success) {
-        setToken(response.data.token)
-        localStorage.setItem('token', response.data.token)
+        setShowOtpModal(true)
         toast({
-          title: 'Account Created',
-          description: 'Welcome! Your account has been created successfully.'
+          title: 'Verify Email',
+          description: 'An OTP has been sent to your email. Please verify to complete registration.'
         })
       } else {
         toast({
@@ -67,6 +75,65 @@ const Signup = () => {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSignupPhoneRequired = credentialResponse => {
+    setPendingCredential(credentialResponse)
+    setShowPhoneModal(true)
+  }
+
+  const handlePhoneSubmit = async e => {
+    e.preventDefault()
+    if (!googlePhone || !pendingCredential) return
+
+    try {
+      const res = await axios.post(
+        backendUrl + '/api/user/google-login',
+        {
+          credential: pendingCredential.credential,
+          signupAllowed: true,
+          phone: googlePhone
+        }
+      )
+      if (res.data.success) {
+        setToken(res.data.token)
+        localStorage.setItem('token', res.data.token)
+        await fetchUser(res.data.token)
+        toast({ title: 'Signup Successful', description: 'Welcome!' })
+        navigate('/')
+      } else {
+        toast({ title: 'Google Signup Failed', description: res.data.message, variant: 'destructive' })
+      }
+    } catch (err) {
+      toast({ title: 'Google Signup Failed', description: err.message, variant: 'destructive' })
+    } finally {
+      setShowPhoneModal(false)
+      setGooglePhone('')
+      setPendingCredential(null)
+    }
+  }
+
+  const handleOtpSubmit = async e => {
+    e.preventDefault()
+    setOtpLoading(true)
+    setOtpError('')
+    try {
+      const res = await axios.post(
+        backendUrl + '/api/user/verify-email-otp',
+        { email: formData.email, otp }
+      )
+      if (res.data.success) {
+        setShowOtpModal(false)
+        toast({ title: 'Email Verified', description: 'Your account is now verified. Please log in.' })
+        navigate('/login')
+      } else {
+        setOtpError(res.data.message || 'Invalid OTP')
+      }
+    } catch (err) {
+      setOtpError(err.message)
+    } finally {
+      setOtpLoading(false)
     }
   }
 
@@ -91,7 +158,7 @@ const Signup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>
-            <GoogleAuthButton isSignup />
+            <GoogleAuthButton isSignup={true} onSignupPhoneRequired={handleGoogleSignupPhoneRequired} />
 
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
@@ -196,6 +263,62 @@ const Signup = () => {
         </Card>
       </div>
     </div>
+    {showPhoneModal && (
+      <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
+        <form onSubmit={handlePhoneSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-80'>
+          <h2 className='text-lg font-semibold text-revive-black'>Enter your phone number</h2>
+          <input
+            type='tel'
+            value={googlePhone}
+            onChange={e => setGooglePhone(e.target.value)}
+            className='w-full border border-revive-black/30 rounded px-3 py-2 focus:outline-none focus:border-revive-red'
+            placeholder='Phone number'
+            required
+          />
+          <div className='flex justify-end'>
+            <button
+              type='button'
+              className='mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300'
+              onClick={() => setShowPhoneModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type='submit'
+              className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90'
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    )}
+    {showOtpModal && (
+      <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
+        <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-80'>
+          <h2 className='text-lg font-semibold text-revive-black'>Verify Your Email</h2>
+          <p className='text-sm text-revive-black/70 mb-2'>Enter the OTP sent to <b>{formData.email}</b></p>
+          <OTPInput value={otp} onChange={setOtp} length={6} />
+          {otpError && <div className='text-red-500 text-sm'>{otpError}</div>}
+          <div className='flex justify-end'>
+            <button
+              type='button'
+              className='mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300'
+              onClick={() => setShowOtpModal(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type='submit'
+              className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90'
+              disabled={otpLoading || otp.length !== 6}
+            >
+              {otpLoading ? 'Verifying...' : 'Verify'}
+            </button>
+          </div>
+        </form>
+      </div>
+    )}
     <Footer />
     </>
   )
