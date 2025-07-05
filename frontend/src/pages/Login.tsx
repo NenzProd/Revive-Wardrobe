@@ -243,22 +243,16 @@ const Login = () => {
       <Footer/>
       {showOtpModal && (
         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
-          <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-80'>
+          <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-full max-w-md'>
             <h2 className='text-lg font-semibold text-revive-black'>Verify Your Email</h2>
             <p className='text-sm text-revive-black/70 mb-2'>Enter the OTP sent to <b>{formData.emailOrPhone}</b></p>
             <OTPInput value={otp} onChange={setOtp} length={6} />
             {otpError && <div className='text-red-500 text-sm'>{otpError}</div>}
-            <div className='flex justify-end'>
+            <div className='flex justify-center'>
               <button
-                type='button'
-                className='mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300'
-                onClick={() => setShowOtpModal(false)}
-              >
-                Cancel
-              </button>
-              <button
+                
                 type='submit'
-                className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90'
+                className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90 w-full'
                 disabled={otpLoading || otp.length !== 6}
               >
                 {otpLoading ? 'Verifying...' : 'Verify'}

@@ -49,11 +49,11 @@ const loginUser = async (req, res) => {
                 user.verifyOtp = otp
                 user.verifyOtpExpireAt = Date.now() + 10 * 60 * 1000
                 await user.save()
-                const verifyHtml = EMAIL_VERIFY_TEMPLATE.replace('{{name}}', user.name).replace('{{verifyLink}}', '')
+                const verifyHtml = EMAIL_VERIFY_TEMPLATE.replace('{{name}}', user.name).replace('{{otp}}', otp)
                 await sendMail({
                   to: user.email,
                   subject: 'Verify your email - Revive Wardrobe',
-                  html: verifyHtml.replace('Verify Email', `Your OTP: <b>${otp}</b>`)
+                  html: verifyHtml
                 })
                 return res.json({ success: false, message: 'Please verify your email before logging in. A new OTP has been sent to your email.' })
             }
@@ -95,11 +95,11 @@ const registerUser = async (req, res) => {
     })
     await newUser.save()
     // Send verification email
-    const verifyHtml = EMAIL_VERIFY_TEMPLATE.replace('{{name}}', name).replace('{{verifyLink}}', '')
+    const verifyHtml = EMAIL_VERIFY_TEMPLATE.replace('{{name}}', name).replace('{{otp}}', otp)
     await sendMail({
       to: email,
       subject: 'Verify your email - Revive Wardrobe',
-      html: verifyHtml.replace('Verify Email', `Your OTP: <b>${otp}</b>`) // Show OTP in email
+      html: verifyHtml
     })
     res.json({ success: true, message: 'Registration successful. Please verify your email.' })
     } catch (error) {
@@ -269,11 +269,11 @@ const forgotPassword = async (req, res) => {
     user.resetOtp = otp
     user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000
     await user.save()
-    const resetHtml = PASSWORD_RESET_TEMPLATE.replace('{{name}}', user.name).replace('{{resetLink}}', '')
+    const resetHtml = PASSWORD_RESET_TEMPLATE.replace('{{name}}', user.name).replace('{{otp}}', otp)
     await sendMail({
       to: user.email,
       subject: 'Reset your password - Revive Wardrobe',
-      html: resetHtml.replace('Reset Password', `Your OTP: <b>${otp}</b>`) // Show OTP in email
+      html: resetHtml
     })
     res.json({ success: true, message: 'OTP sent to your email' })
   } catch (error) {
