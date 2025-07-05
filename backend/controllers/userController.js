@@ -223,10 +223,19 @@ const googleLogin = async (req, res) => {
         isAccountVerified: true
       })
       await user.save()
+      // Send welcome email for new Google signup
+      const welcomeHtml = WELCOME_EMAIL_TEMPLATE.replace('{{name}}', user.name).replace('{{loginLink}}', 'https://www.revivewardrobe.com/login')
+      await sendMail({
+        to: user.email,
+        subject: 'Welcome to Revive Wardrobe',
+        html: welcomeHtml
+      })
     }
+
 
     const token = createToken(user._id)
     res.json({ success: true, token })
+    
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })

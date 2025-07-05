@@ -10,8 +10,8 @@ export const WELCOME_EMAIL_TEMPLATE = `
     .container { max-width: 500px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 8px; }
     .button {
       display: inline-block;
-      background: #4C83EE;
-      color: #fff;
+      background: #c10000e6;
+      color: #fff !important;
       padding: 12px 20px;
       text-decoration: none;
       border-radius: 6px;

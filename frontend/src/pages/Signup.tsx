@@ -158,8 +158,9 @@ const Signup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>
+          <div className='flex justify-center w-full'>
             <GoogleAuthButton isSignup={true} onSignupPhoneRequired={handleGoogleSignupPhoneRequired} />
-
+            </div>
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
                 <span className='w-full border-t border-revive-black/20' />
@@ -275,17 +276,10 @@ const Signup = () => {
             placeholder='Phone number'
             required
           />
-          <div className='flex justify-end'>
-            <button
-              type='button'
-              className='mr-2 px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300'
-              onClick={() => setShowPhoneModal(false)}
-            >
-              Cancel
-            </button>
+          <div className='flex justify-center w-full'>
             <button
               type='submit'
-              className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90'
+              className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90 w-full'
             >
               Submit
             </button>

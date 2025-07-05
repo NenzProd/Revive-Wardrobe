@@ -9,9 +9,15 @@ export function GoogleAuthButton ({ isSignup = false, onSignupPhoneRequired }) {
   const backendUrl = useCartStore(state => state.backendUrl)
   const { toast } = useToast()
 
+  type GooglePayload = {
+    credential: string
+    signupAllowed: boolean
+    phone?: string
+  }
+
   const handleSuccess = async (credentialResponse, phone) => {
     try {
-      const payload = {
+      const payload: GooglePayload = {
         credential: credentialResponse.credential,
         signupAllowed: !!isSignup
       }
@@ -39,9 +45,10 @@ export function GoogleAuthButton ({ isSignup = false, onSignupPhoneRequired }) {
 
   return (
     <GoogleLogin
-      onSuccess={cred => handleSuccess(cred)}
+      onSuccess={cred => handleSuccess(cred, undefined)}
       onError={() => toast({ title: 'Google Login Failed', description: 'Try again', variant: 'destructive' })}
       useOneTap
+      text={isSignup ? 'signup_with' : 'signin_with'}
     />
   )
 }
