@@ -9,6 +9,8 @@ import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
 import addressRouter from './routes/addressRoute.js'
 import blogRouter from './routes/blogRoute.js'
+import cron from 'node-cron'
+import { updateAllProductStocks } from './controllers/productController.js'
 
 //App config
 const app = express()
@@ -39,6 +41,14 @@ app.use('/api/blog', blogRouter)
 
 app.get('/', (req, res)=>{
     res.send("API Working")
+})
+
+// Schedule job: every every 12 hours  
+cron.schedule('0 */12 * * *', () => {
+  updateAllProductStocks(
+    { method: 'SCHEDULED' },
+    { json: (result) => console.log('[CRON][0 */12 * * *] Stock update result:', result) }
+  )
 })
 
 app.listen(port, ()=> console.log('Server started on PORT : '+ port))

@@ -326,4 +326,57 @@ const editProduct = async (req, res) => {
     }
 }
 
-export {addProduct, listProduct, removeProduct, singleProduct, editProduct}
+
+
+const updateAllProductStocks = async (req, res) => {
+  try {
+    // Fetch all products
+    const products = await productModel.find({})
+    let updatedCount = 0
+    let errors = []
+    for (const product of products) {
+      let variantsChanged = false
+      for (const variant of product.variants) {
+        if (!variant.sku) continue
+        try {
+          const depoterRes = await axios({
+            method: 'get',
+            url: 'https://fms.depoter.com/WMS/API/inventory/',
+            headers: { Key: '974e7b1d1ce1aadee33e' },
+            data: {
+              sku: variant.sku,
+              inventory_type: 'domestic'
+            }
+          })
+          if (
+            depoterRes.data &&
+            depoterRes.data.status &&
+            depoterRes.data.status.response === true &&
+            depoterRes.data.inventory &&
+            typeof depoterRes.data.inventory.quantity !== 'undefined'
+          ) {
+            const newStock = Number(depoterRes.data.inventory.quantity)
+            if (variant.stock !== newStock) {
+              variant.stock = newStock
+              variantsChanged = true
+            }
+          } else {
+            errors.push({ sku: variant.sku, error: depoterRes.data.status ? depoterRes.data.status.comment : 'Depoter error' })
+          }
+        } catch (err) {
+          errors.push({ sku: variant.sku, error: err.message })
+        }
+      }
+      if (variantsChanged) {
+        await product.save()
+        updatedCount++
+      }
+    }
+    res.json({ success: true, updatedProducts: updatedCount, errors })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+export {addProduct, listProduct, removeProduct, singleProduct, editProduct, updateAllProductStocks}
