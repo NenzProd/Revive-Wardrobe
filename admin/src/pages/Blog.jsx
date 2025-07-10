@@ -53,7 +53,39 @@ const Blog = ({ token }) => {
         </button>
       </div>
       {showAdd && <AddBlog token={token} onSuccess={fetchBlogs} />}
-      <div className="overflow-x-auto mt-6">
+      {/* Mobile view: cards */}
+      <div className="md:hidden space-y-4 mt-6">
+        {blogs.map((blog) => (
+          <div key={blog._id} className="bg-white rounded-lg shadow p-4 border border-gray-100">
+            <div className="mb-2">
+              <div className="text-lg font-semibold text-gray-900">{blog.title}</div>
+              <div className="text-sm text-gray-500">{blog.author} • {blog.category}</div>
+              <div className="text-xs text-gray-400">{new Date(blog.date).toLocaleDateString()}</div>
+            </div>
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                onClick={() => navigate(`/editblog/${blog._id}`)}
+                className="px-3 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 transition-colors"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => removeBlog(blog._id)}
+                className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+        {blogs.length === 0 && (
+          <div className="text-center py-10">
+            <p className="text-gray-500">No blogs found</p>
+          </div>
+        )}
+      </div>
+      {/* Desktop view: table */}
+      <div className="hidden md:block overflow-x-auto mt-6">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

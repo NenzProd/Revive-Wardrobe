@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useState } from 'react'
 import { backendUrl } from '../App';
 import { toast } from 'react-toastify'
-
+import logo from '/logo.png'
 
 
 const Login = ({setToken}) => {
@@ -28,7 +28,10 @@ const Login = ({setToken}) => {
   return (
     <div className='min-h-screen flex items-center justify-center w-full'>
       <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-md'>
-        <h1 className='text-2xl font-bold mb-4'>Revive Wardrobe Admin</h1>
+        <div className='flex flex-col items-center mb-4'>
+          <img src={logo} alt="Logo" className="h-12 w-12 object-contain mb-2" />
+          <h1 className='text-2xl font-bold'>Revive Wardrobe Admin</h1>
+        </div>
         <form onSubmit={onSubmitHandler}>
             <div className='mb-3 min-w-72 '>
                 <p className='text-sm font-medium text-gray-700 mb-2'>Email Adress</p>

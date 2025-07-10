@@ -325,7 +325,7 @@ function Checkout() {
               title: "Payment Successful",
               description: "Your order has been placed.",
             });
-            // navigate("/account");
+            navigate("/account");
           } else {
             toast({
               title: "Error",
