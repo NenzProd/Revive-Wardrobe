@@ -128,7 +128,7 @@ export const useCartStore = create<CartState>()(
         for (const itemId in cartItems) {
           const product = products.find(p => p._id === itemId);
           if (product && cartItems[itemId] > 0) {
-            total += product.price * cartItems[itemId];
+            total += (product.price || 0) * cartItems[itemId];
           }
         }
         return total;
@@ -145,7 +145,7 @@ export const useCartStore = create<CartState>()(
               ? {
                   _id: itemId,
                   name: product.name,
-                  price: product.price,
+                  price: product.price || 0,
                   image: product.image?.[0],
                   quantity: qty
                 }
@@ -158,11 +158,11 @@ export const useCartStore = create<CartState>()(
       recalculateTotals: () => {
         const cart = get().cart;
         const subtotal = cart.reduce((sum, item) => {
-          const itemPrice = item.salePrice || item.price;
+          const itemPrice = item.price || 0;
           return sum + itemPrice * item.quantity;
         }, 0);
-        
-        const shippingCost = subtotal > 0 ? (subtotal > 5000 ? 0 : 250) : 0;
+        // shipping cost is now always 0
+        const shippingCost = 0;
         const total = subtotal + shippingCost;
         const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
         
@@ -213,11 +213,11 @@ export const useCartStore = create<CartState>()(
           const newState = { ...state, cart: updatedCart };
           // Recalculate totals
           const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.salePrice || item.price;
+            const itemPrice = item.price || 0;
             return sum + itemPrice * item.quantity;
           }, 0);
-          
-          const shippingCost = subtotal > 0 ? (subtotal > 5000 ? 0 : 250) : 0;
+          // shipping cost is now always 0
+          const shippingCost = 0;
           const total = subtotal + shippingCost;
           const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
           
@@ -260,11 +260,11 @@ export const useCartStore = create<CartState>()(
           const newState = { ...state, cart: updatedCart };
           // Recalculate totals
           const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.salePrice || item.price;
+            const itemPrice = item.price || 0;
             return sum + itemPrice * item.quantity;
           }, 0);
-          
-          const shippingCost = subtotal > 0 ? (subtotal > 5000 ? 0 : 250) : 0;
+          // shipping cost is now always 0
+          const shippingCost = 0;
           const total = subtotal + shippingCost;
           const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
           
@@ -287,11 +287,11 @@ export const useCartStore = create<CartState>()(
           const newState = { ...state, cart: updatedCart };
           // Recalculate totals
           const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.salePrice || item.price;
+            const itemPrice = item.price || 0;
             return sum + itemPrice * item.quantity;
           }, 0);
-          
-          const shippingCost = subtotal > 0 ? (subtotal > 5000 ? 0 : 250) : 0;
+          // shipping cost is now always 0
+          const shippingCost = 0;
           const total = subtotal + shippingCost;
           const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
           
@@ -368,11 +368,11 @@ export const useCartStore = create<CartState>()(
           
           // Recalculate totals
           const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.salePrice || item.price;
+            const itemPrice = item.price || 0;
             return sum + itemPrice * item.quantity;
           }, 0);
-          
-          const shippingCost = subtotal > 0 ? (subtotal > 5000 ? 0 : 250) : 0;
+          // shipping cost is now always 0
+          const shippingCost = 0;
           const total = subtotal + shippingCost;
           const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
           

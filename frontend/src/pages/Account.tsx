@@ -14,12 +14,16 @@ const Account = () => {
   const [primaryAddress, setPrimaryAddress] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressForm, setAddressForm] = useState({
-    name: '',
-    building: '',
-    street: '',
-    area: '',
+    first_name: '',
+    last_name: '',
+    address: '',
+    country: '',
+    postcode: '',
+    state: '',
     city: '',
-    country: ''
+    landmark: '',
+    email: '',
+    phone: ''
   });
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [settingPrimaryIdx, setSettingPrimaryIdx] = useState(-1);
@@ -87,12 +91,16 @@ const Account = () => {
     setShowAddressForm(true)
     const addr = addresses[idx]
     setAddressForm({
-      name: addr.name || '',
-      building: addr.building || '',
-      street: addr.street || '',
-      area: addr.area || '',
+      first_name: addr.first_name || '',
+      last_name: addr.last_name || '',
+      address: addr.address || '',
+      country: addr.country || '',
+      postcode: addr.postcode || '',
+      state: addr.state || '',
       city: addr.city || '',
-      country: addr.country || ''
+      landmark: addr.landmark || '',
+      email: addr.email || '',
+      phone: addr.phone || ''
     })
   }
 
@@ -117,14 +125,7 @@ const Account = () => {
     e.preventDefault();
     setIsSavingAddress(true);
     try {
-      const address = {
-        name: addressForm.name,
-        building: addressForm.building,
-        street: addressForm.street,
-        area: addressForm.area,
-        city: addressForm.city,
-        country: addressForm.country
-      };
+      const address = { ...addressForm };
       if (editAddressIdx !== -1) {
         // Edit mode
         await axios.post(
@@ -144,7 +145,7 @@ const Account = () => {
       }
       setShowAddressForm(false);
       setEditAddressIdx(-1);
-      setAddressForm({ name: '', building: '', street: '', area: '', city: '', country: '' });
+      setAddressForm({ first_name: '', last_name: '', address: '', country: '', postcode: '', state: '', city: '', landmark: '', email: '', phone: '' });
       fetchAddresses();
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to save address.', variant: 'destructive' })
@@ -155,7 +156,7 @@ const Account = () => {
   const handleCancelAddressForm = () => {
     setShowAddressForm(false)
     setEditAddressIdx(-1)
-    setAddressForm({ name: '', building: '', street: '', area: '', city: '', country: '' })
+    setAddressForm({ first_name: '', last_name: '', address: '', country: '', postcode: '', state: '', city: '', landmark: '', email: '', phone: '' })
   }
 
   const handleSetPrimary = async idx => {
@@ -376,27 +377,36 @@ const Account = () => {
                         </div>
                         {/* Items List */}
                         <div className="flex flex-wrap gap-4 px-6 py-4 border-b">
-                          {order.items.map((item, i) => (
+                          {Array.isArray(order.line_items) ? order.line_items.map((item, i) => (
                             <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-md px-2 py-1">
-                              <img src={Array.isArray(item.image) ? item.image[0] : item.image} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                              <img src={Array.isArray(item.image) ? item.image[0] : item.image} alt={item.sku_id || ''} className="w-10 h-10 object-cover rounded" />
                               <div className="flex flex-col">
-                                <span className="font-medium text-sm">{item.name}</span>
-                                <span className="text-xs text-gray-500">Qty: {item.quantity}{item.size && <span> | Size: {item.size}</span>}</span>
+                                <span className="font-medium text-sm">{item.sku_id || 'SKU'}</span>
+                                <span className="text-xs text-gray-500">Qty: {item.quantity}</span>
                               </div>
                             </div>
-                          ))}
+                          )) : null}
                         </div>
                         {/* Order Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4">
                           <div className="space-y-1">
-                            <div className="text-gray-600 text-sm">Amount: <span className="font-semibold text-revive-red">{order.amount}</span></div>
-                            <div className="text-gray-600 text-sm">Payment: <span className="font-medium">{order.payment ? 'Done' : 'Pending'}</span></div>
-                            <div className="text-gray-600 text-sm">Method: <span className="font-medium">{order.paymentMethod}</span></div>
+                            <div className="text-gray-600 text-sm">Amount: <span className="font-semibold text-revive-red">{order.price && order.line_items ? order.price.currency_code + ' ' + order.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : ''}</span></div>
+                            <div className="text-gray-600 text-sm">Payment: <span className="font-medium">{order.price?.payment_mode === 'cod' ? 'Pending' : 'Done'}</span></div>
+                            <div className="text-gray-600 text-sm">Method: <span className="font-medium">{order.price?.payment_mode || '-'}</span></div>
                           </div>
                           <div className="space-y-1">
                             <div className="text-gray-600 text-sm">Address:</div>
                             <div className="text-xs text-gray-500">
-                              {order.address?.name}, {order.address?.building}, {order.address?.street}, {order.address?.area}, {order.address?.city}, {order.address?.country}
+                              {order.address && [
+                                order.address.first_name,
+                                order.address.last_name,
+                                order.address.address,
+                                order.address.landmark,
+                                order.address.city,
+                                order.address.state,
+                                order.address.postcode,
+                                order.address.country
+                              ].filter(Boolean).join(', ')}
                             </div>
                           </div>
                         </div>
@@ -434,24 +444,32 @@ const Account = () => {
                   <form className="max-w-lg mx-auto border rounded-lg p-6 bg-gray-50" onSubmit={handleAddAddress}>
                     <h3 className="text-lg font-semibold mb-4">{editAddressIdx !== -1 ? 'Edit Address' : 'Add New Address'}</h3>
                     <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Full Name</label>
-                      <input type="text" name="name" value={addressForm.name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      <label className="block text-sm font-medium mb-1">First Name</label>
+                      <input type="text" name="first_name" value={addressForm.first_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                     </div>
                     <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Building Name/Number</label>
-                      <input type="text" name="building" value={addressForm.building} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      <label className="block text-sm font-medium mb-1">Last Name</label>
+                      <input type="text" name="last_name" value={addressForm.last_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
                     </div>
                     <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Street Name/Number</label>
-                      <input type="text" name="street" value={addressForm.street} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      <label className="block text-sm font-medium mb-1">Address</label>
+                      <input type="text" name="address" value={addressForm.address} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
                     </div>
                     <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Area/Neighborhood</label>
-                      <input type="text" name="area" value={addressForm.area} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      <label className="block text-sm font-medium mb-1">Landmark</label>
+                      <input type="text" name="landmark" value={addressForm.landmark} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">City</label>
                       <input type="text" name="city" value={addressForm.city} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">State</label>
+                      <input type="text" name="state" value={addressForm.state} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">Postcode</label>
+                      <input type="text" name="postcode" value={addressForm.postcode} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">Country</label>
@@ -471,6 +489,14 @@ const Account = () => {
                         <option value="Kuwait">Kuwait</option>
                       </select>
                     </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">Email</label>
+                      <input type="email" name="email" value={addressForm.email} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">Phone</label>
+                      <input type="tel" name="phone" value={addressForm.phone} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
                     <div className="flex gap-2 mt-4">
                       <button type="submit" className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300" disabled={isSavingAddress}>
                         {isSavingAddress ? (editAddressIdx !== -1 ? 'Saving...' : 'Saving...') : (editAddressIdx !== -1 ? 'Save Changes' : 'Save Address')}
@@ -489,13 +515,17 @@ const Account = () => {
                           <li key={idx} className={`border rounded-lg p-4 ${isPrimary ? 'border-revive-red' : 'border-gray-200'}`}>
                             <div className="flex justify-between items-center">
                               <div>
-                                <p className="font-medium">{address.name || 'Address'}</p>
+                                <p className="font-medium">{address.first_name} {address.last_name || ''}</p>
                                 <p className="text-gray-600 text-sm">
-                                  {address.building ? address.building + ', ' : ''}
-                                  {address.street ? address.street + ', ' : ''}
-                                  {address.area ? address.area + ', ' : ''}
+                                  {address.address ? address.address + ', ' : ''}
+                                  {address.landmark ? address.landmark + ', ' : ''}
                                   {address.city ? address.city + ', ' : ''}
+                                  {address.state ? address.state + ', ' : ''}
+                                  {address.postcode ? address.postcode + ', ' : ''}
                                   {address.country || ''}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Email: {address.email}, Phone: {address.phone}
                                 </p>
                               </div>
                               <div className="flex flex-col items-end gap-2">
@@ -535,7 +565,7 @@ const Account = () => {
                     </ul>
                     <button 
                       className="mt-6 bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
-                      onClick={() => { setShowAddressForm(true); setEditAddressIdx(-1); setAddressForm({ name: '', building: '', street: '', area: '', city: '', country: '' }) }}
+                      onClick={() => { setShowAddressForm(true); setEditAddressIdx(-1); setAddressForm({ first_name: '', last_name: '', address: '', country: '', postcode: '', state: '', city: '', landmark: '', email: '', phone: '' }) }}
                     >
                       Add New Address
                     </button>

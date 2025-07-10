@@ -1,17 +1,15 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    userId: { type:String, required:true },
-    email: { type: String },
-    phone: { type: String },
-    items: { type:Array, required:true },
-    amount: { type:Number, required:true },
-    address: { type:Object, required:true },
-    status: { type:String, required:true, default: 'Order Placed' },
-    paymentMethod: { type:String, required:true },
-    payment: { type:Boolean, required:true, default:false },
-    date: { type: Number, required: true }
-
+    userId: { type: String, required: true },
+    order_id: { type: String },
+    address: { type: Object, required: true },
+    price: { type: Object, required: true },
+    line_items: { type: Array, required: true },
+    status: { type: String, required: true, default: 'Order Placed' },
+    date: { type: Date, required: true, default: Date.now },
+    depoterOrderId: { type: String, default: '' },
+    depoterId: { type: String, default: '' }
 })
 
 const orderModel = mongoose.models.order || mongoose.model('order', orderSchema)

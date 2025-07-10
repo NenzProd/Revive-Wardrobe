@@ -8,6 +8,8 @@ import Newsletter from "../components/Newsletter";
 import { priceSymbol } from "../config/constants";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { CartItem } from '../types/product'
+type CartItemWithPrice = CartItem & { price?: number, sku_id?: string }
 
 // Add Razorpay type declaration for TypeScript
 interface RazorpayResponse {
@@ -40,32 +42,36 @@ declare global {
 }
 
 function Checkout() {
-  const {
-    cart,
-    subtotal,
-    shippingCost,
-    total,
-    token,
-    backendUrl,
-    user,
-    clearCart,
-  } = useCartStore();
+  const store = useCartStore();
+  const cart = store.cart as CartItemWithPrice[];
+  const subtotal = store.subtotal;
+  const shippingCost = store.shippingCost;
+  const total = store.total;
+  const token = store.token;
+  const backendUrl = store.backendUrl;
+  const user = store.user;
+  const clearCart = store.clearCart;
   const [addresses, setAddresses] = useState([]);
   const [primaryAddress, setPrimaryAddress] = useState(null);
   const [selectedAddressIdx, setSelectedAddressIdx] = useState(0);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressForm, setAddressForm] = useState({
-    name: "",
-    building: "",
-    street: "",
-    area: "",
-    city: "",
-    country: "",
+    first_name: '',
+    last_name: '',
+    address: '',
+    country: '',
+    postcode: '',
+    state: '',
+    city: '',
+    landmark: '',
+    email: '',
+    phone: ''
   });
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [editAddressIdx, setEditAddressIdx] = useState(-1);
   const [removingIdx, setRemovingIdx] = useState(-1);
   const [selectedPayment, setSelectedPayment] = useState("razorpay");
+  const [selectedDeliveryType, setSelectedDeliveryType] = useState('next day delivery');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -113,12 +119,16 @@ function Checkout() {
     setShowAddressForm(true);
     setEditAddressIdx(-1);
     setAddressForm({
-      name: "",
-      building: "",
-      street: "",
-      area: "",
-      city: "",
-      country: "",
+      first_name: '',
+      last_name: '',
+      address: '',
+      country: '',
+      postcode: '',
+      state: '',
+      city: '',
+      landmark: '',
+      email: '',
+      phone: ''
     });
   };
   const handleEditAddress = (idx) => {
@@ -126,12 +136,16 @@ function Checkout() {
     setShowAddressForm(true);
     const addr = addresses[idx];
     setAddressForm({
-      name: addr.name || "",
-      building: addr.building || "",
-      street: addr.street || "",
-      area: addr.area || "",
-      city: addr.city || "",
-      country: addr.country || "",
+      first_name: addr.first_name || '',
+      last_name: addr.last_name || '',
+      address: addr.address || '',
+      country: addr.country || '',
+      postcode: addr.postcode || '',
+      state: addr.state || '',
+      city: addr.city || '',
+      landmark: addr.landmark || '',
+      email: addr.email || '',
+      phone: addr.phone || ''
     });
   };
   const handleSaveAddress = async (e) => {
@@ -163,12 +177,16 @@ function Checkout() {
       setShowAddressForm(false);
       setEditAddressIdx(-1);
       setAddressForm({
-        name: "",
-        building: "",
-        street: "",
-        area: "",
-        city: "",
-        country: "",
+        first_name: '',
+        last_name: '',
+        address: '',
+        country: '',
+        postcode: '',
+        state: '',
+        city: '',
+        landmark: '',
+        email: '',
+        phone: ''
       });
       // Refresh addresses
       const res = await axios.get(backendUrl + "/api/address/get", {
@@ -177,7 +195,6 @@ function Checkout() {
       if (res.data.success) {
         setAddresses(res.data.addresses || []);
         setPrimaryAddress(res.data.primaryAddress || null);
-        // If only one address, set as primary
         if ((res.data.addresses || []).length === 1) {
           await axios.post(
             backendUrl + "/api/address/set-primary",
@@ -271,6 +288,12 @@ function Checkout() {
     // { id: 'stripe', label: 'Stripe', icon: <Lock size={18} className='mr-3 text-gray-400' /> }
   ];
 
+  // Delivery type options
+  const deliveryTypes = [
+    { id: 'next day delivery', label: 'Next Day Delivery' },
+    { id: 'same day delivery', label: 'Same Day Delivery' }
+  ];
+
   // Razorpay payment integration (updated)
   const initPay = (order) => {
     const options = {
@@ -284,12 +307,12 @@ function Checkout() {
         try {
           const verifyData = {
             ...response,
-            userId: user._id,
-            email: user.email,
-            phone: user.phone,
-            items: cart,
-            amount: total,
-            address: addresses[selectedAddressIdx],
+            ...buildOrderPayload('online'),
+            address: order.address || addresses[selectedAddressIdx],
+            price: {
+              ...buildOrderPayload('online').price,
+              delivery_type: order.delivery_type || selectedDeliveryType
+            }
           };
           const { data } = await axios.post(
             backendUrl + "/api/order/verifyRazorpay",
@@ -302,7 +325,7 @@ function Checkout() {
               title: "Payment Successful",
               description: "Your order has been placed.",
             });
-            navigate("/account");
+            // navigate("/account");
           } else {
             toast({
               title: "Error",
@@ -330,6 +353,40 @@ function Checkout() {
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
+
+  // Helper to build order payload in new format
+  function buildOrderPayload(paymentMode) {
+    return {
+      userId: user._id,
+      order_id: '', // let backend generate or add logic if needed
+      address: { ...addresses[selectedAddressIdx] },
+      price: {
+        payment_mode: paymentMode,
+        currency_code: 'INR',
+        delivery_type: selectedDeliveryType,
+        shipping_charges: '0',
+        COD: selectedPayment === 'cod' ? total.toString() : '0',
+        tax: '0',
+        extra_charges: '0'
+      },
+      line_items: cart.map(item => {
+        let selectedSize = ''
+        if (Array.isArray(item.selectedSize)) {
+          selectedSize = item.selectedSize[0] || ''
+        } else {
+          selectedSize = item.selectedSize || ''
+        }
+        const variant = item.variants?.find(v => typeof v.filter_value === 'string' && typeof selectedSize === 'string' && v.filter_value === selectedSize)
+        return {
+          product_id: item._id || '',
+          sku_id: variant?.sku || '',
+          image: item.image || '',
+          quantity: item.quantity?.toString() || '1',
+          price: (item.price || 0).toString()
+        }
+      })
+    }
+  }
 
   // Place Order Handler (COD & Razorpay, updated)
   const handlePlaceOrder = async () => {
@@ -367,7 +424,12 @@ function Checkout() {
           { headers: { token } }
         );
         if (responseRazorpay.data.success) {
-          initPay(responseRazorpay.data.order);
+          // Pass delivery type and address to Razorpay handler
+          initPay({
+            ...responseRazorpay.data.order,
+            delivery_type: selectedDeliveryType,
+            address: addresses[selectedAddressIdx]
+          });
         } else {
           toast({
             title: "Error",
@@ -378,16 +440,10 @@ function Checkout() {
         }
       } else {
         // COD fallback
+        const orderPayload = buildOrderPayload('cod');
         const res = await axios.post(
           backendUrl + "/api/order/place",
-          {
-            userId: user._id,
-            email: user.email,
-            phone: user.phone,
-            items: cart,
-            amount: total,
-            address: addresses[selectedAddressIdx],
-          },
+          orderPayload,
           { headers: { token } }
         );
         if (res.data.success) {
@@ -460,7 +516,7 @@ function Checkout() {
                       >
                         <div>
                           <div className="font-semibold mb-1 flex items-center gap-2">
-                            {addr.name}{" "}
+                            {addr.first_name} {addr.last_name}{" "}
                             {isPrimary && (
                               <span className="text-xs text-revive-gold flex items-center gap-1">
                                 <Star size={14} className="inline" />
@@ -470,12 +526,16 @@ function Checkout() {
                           </div>
                           <div className="text-gray-700 text-sm whitespace-pre-line">
                             {[
-                              addr.building,
-                              addr.street,
-                              addr.area,
+                              addr.address,
+                              addr.landmark,
                               addr.city,
+                              addr.state,
+                              addr.postcode,
                               addr.country
                             ].filter(Boolean).join(', ')}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Email: {addr.email}, Phone: {addr.phone}
                           </div>
                         </div>
                         <div className="flex flex-col gap-1">
@@ -533,12 +593,12 @@ function Checkout() {
                     </h3>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">
-                        Full Name
+                        First Name
                       </label>
                       <input
                         type="text"
-                        name="name"
-                        value={addressForm.name}
+                        name="first_name"
+                        value={addressForm.first_name}
                         onChange={handleAddressInput}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                         required
@@ -546,12 +606,12 @@ function Checkout() {
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">
-                        Building Name/Number
+                        Last Name
                       </label>
                       <input
                         type="text"
-                        name="building"
-                        value={addressForm.building}
+                        name="last_name"
+                        value={addressForm.last_name}
                         onChange={handleAddressInput}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                         required
@@ -559,12 +619,12 @@ function Checkout() {
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">
-                        Street Name/Number
+                        Address
                       </label>
                       <input
                         type="text"
-                        name="street"
-                        value={addressForm.street}
+                        name="address"
+                        value={addressForm.address}
                         onChange={handleAddressInput}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                         required
@@ -572,15 +632,14 @@ function Checkout() {
                     </div>
                     <div className="mb-3">
                       <label className="block text-sm font-medium mb-1">
-                        Area/Neighborhood
+                        Landmark
                       </label>
                       <input
                         type="text"
-                        name="area"
-                        value={addressForm.area}
+                        name="landmark"
+                        value={addressForm.landmark}
                         onChange={handleAddressInput}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -591,6 +650,32 @@ function Checkout() {
                         type="text"
                         name="city"
                         value={addressForm.city}
+                        onChange={handleAddressInput}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">
+                        State
+                      </label>
+                      <input
+                        type="text"
+                        name="state"
+                        value={addressForm.state}
+                        onChange={handleAddressInput}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">
+                        Postcode
+                      </label>
+                      <input
+                        type="text"
+                        name="postcode"
+                        value={addressForm.postcode}
                         onChange={handleAddressInput}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md"
                         required
@@ -616,6 +701,32 @@ function Checkout() {
                         <option value="Kuwait">Kuwait</option>
                       </select>
                     </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={addressForm.email}
+                        onChange={handleAddressInput}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={addressForm.phone}
+                        onChange={handleAddressInput}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                      />
+                    </div>
                     <div className="flex gap-2 mt-4">
                       <button
                         type="submit"
@@ -637,12 +748,16 @@ function Checkout() {
                           setShowAddressForm(false);
                           setEditAddressIdx(-1);
                           setAddressForm({
-                            name: "",
-                            building: "",
-                            street: "",
-                            area: "",
-                            city: "",
-                            country: "",
+                            first_name: '',
+                            last_name: '',
+                            address: '',
+                            country: '',
+                            postcode: '',
+                            state: '',
+                            city: '',
+                            landmark: '',
+                            email: '',
+                            phone: ''
                           });
                         }}
                       >
@@ -685,6 +800,35 @@ function Checkout() {
                 ))}
               </div>
             </div>
+            {/* Add Delivery Type selector in the UI, below Payment Method */}
+            <div className="bg-gray-50 rounded-lg border border-gray-200 shadow-sm p-6 mt-6">
+              <div className="flex items-center mb-4">
+                <span className="text-revive-red mr-2">🚚</span>
+                <h2 className="text-lg font-serif font-semibold">Delivery Type</h2>
+              </div>
+              <div className="space-y-3">
+                {deliveryTypes.map((type) => (
+                  <label
+                    key={type.id}
+                    className={`flex items-center border rounded-lg px-4 py-3 cursor-pointer transition-all ${
+                      selectedDeliveryType === type.id
+                        ? 'border-revive-red bg-revive-red/10'
+                        : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="deliveryType"
+                      value={type.id}
+                      checked={selectedDeliveryType === type.id}
+                      onChange={() => setSelectedDeliveryType(type.id)}
+                      className="mr-3 accent-revive-red"
+                    />
+                    <span className="font-medium">{type.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
           {/* Right: Order Summary */}
           <div className="w-full lg:w-[350px]">
@@ -706,7 +850,7 @@ function Checkout() {
                     </div>
                   </div>
                   <div className="font-semibold text-revive-red">
-                    {priceSymbol} {(cart[0].price || 0).toLocaleString()}
+                    {priceSymbol} {(cart[0]?.price || 0).toLocaleString()}
                   </div>
                 </div>
               )}

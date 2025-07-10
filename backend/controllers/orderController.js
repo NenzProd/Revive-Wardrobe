@@ -1,13 +1,12 @@
-// placing orders using COD
-
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import razorpay from "razorpay";
 import crypto from "crypto";
+import axios from 'axios'
 
 // global variables
-const currency = 'inr'
-const deliveryCharge = 10
+const currency = 'INR'
+const deliveryCharge = 0
 
 
 const razorpayInstance = new razorpay({
@@ -18,40 +17,64 @@ const razorpayInstance = new razorpay({
 
 const placeOrder = async (req, res) => {
     try {
-        const { userId, email, phone, items, amount, address } = req.body;
-        
-        if (!items || items.length === 0) {
+        console.log('--- placeOrder called ---');
+        console.log('Request body:', req.body);
+        const { userId,  address, price, line_items, depoterOrderId="", depoterId="" } = req.body;
+        if (!line_items || line_items.length === 0) {
+            console.log('No items in cart');
             return res.json({success: false, message: "No items in cart"});
         }
-
         const orderData = {
             userId,
-            email,
-            phone,
-            items: items.map(item => ({
-                productId: item._id,
-                name: item.name,
-                price: item.price,
-                image: item.image,
-                quantity: item.quantity
-            })),
             address,
-            amount,
-            paymentMethod: "COD",
-            payment: false,
+            price,
+            // line_items is expected to be an array of { product_id, sku_id, quantity, price }
+            line_items,
+            depoterOrderId,
+            depoterId,
             status: "Order Placed",
             date: new Date()
+        };
+        const newOrder = new orderModel(orderData);
+        await newOrder.save();
+        await userModel.findByIdAndUpdate(userId, {cartData: {}});
+
+        // Send order to Depoter
+        const depoterPayload = {
+            order_id: newOrder._id.toString(),
+            billing: { ...address },
+            shipping: { ...address },
+            price: { ...price },
+            line_items: line_items.map(item => ({
+                sku_id: item.sku_id,
+                quantity: item.quantity,
+                price: item.price
+            }))
+        }
+        console.log('Depoter payload:', depoterPayload);
+        try {
+            const depoterRes = await axios.post(
+                'https://fms.depoter.com/WMS/API/create_order/',
+                depoterPayload,
+                { headers: { key: '974e7b1d1ce1aadee33e' } }
+            )
+            console.log('Depoter response:', depoterRes.data);
+            // If response contains order.id and order.depoter_order_id, update the order
+            const depoterOrder = depoterRes.data?.order
+            if (depoterOrder && depoterOrder.id && depoterOrder.depoter_order_id) {
+                await orderModel.findByIdAndUpdate(newOrder._id, {
+                    depoterId: depoterOrder.id,
+                    depoterOrderId: depoterOrder.depoter_order_id
+                })
+            }
+        } catch (err) {
+            console.log('Depoter API error:', err?.response?.data || err.message)
+            // Optionally, handle/log depoter API error
         }
 
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
-
-        await userModel.findByIdAndUpdate(userId, {cartData: {}})
-
-        res.json({success: true, message: "Order Placed"})
-
+        res.json({success: true, message: "Order Placed", depoterId: depoterOrder?.id, depoterOrderId: depoterOrder?.depoter_order_id});
     } catch (error) {
-        console.log(error)
+        console.log('placeOrder error:', error)
         res.json({success: false, message: error.message})
     }
 }
@@ -88,43 +111,31 @@ const createRazorpayOrder = async (req, res) => {
 const verifyRazorpay = async (req, res) => {
     try {
         const {
-            userId, email, phone, items, amount, address,
+            userId, order_id, address, price, line_items, depoterOrderId, depoterId,
             razorpay_payment_id, razorpay_order_id, razorpay_signature
         } = req.body
-
         // Signature verification
         const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET_KEY)
         hmac.update(razorpay_order_id + '|' + razorpay_payment_id)
         const generated_signature = hmac.digest('hex')
-
         if (generated_signature !== razorpay_signature) {
             return res.json({ success: false, message: 'Invalid signature' })
         }
-
         // Create order in DB
         const orderData = {
             userId,
-            email,
-            phone,
-            items: items.map(item => ({
-                productId: item._id,
-                name: item.name,
-                price: item.price,
-                image: item.image,
-                quantity: item.quantity
-            })),
+            order_id,
             address,
-            amount,
-            paymentMethod: 'Razorpay',
-            payment: true,
+            price,
+            line_items,
+            depoterOrderId,
+            depoterId,
             status: 'Order Placed',
             date: new Date()
         }
-
         const newOrder = new orderModel(orderData)
         await newOrder.save()
         await userModel.findByIdAndUpdate(userId, { cartData: {} })
-
         res.json({ success: true, message: 'Payment Successful, Order Placed' })
     } catch (error) {
         console.log(error)
