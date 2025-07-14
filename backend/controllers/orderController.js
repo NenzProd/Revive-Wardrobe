@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import razorpay from "razorpay";
 import crypto from "crypto";
 import axios from 'axios'
+import productModel from "../models/productModel.js";
 
 // global variables
 const currency = 'INR'
@@ -57,6 +58,28 @@ const verifyRazorpay = async (req, res) => {
         const generated_signature = hmac.digest('hex')
         if (generated_signature !== razorpay_signature) {
             return res.json({ success: false, message: 'Invalid signature' })
+        }
+        // Check stock for each line item
+        for (const item of line_items) {
+            const product = await productModel.findById(item.product_id)
+            if (!product) {
+                return res.json({ success: false, message: `Product not found for item ${item.product_id}` })
+            }
+            const variant = product.variants.find(v => v.sku === item.sku_id)
+            if (!variant) {
+                return res.json({ success: false, message: `Variant not found for SKU ${item.sku_id}` })
+            }
+            if (variant.stock < Number(item.quantity)) {
+                return res.json({ success: false, message: `Insufficient stock for ${product.name} (${variant.filter_value}). Only ${variant.stock} left.` })
+            }
+        }
+        // Decrement stock for each line item
+        for (const item of line_items) {
+            const product = await productModel.findById(item.product_id)
+            const variant = product.variants.find(v => v.sku === item.sku_id)
+            variant.stock -= Number(item.quantity)
+            if (variant.stock < 0) variant.stock = 0
+            await product.save()
         }
         // Create order in DB
         const orderData = {

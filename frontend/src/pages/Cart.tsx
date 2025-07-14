@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -25,6 +25,27 @@ const Cart = () => {
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const navigate = useNavigate();
   
+  // Fetch latest product data for stock validation
+  const [productsData, setProductsData] = useState([]);
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/product/list');
+        const data = await res.json();
+        if (data.success) setProductsData(data.products);
+      } catch {}
+    }
+    fetchProducts();
+  }, []);
+
+  // Helper to get variant stock for a cart item
+  function getVariantStock(item) {
+    const product = productsData.find(p => p._id === item._id);
+    if (!product || !item.selectedSize) return 9999;
+    const variant = product.variants?.find(v => v.filter_value === item.selectedSize);
+    return variant ? variant.stock : 9999;
+  }
+
   const handleCouponApply = () => {
     if (!couponCode.trim()) {
       toast({
@@ -50,11 +71,27 @@ const Cart = () => {
   };
   
   const handleCheckout = () => {
-    // Placeholder for checkout functionality
-    toast({
-      title: "Proceeding to checkout",
-      description: "This functionality will be implemented in the future.",
-    });
+    // Validate stock for all items
+    for (const item of cart) {
+      const stock = getVariantStock(item);
+      if (item.quantity > stock) {
+        toast({
+          title: 'Stock error',
+          description: `Only ${stock} in stock for ${item.name} (${item.selectedSize})`,
+          variant: 'destructive'
+        });
+        return;
+      }
+      if (stock === 0) {
+        toast({
+          title: 'Out of stock',
+          description: `${item.name} (${item.selectedSize}) is out of stock`,
+          variant: 'destructive'
+        });
+        return;
+      }
+    }
+    navigate('/checkout');
   };
 
   return (
@@ -104,6 +141,7 @@ const Cart = () => {
                   {cart.map((item) => {
                     const itemPrice = item.salePrice || item.price;
                     const itemTotal = itemPrice * item.quantity;
+                    const stock = getVariantStock(item);
                     
                     return (
                       <div key={`${item._id}-${item.selectedSize}-${item.selectedColor}`} className="p-4">
@@ -188,6 +226,7 @@ const Cart = () => {
                               <button
                                 onClick={() => updateQuantity(item._id, item.quantity + 1)}
                                 className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                disabled={item.quantity >= stock}
                               >
                                 <Plus size={16} />
                               </button>
@@ -223,7 +262,7 @@ const Cart = () => {
                 <h2 className="text-xl font-serif mb-4">Order Summary</h2>
                 
                 {/* Coupon Code */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <label className="block text-sm font-medium mb-2">Apply Coupon Code</label>
                   <div className="flex space-x-2">
                     <Input
@@ -241,7 +280,7 @@ const Cart = () => {
                     </Button>
                   </div>
                 </div>
-                
+                 */}
                 {/* Price Details */}
                 <div className="border-t border-b border-gray-200 py-4 mb-4">
                   <div className="flex justify-between mb-2">
@@ -267,16 +306,16 @@ const Cart = () => {
                 {/* Checkout Button */}
                 <Button 
                   className="w-full bg-revive-gold hover:bg-revive-gold/90" 
-                  onClick={() => navigate('/checkout')}
+                  onClick={handleCheckout}
                 >
                   Proceed to Checkout
                 </Button>
                 
                 {/* Additional Information */}
-                <div className="mt-4 text-xs text-gray-500">
+                {/* <div className="mt-4 text-xs text-gray-500">
                   <p>Free shipping on orders over {priceSymbol} 5,000</p>
                   <p className="mt-1">Estimated delivery: 3-5 business days</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

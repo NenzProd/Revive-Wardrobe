@@ -27,8 +27,10 @@ import React from 'react';
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
+  const [maxStock, setMaxStock] = useState<number>(0);
   const { toast } = useToast();
   const { addToCart } = useCartStore();
   const wishlist = useCartStore(state => state.wishlist)
@@ -41,8 +43,11 @@ const ProductDetail = () => {
   // Set default size and price when product loads
   React.useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0])
       setSelectedSize(product.variants[0].filter_value || null)
       setDisplayPrice(product.variants[0].retail_price)
+      setMaxStock(product.variants[0].stock)
+      setQuantity(1)
     }
   }, [product])
 
@@ -50,7 +55,12 @@ const ProductDetail = () => {
   React.useEffect(() => {
     if (product && product.variants && selectedSize) {
       const variant = product.variants.find(v => v.filter_value === selectedSize)
-      if (variant) setDisplayPrice(variant.retail_price)
+      if (variant) {
+        setDisplayPrice(variant.retail_price)
+        setSelectedVariant(variant)
+        setMaxStock(variant.stock)
+        setQuantity(1)
+      }
     }
   }, [selectedSize, product])
 
@@ -74,48 +84,63 @@ const ProductDetail = () => {
   }
 
   const {
-    id,
+    _id,
     name,
     image,
     description,
     type,
-    fabric,
     sizes,
     bestseller,
-    stock
+    category,
+    variants
   } = product;
 
   const handleAddToCart = () => {
     if (product.variants && product.variants.length > 0 && !selectedSize) {
       toast({
-        title: "Please select a size",
-        variant: "destructive",
-      });
-      return;
+        title: 'Please select a size',
+        variant: 'destructive',
+      })
+      return
     }
-    const variant = product.variants.find(v => v.filter_value === selectedSize)
-    addToCart({ ...product, price: variant ? variant.retail_price : displayPrice }, quantity, selectedSize || undefined);
-    navigate('/cart');
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      toast({
+        title: 'Out of stock',
+        description: 'Selected size is out of stock',
+        variant: 'destructive',
+      })
+      return
+    }
+    addToCart({ ...product }, quantity, selectedSize || undefined)
+    navigate('/cart')
     toast({
-      title: "Added to cart",
+      title: 'Added to cart',
       description: `${name} (${quantity}) has been added to your cart`,
-    });
-  };
+    })
+  }
   
   const handleAddToWishlist = () => {
     if (wishlist.some(item => item._id === product._id)) {
       toast({
-        title: "Already in wishlist",
+        title: 'Already in wishlist',
         description: `${name} is already in your wishlist`,
-      });
-      return;
+      })
+      return
+    }
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      toast({
+        title: 'Out of stock',
+        description: 'Selected size is out of stock',
+        variant: 'destructive',
+      })
+      return
     }
     setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
     toast({
-      title: "Added to wishlist",
+      title: 'Added to wishlist',
       description: `${name} has been added to your wishlist`,
-    });
-  };
+    })
+  }
 
   // Share button handler
   const handleShare = () => {
@@ -169,7 +194,7 @@ const ProductDetail = () => {
             <div className="flex items-center mb-6 bg-gray-50 p-4 rounded-md">
               <Truck size={18} className="text-revive-red mr-2" />
               <span className="text-sm">
-                {product.deliveryEstimate ? `Estimated delivery: ${product.deliveryEstimate}` : 'Delivery estimate available at checkout'}
+                {'Delivery estimate available at checkout'}
               </span>
             </div>
             
@@ -187,12 +212,13 @@ const ProductDetail = () => {
                           : 'border-gray-300 hover:border-revive-red'
                       } rounded-md transition-colors`}
                       onClick={() => setSelectedSize(variant.filter_value)}
+                      disabled={variant.stock === 0}
                     >
                       {variant.filter_value}
                     </button>
                   ))}
                 </div>
-                <div className="mt-2">
+                <div className="mt-2 flex items-center gap-4">
                   <button 
                     className="text-sm text-revive-gold hover:underline flex items-center"
                     onClick={() => document.getElementById('sizeGuideModal')?.classList.remove('hidden')}
@@ -200,6 +226,7 @@ const ProductDetail = () => {
                     <Calendar size={16} className="mr-1" />
                     Size Guide
                   </button>
+                  <span className="text-xs text-gray-500">Stock: {selectedVariant?.stock ?? 0}</span>
                 </div>
               </div>
             )}
@@ -211,7 +238,7 @@ const ProductDetail = () => {
                 <button 
                   className="px-3 py-2 hover:bg-gray-100 transition-colors"
                   onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                  disabled={stock === 0}
+                  disabled={selectedVariant?.stock === 0 || quantity <= 1}
                 >
                   -
                 </button>
@@ -223,16 +250,16 @@ const ProductDetail = () => {
                 />
                 <button 
                   className="px-3 py-2 hover:bg-gray-100 transition-colors"
-                  onClick={() => setQuantity(prev => Math.min(stock, prev + 1))}
-                  disabled={stock === 0 || quantity >= stock}
+                  onClick={() => setQuantity(prev => Math.min(maxStock, prev + 1))}
+                  disabled={selectedVariant?.stock === 0 || quantity >= maxStock}
                 >
                   +
                 </button>
               </div>
-              {stock > 0 && (
-                <div className="text-xs text-gray-500 mt-1">{stock} in stock</div>
+              {selectedVariant?.stock > 0 && (
+                <div className="text-xs text-gray-500 mt-1">{selectedVariant.stock} in stock</div>
               )}
-              {stock === 0 && (
+              {selectedVariant?.stock === 0 && (
                 <div className="text-xs text-red-500 mt-1">Out of stock</div>
               )}
             </div>
@@ -242,16 +269,16 @@ const ProductDetail = () => {
               <Button 
                 className="bg-revive-red hover:bg-revive-red/90 flex-1" 
                 onClick={handleAddToCart}
-                disabled={stock === 0}
+                disabled={selectedVariant?.stock === 0}
               >
-                {stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {selectedVariant?.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
               
               <Button 
                 variant="outline" 
                 className="border-gray-300 hover:bg-gray-50"
                 onClick={handleAddToWishlist}
-                disabled={stock === 0 || wishlist.some(item => item._id === product._id)}
+                disabled={selectedVariant?.stock === 0 || wishlist.some(item => item._id === product._id)}
               >
                 <Heart size={18} className="mr-2" />
                 Wishlist

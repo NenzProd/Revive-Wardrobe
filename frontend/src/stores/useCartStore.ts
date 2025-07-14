@@ -172,23 +172,43 @@ export const useCartStore = create<CartState>()(
       // Add item to cart
       addToCart: (product, quantity, size, color) => {
         set((state) => {
+          // Find the correct variant for stock check
+          let variant = null
+          if (product.variants && size) {
+            variant = product.variants.find(v => v.filter_value === size)
+          }
+          const maxStock = variant ? variant.stock : 9999
+          if (quantity > maxStock) {
+            toast({
+              title: 'Stock limit reached',
+              description: `Only ${maxStock} in stock for selected size`,
+              variant: 'destructive'
+            })
+            return state
+          }
           // Check if the product is already in the cart
           const existingItemIndex = state.cart.findIndex(
             item => item._id === product._id && 
                   item.selectedSize === size && 
                   item.selectedColor === color
           );
-          
           let updatedCart;
-          
           if (existingItemIndex >= 0) {
             // Update quantity if the product is already in the cart
+            const newQty = Math.min(state.cart[existingItemIndex].quantity + quantity, maxStock)
+            if (newQty > maxStock) {
+              toast({
+                title: 'Stock limit reached',
+                description: `Only ${maxStock} in stock for selected size`,
+                variant: 'destructive'
+              })
+              return state
+            }
             updatedCart = [...state.cart];
             updatedCart[existingItemIndex] = {
               ...updatedCart[existingItemIndex],
-              quantity: updatedCart[existingItemIndex].quantity + quantity
+              quantity: newQty
             };
-            
             toast({
               title: "Cart updated",
               description: `${product.name} quantity increased to ${updatedCart[existingItemIndex].quantity}.`,
@@ -201,15 +221,12 @@ export const useCartStore = create<CartState>()(
               selectedSize: size,
               selectedColor: color
             };
-            
             updatedCart = [...state.cart, newItem];
-            
             toast({
               title: "Added to cart",
               description: `${product.name} added to your cart.`,
             });
           }
-          
           const newState = { ...state, cart: updatedCart };
           // Recalculate totals
           const subtotal = updatedCart.reduce((sum, item) => {
@@ -220,7 +237,6 @@ export const useCartStore = create<CartState>()(
           const shippingCost = 0;
           const total = subtotal + shippingCost;
           const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          
           return { ...newState, subtotal, shippingCost, total, itemCount };
         });
       },
@@ -272,31 +288,29 @@ export const useCartStore = create<CartState>()(
         });
       },
       
-      // Update quantity of an item
+      // Update quantity
       updateQuantity: (productId, quantity) => {
-        if (quantity < 1) {
-          get().removeFromCart(productId);
-          return;
-        }
-        
         set((state) => {
-          const updatedCart = state.cart.map(item => 
-            item._id === productId ? { ...item, quantity } : item
-          );
-          
-          const newState = { ...state, cart: updatedCart };
-          // Recalculate totals
-          const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.price || 0;
-            return sum + itemPrice * item.quantity;
-          }, 0);
-          // shipping cost is now always 0
-          const shippingCost = 0;
-          const total = subtotal + shippingCost;
-          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          
-          return { ...newState, subtotal, shippingCost, total, itemCount };
-        });
+          const item = state.cart.find(i => i._id === productId)
+          if (!item) return state
+          let variant = null
+          if (item.variants && item.selectedSize) {
+            variant = item.variants.find(v => v.filter_value === item.selectedSize)
+          }
+          const maxStock = variant ? variant.stock : 9999
+          if (quantity > maxStock) {
+            toast({
+              title: 'Stock limit reached',
+              description: `Only ${maxStock} in stock for selected size`,
+              variant: 'destructive'
+            })
+            return state
+          }
+          const updatedCart = state.cart.map(i =>
+            i._id === productId ? { ...i, quantity: Math.max(1, Math.min(quantity, maxStock)) } : i
+          )
+          return { ...state, cart: updatedCart }
+        })
       },
       
       // Update quantity by ID (object-based)

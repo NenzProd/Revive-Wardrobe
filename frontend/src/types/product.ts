@@ -4,7 +4,7 @@ export interface ProductVariant {
   retail_price: number
   discount: number
   weight_unit: string
-  filter_value: string[]
+  filter_value: string
   min_order_quantity: number
   stock: number
   _id?: string

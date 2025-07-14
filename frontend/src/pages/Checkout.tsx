@@ -693,7 +693,7 @@ function Checkout() {
                         required
                       >
                         <option value="">Select Country</option>
-                        <option value="Dubai">Dubai</option>
+                        <option value="UAE">UAE</option>
                         <option value="Oman">Oman</option>
                         <option value="Saudi Arabia">Saudi Arabia</option>
                         <option value="Qatar">Qatar</option>
