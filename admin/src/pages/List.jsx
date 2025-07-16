@@ -41,13 +41,38 @@ const List = ({token}) => {
         }
     }
 
+    const updateStocks = async () => {
+        try {
+            toast.info('Updating stocks...')
+            const response = await axios.post(backendUrl + '/api/product/update-stocks', {}, {headers:{token}})
+            if (response.data.success) {
+                toast.success(`Stocks updated! ${response.data.updatedProducts} products updated`)
+                await fetchList();
+            }
+            else{
+                toast.error(response.data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
     useEffect(()=>{
         fetchList()
     }, [])
 
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
-      <h2 className='text-xl md:text-2xl font-semibold mb-4 text-gray-800'>Products List</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className='text-xl md:text-2xl font-semibold text-gray-800'>Products List</h2>
+        <button 
+          onClick={updateStocks}
+          className='px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors'
+        >
+          Update Stocks
+        </button>
+      </div>
       
       {/* Mobile view - card layout */}
       <div className="md:hidden space-y-4">

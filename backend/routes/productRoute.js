@@ -13,6 +13,6 @@ productRouter.post('/remove', adminAuth, removeProduct);
 productRouter.post('/single', singleProduct);
 productRouter.put('/edit', adminAuth, upload.fields([{name:'image1', maxCount:1}, {name:'image2', maxCount:1}, {name:'image3', maxCount:1}, {name:'image4', maxCount:1}]), editProduct);
 productRouter.get('/list', listProduct);
-productRouter.post('/update-stocks', updateAllProductStocks);
+productRouter.post('/update-stocks', adminAuth, updateAllProductStocks);
 
 export default productRouter;
