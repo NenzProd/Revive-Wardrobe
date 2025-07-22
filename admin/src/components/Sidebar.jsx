@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, ChevronLeft, BookText, Menu } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, BookText, Menu } from 'lucide-react'
+import PropTypes from 'prop-types'
 
-const Sidebar = () => {
+const Sidebar = ({ onSidebarToggle }) => {
   const [isOpen, setIsOpen] = useState(true)
 
   // Responsive sidebar open/close
@@ -19,6 +20,13 @@ const Sidebar = () => {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
+  // Notify parent component when sidebar state changes
+  useEffect(() => {
+    if (onSidebarToggle) {
+      onSidebarToggle(isOpen)
+    }
+  }, [isOpen, onSidebarToggle])
+
   return (
     <>
       {/* Hamburger for mobile and desktop */}
@@ -30,10 +38,10 @@ const Sidebar = () => {
         <Menu className="h-6 w-6" />
       </button>
       <div
-        className={`${isOpen ? 'w-64' : 'w-16'} min-h-screen bg-white shadow-lg transition-all duration-300 fixed left-0 top-0 pt-16 z-10 md:relative flex flex-col`}
+        className={`${isOpen ? 'w-64' : 'w-16'} min-h-screen bg-white shadow-lg transition-all duration-300 fixed left-0 top-14 pt-4 z-10 flex flex-col`}
         style={{ width: isOpen ? '16rem' : '4rem' }}
       >
-        {/* Hamburger for desktop (hidden on mobile) */}
+        {/* Hamburger for desktop */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="absolute right-0 top-4 bg-gray-100 rounded-full p-2 hidden md:block"
@@ -104,6 +112,10 @@ const Sidebar = () => {
       </div>
     </>
   )
+}
+
+Sidebar.propTypes = {
+  onSidebarToggle: PropTypes.func
 }
 
 export default Sidebar
