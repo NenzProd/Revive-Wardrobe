@@ -70,7 +70,7 @@ function Checkout() {
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [editAddressIdx, setEditAddressIdx] = useState(-1);
   const [removingIdx, setRemovingIdx] = useState(-1);
-  const [selectedPayment, setSelectedPayment] = useState("razorpay");
+  const [selectedPayment, setSelectedPayment] = useState("paymennt");
   const [selectedDeliveryType, setSelectedDeliveryType] = useState('next day delivery');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const navigate = useNavigate();
@@ -279,11 +279,11 @@ function Checkout() {
 
   // Payment methods
   const paymentMethods = [
-    {
-      id: "razorpay",
-      label: "Razorpay",
-      icon: <CreditCard size={18} className="mr-2" />,
-    },
+    // {
+    //   id: "razorpay",
+    //   label: "Razorpay",
+    //   icon: <CreditCard size={18} className="mr-2" />,
+    // },
     {
       id: "paymennt",
       label: "Paymennt",
