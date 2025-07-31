@@ -6,7 +6,7 @@ import axios from "axios";
 import productModel from "../models/productModel.js";
 
 // global variables
-const currency = "INR";
+const currency = "AED";
 const deliveryCharge = 0;
 
 const razorpayInstance = new razorpay({
