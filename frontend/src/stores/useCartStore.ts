@@ -309,7 +309,18 @@ export const useCartStore = create<CartState>()(
           const updatedCart = state.cart.map(i =>
             i._id === productId ? { ...i, quantity: Math.max(1, Math.min(quantity, maxStock)) } : i
           )
-          return { ...state, cart: updatedCart }
+          
+          // Recalculate totals
+          const subtotal = updatedCart.reduce((sum, item) => {
+            const itemPrice = item.price || 0;
+            return sum + itemPrice * item.quantity;
+          }, 0);
+          // shipping cost is now always 0
+          const shippingCost = 0;
+          const total = subtotal + shippingCost;
+          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
+          
+          return { ...state, cart: updatedCart, subtotal, shippingCost, total, itemCount }
         })
       },
       

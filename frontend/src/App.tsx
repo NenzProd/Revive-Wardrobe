@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Checkout from "./pages/Checkout";
+import PaymentRedirect from "./pages/PaymentRedirect";
 import About from "./pages/About";
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout/>} />
+          <Route path="/payment-redirect" element={<PaymentRedirect />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/account" element={<Account />} />
           <Route path="/contact" element={<Contact />} />

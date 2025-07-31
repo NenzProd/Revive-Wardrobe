@@ -34,7 +34,7 @@ interface RazorpayOptions {
     color?: string;
   };
 }
-// eslint-disable-next-line no-var
+ 
 declare global {
   interface Window {
     Razorpay: new (options: RazorpayOptions) => { open: () => void };
@@ -70,7 +70,7 @@ function Checkout() {
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [editAddressIdx, setEditAddressIdx] = useState(-1);
   const [removingIdx, setRemovingIdx] = useState(-1);
-  const [selectedPayment, setSelectedPayment] = useState("razorpay");
+  const [selectedPayment, setSelectedPayment] = useState("paymennt");
   const [selectedDeliveryType, setSelectedDeliveryType] = useState('next day delivery');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const navigate = useNavigate();
@@ -279,9 +279,14 @@ function Checkout() {
 
   // Payment methods
   const paymentMethods = [
+    // {
+    //   id: "razorpay",
+    //   label: "Razorpay",
+    //   icon: <CreditCard size={18} className="mr-2" />,
+    // },
     {
-      id: "razorpay",
-      label: "Razorpay",
+      id: "paymennt",
+      label: "Paymennt",
       icon: <CreditCard size={18} className="mr-2" />,
     },
     // { id: 'cod', label: 'Cash on Delivery', icon: <Truck size={18} className='mr-2' /> },
@@ -362,7 +367,7 @@ function Checkout() {
       address: { ...addresses[selectedAddressIdx] },
       price: {
         payment_mode: paymentMode,
-        currency_code: 'INR',
+        currency_code: 'AED',
         delivery_type: selectedDeliveryType,
         shipping_charges: '0',
         COD: selectedPayment === 'cod' ? total.toString() : '0',
@@ -388,7 +393,7 @@ function Checkout() {
     }
   }
 
-  // Place Order Handler (COD & Razorpay, updated)
+  // Place Order Handler (COD, Razorpay & Paymennt, updated)
   const handlePlaceOrder = async () => {
     if (!token) {
       toast({
@@ -435,6 +440,43 @@ function Checkout() {
             title: "Error",
             description:
               responseRazorpay.data.message || "Failed to initiate payment.",
+            variant: "destructive",
+          });
+        }
+      } else if (selectedPayment === "paymennt") {
+        // Create Paymennt checkout
+        const orderPayload = buildOrderPayload('online');
+        const responsePaymennt = await axios.post(
+          backendUrl + "/api/order/paymennt",
+          { 
+            amount: total,
+            address: addresses[selectedAddressIdx],
+            line_items: orderPayload.line_items.map(item => ({
+              ...item,
+              name: cart.find(c => c._id === item.product_id)?.name || 'Product'
+            }))
+          },
+          { headers: { token } }
+        );
+        if (responsePaymennt.data.success) {
+          // Store order data in localStorage for verification after redirect
+          localStorage.setItem('paymennt_order_data', JSON.stringify({
+            paymentId: responsePaymennt.data.paymentId,
+            userId: user._id,
+            address: addresses[selectedAddressIdx],
+            price: {
+              ...orderPayload.price,
+              delivery_type: selectedDeliveryType
+            },
+            line_items: orderPayload.line_items
+          }));
+          // Redirect to Paymennt checkout
+          window.location.href = responsePaymennt.data.checkoutUrl;
+        } else {
+          toast({
+            title: "Error",
+            description:
+              responsePaymennt.data.message || "Failed to initiate payment.",
             variant: "destructive",
           });
         }
@@ -837,21 +879,30 @@ function Checkout() {
                 Order Summary
               </h2>
               {cart.length > 0 && (
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src={cart[0].image[0]}
-                    alt={cart[0].name}
-                    className="w-12 h-12 object-cover rounded-md"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">{cart[0].name}</div>
-                    <div className="text-xs text-gray-500">
-                      Qty: {cart[0].quantity}
+                <div className="space-y-3 mb-4">
+                  {cart.map((item, index) => (
+                    <div key={`${item._id}-${item.selectedSize}-${index}`} className="flex items-center gap-3">
+                      <img
+                        src={item.image[0]}
+                        alt={item.name}
+                        className="w-12 h-12 object-cover rounded-md"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{item.name}</div>
+                        {item.selectedSize && (
+                          <div className="text-xs text-gray-500">
+                            Size: {item.selectedSize}
+                          </div>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          Qty: {item.quantity}
+                        </div>
+                      </div>
+                      <div className="font-semibold text-revive-red text-sm">
+                        {priceSymbol} {((item.price || 0) * item.quantity).toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                  <div className="font-semibold text-revive-red">
-                    {priceSymbol} {(cart[0]?.price || 0).toLocaleString()}
-                  </div>
+                  ))}
                 </div>
               )}
               <div className="border-t border-b border-gray-200 py-4 mb-4">
