@@ -34,7 +34,7 @@ interface RazorpayOptions {
     color?: string;
   };
 }
-// eslint-disable-next-line no-var
+ 
 declare global {
   interface Window {
     Razorpay: new (options: RazorpayOptions) => { open: () => void };
@@ -284,6 +284,11 @@ function Checkout() {
       label: "Razorpay",
       icon: <CreditCard size={18} className="mr-2" />,
     },
+    {
+      id: "paymennt",
+      label: "Paymennt",
+      icon: <CreditCard size={18} className="mr-2" />,
+    },
     // { id: 'cod', label: 'Cash on Delivery', icon: <Truck size={18} className='mr-2' /> },
     // { id: 'stripe', label: 'Stripe', icon: <Lock size={18} className='mr-3 text-gray-400' /> }
   ];
@@ -388,7 +393,7 @@ function Checkout() {
     }
   }
 
-  // Place Order Handler (COD & Razorpay, updated)
+  // Place Order Handler (COD, Razorpay & Paymennt, updated)
   const handlePlaceOrder = async () => {
     if (!token) {
       toast({
@@ -435,6 +440,43 @@ function Checkout() {
             title: "Error",
             description:
               responseRazorpay.data.message || "Failed to initiate payment.",
+            variant: "destructive",
+          });
+        }
+      } else if (selectedPayment === "paymennt") {
+        // Create Paymennt checkout
+        const orderPayload = buildOrderPayload('online');
+        const responsePaymennt = await axios.post(
+          backendUrl + "/api/order/paymennt",
+          { 
+            amount: total,
+            address: addresses[selectedAddressIdx],
+            line_items: orderPayload.line_items.map(item => ({
+              ...item,
+              name: cart.find(c => c._id === item.product_id)?.name || 'Product'
+            }))
+          },
+          { headers: { token } }
+        );
+        if (responsePaymennt.data.success) {
+          // Store order data in localStorage for verification after redirect
+          localStorage.setItem('paymennt_order_data', JSON.stringify({
+            paymentId: responsePaymennt.data.paymentId,
+            userId: user._id,
+            address: addresses[selectedAddressIdx],
+            price: {
+              ...orderPayload.price,
+              delivery_type: selectedDeliveryType
+            },
+            line_items: orderPayload.line_items
+          }));
+          // Redirect to Paymennt checkout
+          window.location.href = responsePaymennt.data.checkoutUrl;
+        } else {
+          toast({
+            title: "Error",
+            description:
+              responsePaymennt.data.message || "Failed to initiate payment.",
             variant: "destructive",
           });
         }
