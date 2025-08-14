@@ -9,6 +9,7 @@ import cartRouter from './routes/cartRoute.js'
 import orderRouter from './routes/orderRoute.js'
 import addressRouter from './routes/addressRoute.js'
 import blogRouter from './routes/blogRoute.js'
+import dashboardRouter from './routes/dashboardRoute.js'
 import cron from 'node-cron'
 import { updateAllProductStocks } from './controllers/productController.js'
 
@@ -38,6 +39,7 @@ app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRouter)
 app.use('/api/address', addressRouter)
 app.use('/api/blog', blogRouter)
+app.use('/api/dashboard', dashboardRouter)
 
 app.get('/', (req, res)=>{
     res.send("API Working")

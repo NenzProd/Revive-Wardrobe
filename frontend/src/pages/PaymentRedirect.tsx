@@ -115,6 +115,12 @@ function PaymentRedirect() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-revive-red mx-auto"></div>
               <h2 className="text-xl font-serif">Verifying Payment...</h2>
               <p className="text-gray-600">Please wait while we confirm your payment.</p>
+              <div className="text-sm text-gray-500">
+                <p>This may take a few moments...</p>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-revive-red h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+              </div>
             </div>
           ) : verificationResult ? (
             <div className="space-y-4">

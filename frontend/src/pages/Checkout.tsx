@@ -73,6 +73,7 @@ function Checkout() {
   const [selectedPayment, setSelectedPayment] = useState("paymennt");
   const [selectedDeliveryType, setSelectedDeliveryType] = useState('next day delivery');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderStatus, setOrderStatus] = useState('idle'); // 'idle', 'processing', 'redirecting'
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -337,6 +338,8 @@ function Checkout() {
               description: data.message || "Payment verification failed.",
               variant: "destructive",
             });
+            setIsPlacingOrder(false);
+            setOrderStatus('idle');
           }
         } catch (error) {
           toast({
@@ -344,6 +347,8 @@ function Checkout() {
             description: error.message,
             variant: "destructive",
           });
+          setIsPlacingOrder(false);
+          setOrderStatus('idle');
         }
       },
       prefill: {
@@ -419,6 +424,13 @@ function Checkout() {
       });
       return;
     }
+    
+    // Show processing message
+    toast({
+      title: "Processing Order",
+      description: "Please wait while we process your order...",
+    });
+    
     setIsPlacingOrder(true);
     try {
       if (selectedPayment === "razorpay") {
@@ -429,6 +441,9 @@ function Checkout() {
           { headers: { token } }
         );
         if (responseRazorpay.data.success) {
+          // Update order status to show processing
+          setOrderStatus('processing');
+          
           // Pass delivery type and address to Razorpay handler
           initPay({
             ...responseRazorpay.data.order,
@@ -442,6 +457,8 @@ function Checkout() {
               responseRazorpay.data.message || "Failed to initiate payment.",
             variant: "destructive",
           });
+          setIsPlacingOrder(false);
+          setOrderStatus('idle');
         }
       } else if (selectedPayment === "paymennt") {
         // Create Paymennt checkout
@@ -470,8 +487,24 @@ function Checkout() {
             },
             line_items: orderPayload.line_items
           }));
-          // Redirect to Paymennt checkout
-          window.location.href = responsePaymennt.data.checkoutUrl;
+          
+          // Show success message before redirect
+          toast({
+            title: "Redirecting to Payment",
+            description: "Please complete your payment on the next page.",
+          });
+          
+          // Update order status to show redirecting
+          setOrderStatus('redirecting');
+          
+          // Small delay to show the message and keep button disabled
+          setTimeout(() => {
+            // Redirect to Paymennt checkout
+            window.location.href = responsePaymennt.data.checkoutUrl;
+          }, 1500);
+          
+          // Don't reset isPlacingOrder for successful redirect
+          return;
         } else {
           toast({
             title: "Error",
@@ -479,6 +512,8 @@ function Checkout() {
               responsePaymennt.data.message || "Failed to initiate payment.",
             variant: "destructive",
           });
+          setIsPlacingOrder(false);
+          setOrderStatus('idle');
         }
       } else {
         // COD fallback
@@ -501,16 +536,20 @@ function Checkout() {
             description: res.data.message || "Failed to place order.",
             variant: "destructive",
           });
+          setIsPlacingOrder(false);
+          setOrderStatus('idle');
         }
       }
     } catch (err) {
+      console.error('Order placement error:', err);
       toast({
         title: "Error",
-        description: "Failed to place order.",
+        description: err.response?.data?.message || "Failed to place order. Please try again.",
         variant: "destructive",
       });
+      setIsPlacingOrder(false);
+      setOrderStatus('idle');
     }
-    setIsPlacingOrder(false);
   };
 
   return (
@@ -926,12 +965,31 @@ function Checkout() {
                 </span>
               </div>
               <button
-                className="w-full bg-revive-gold hover:bg-revive-gold/90 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2 transition-colors text-base"
+                className="w-full bg-revive-gold hover:bg-revive-gold/90 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2 transition-colors text-base disabled:opacity-70 disabled:cursor-not-allowed"
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder}
               >
-                {isPlacingOrder ? "Placing Order..." : "Place Order"}{" "}
-                <span className="ml-1">&rarr;</span>
+                {orderStatus === 'redirecting' ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Redirecting to Payment...
+                  </>
+                ) : orderStatus === 'processing' ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Processing Payment...
+                  </>
+                ) : isPlacingOrder ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Placing Order...
+                  </>
+                ) : (
+                  <>
+                    Place Order
+                    <span className="ml-1">&rarr;</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
