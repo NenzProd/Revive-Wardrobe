@@ -4,6 +4,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend)
 
+export const backendUrls = import.meta.env.VITE_BACKEND_URL;
+
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -23,7 +25,7 @@ const Dashboard = () => {
         throw new Error('No authentication token found')
       }
 
-      const response = await fetch('http://localhost:4000/api/dashboard/overview', {
+      const response = await fetch(`${backendUrls}/api/dashboard/overview`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
