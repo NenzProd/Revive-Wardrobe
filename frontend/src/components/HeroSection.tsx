@@ -19,39 +19,71 @@ interface CarouselSlide {
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // const slides: CarouselSlide[] = [
+  //   {
+  //     id: 1,
+  //     title: "\"I Licked It / So It's Mine\"",
+  //     description: "Playfully claim your partner — one cheeky message at a time. Because love tastes better with laughter.",
+  //     offer: "Get 10% OFF this wild set — Limited stock!",
+  //     ctaText: "Shop the Fun Set",
+  //     modelImage: slide1,
+  //     productImage: productImage1,
+  //     link: "/shop"
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "\"PINKPLAY\" Black & Lace Set",
+  //     description: "When sporty meets sexy — crafted for bold lovers. Elevate date nights with signature style.",
+  //     offer: "Flat ₹200 OFF — Only this week!",
+  //     ctaText: "Get the Luxe Look",
+  //     modelImage: slide2,
+  //     productImage: productImage2,
+  //     link: "/shop?category=luxury"
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "\"Hands Tearing Fabric\" Lace Set",
+  //     description: "Unleash the tease with our most playful design yet. Perfect for couples who flirt with fire.",
+  //     offer: "Save 15% on this flirty favorite!",
+  //     ctaText: "Flirt & Shop Now",
+  //     modelImage: slide3,
+  //     productImage: productImage3,
+  //     link: "/shop?category=flirty"
+  //   },
+  // ];
   const slides: CarouselSlide[] = [
     {
       id: 1,
-      title: "\"I Licked It / So It's Mine\"",
-      description: "Playfully claim your partner — one cheeky message at a time. Because love tastes better with laughter.",
-      offer: "Get 10% OFF this wild set — Limited stock!",
-      ctaText: "Shop the Fun Set",
+      title: "\"Elegance Redefined\" Premium Abaya",
+      description: "Step into timeless grace with our handcrafted Abaya — a blend of modesty and modern sophistication. Perfect for every occasion, from casual outings to elegant evenings.",
+      offer: "Exclusive Launch Offer — 15% OFF Today!",
+      ctaText: "Shop Abaya Collection",
       modelImage: slide1,
       productImage: productImage1,
       link: "/shop"
     },
     {
       id: 2,
-      title: "\"PINKPLAY\" Black & Lace Set",
-      description: "When sporty meets sexy — crafted for bold lovers. Elevate date nights with signature style.",
-      offer: "Flat ₹200 OFF — Only this week!",
-      ctaText: "Get the Luxe Look",
+      title: "\"Royal Comfort\" Designer Jalabiya",
+      description: "Experience effortless charm with our flowy Jalabiya — a fusion of tradition and comfort. Tailored for women who embrace culture with a touch of luxury.",
+      offer: "Flat ₹500 OFF — Limited Period Only!",
+      ctaText: "Explore Jalabiya Styles",
       modelImage: slide2,
       productImage: productImage2,
-      link: "/shop?category=luxury"
+      link: "/shop"
     },
     {
       id: 3,
-      title: "\"Hands Tearing Fabric\" Lace Set",
-      description: "Unleash the tease with our most playful design yet. Perfect for couples who flirt with fire.",
-      offer: "Save 15% on this flirty favorite!",
-      ctaText: "Flirt & Shop Now",
+      title: "\"Heritage Chic\" Pakistani Dresses",
+      description: "Celebrate culture with our elegant Pakistani dresses, adorned with intricate embroidery and timeless patterns. Crafted for weddings, festivities, and everyday elegance.",
+      offer: "Save 20% on Festive Collection!",
+      ctaText: "Discover Pakistani Wear",
       modelImage: slide3,
       productImage: productImage3,
-      link: "/shop?category=flirty"
+      link: "/shop"
     },
   ];
-
+  
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
