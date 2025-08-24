@@ -47,6 +47,45 @@ const Account = () => {
   const { toast } = useToast()
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [orderSortBy, setOrderSortBy] = useState('newest'); // newest, oldest, status, amount
+  const [filteredOrders, setFilteredOrders] = useState([]);
+
+  // Sort orders based on selected criteria
+  const sortOrders = (ordersList, sortBy) => {
+    const sorted = [...ordersList].sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        case 'oldest':
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        case 'status':
+          return a.status.localeCompare(b.status);
+        case 'amount-high':
+          const amountA = a.line_items ? a.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
+          const amountB = b.line_items ? b.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
+          return amountB - amountA;
+        case 'amount-low':
+          const amountA2 = a.line_items ? a.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
+          const amountB2 = b.line_items ? b.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
+          return amountA2 - amountB2;
+        default:
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+    });
+    return sorted;
+  };
+
+  // Update filtered orders when orders or sort option changes
+  useEffect(() => {
+    if (orders.length > 0) {
+      const sorted = sortOrders(orders, orderSortBy);
+      setFilteredOrders(sorted);
+    }
+  }, [orders, orderSortBy]);
+
+  const handleSortChange = (e) => {
+    setOrderSortBy(e.target.value);
+  };
 
   useEffect(() => {
     if (!token) {
@@ -332,7 +371,33 @@ const Account = () => {
           <div className="md:w-3/4 bg-white rounded-lg shadow-sm p-6">
             {activeTab === 'orders' && (
               <div>
-                <h2 className="text-xl font-semibold mb-4">My Orders</h2>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+                  <div className="flex-shrink-0">
+                    <h2 className="text-xl font-semibold mb-1">My Orders</h2>
+                    {orders.length > 0 && (
+                      <p className="text-sm text-gray-500">{orders.length} order{orders.length !== 1 ? 's' : ''} found</p>
+                    )}
+                  </div>
+                  {orders.length > 0 && (
+                    <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                      <label htmlFor="orderSort" className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                        Sort by:
+                      </label>
+                      <select
+                        id="orderSort"
+                        value={orderSortBy}
+                        onChange={handleSortChange}
+                        className="min-w-[140px] px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-revive-red focus:border-transparent shadow-sm hover:border-gray-400 transition-colors"
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="status">Status</option>
+                        <option value="amount-high">Amount (High to Low)</option>
+                        <option value="amount-low">Amount (Low to High)</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
                 {ordersLoading ? (
                   <div className="p-8 text-center text-gray-500">Loading orders...</div>
                 ) : orders.length === 0 ? (
@@ -351,7 +416,7 @@ const Account = () => {
                   </div>
                 ) : (
                   <div className="space-y-8">
-                    {orders.map((order, idx) => (
+                    {filteredOrders.map((order, idx) => (
                       <div
                         key={order._id || idx}
                         className="rounded-xl shadow-md border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200"
