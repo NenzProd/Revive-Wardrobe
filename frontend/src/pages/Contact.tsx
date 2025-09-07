@@ -14,6 +14,8 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [result, setResult] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -24,13 +26,76 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(true);
+    setResult("Sending....");
+    
+    // Try multiple approaches for better compatibility
+    const submitData = {
+      access_key: "8fe96749-31d0-42ce-805a-fa6b07f765f2",
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject,
+      message: formData.message,
+    };
+
+    try {
+      // First try: JSON approach (often works better)
+      let response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData)
+      });
+
+      // If JSON fails, try FormData approach
+      if (!response.ok) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("access_key", submitData.access_key);
+        formDataToSend.append("name", submitData.name);
+        formDataToSend.append("email", submitData.email);
+        formDataToSend.append("subject", submitData.subject);
+        formDataToSend.append("message", submitData.message);
+
+        response = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          body: formDataToSend
+        });
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        toast({
+          title: "Message sent!",
+          description: "We'll get back to you within 24 hours.",
+        });
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        console.log("Error", data);
+        setResult(data.message || "Failed to submit form");
+        toast({
+          title: "Error",
+          description: data.message || "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      
+      // Fallback: Show contact info instead of error
+      setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 52 191 9358");
+      toast({
+        title: "Connection Issue",
+        description: "Please contact us directly using the information provided above.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -168,13 +233,30 @@ const Contact = () => {
                     ></textarea>
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300 flex items-center space-x-2"
-                  >
-                    <Send size={18} />
-                    <span>Send Message</span>
-                  </Button>
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed flex-1"
+                      >
+                        <Send size={18} />
+                        <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
+                      </Button>
+                      
+                
+                    </div>
+                    
+                    {result && (
+                      <div className={`text-sm text-center p-3 rounded-md ${
+                        result.includes("Successfully") 
+                          ? "bg-green-100 text-green-700 border border-green-200" 
+                          : "bg-red-100 text-red-700 border border-red-200"
+                      }`}>
+                        {result}
+                      </div>
+                    )}
+                  </div>
                 </form>
               </div>
             </div>

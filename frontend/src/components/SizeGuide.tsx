@@ -25,47 +25,59 @@ const SizeGuide = () => {
           </div>
           
           <div className="mb-8">
-            <h4 className="font-medium text-lg mb-3">Women's Sizes (in inches)</h4>
+            <h4 className="font-medium text-lg mb-3">Abaya Size Guide (Mapped to XS-XL)</h4>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="border p-2 text-left">Size</th>
-                    <th className="border p-2 text-left">Bust</th>
-                    <th className="border p-2 text-left">Waist</th>
-                    <th className="border p-2 text-left">Hips</th>
+                    <th className="border p-2 text-left">Standard Size</th>
+                    <th className="border p-2 text-left">Abaya Size</th>
+                    <th className="border p-2 text-left">Height (ft.)</th>
+                    <th className="border p-2 text-left">Bust (in)</th>
+                    <th className="border p-2 text-left">Waist (in)</th>
+                    <th className="border p-2 text-left">Hips (in)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border p-2">XS</td>
-                    <td className="border p-2">31-32</td>
-                    <td className="border p-2">24-25</td>
-                    <td className="border p-2">34-35</td>
+                    <td className="border p-2 font-medium">XS</td>
+                    <td className="border p-2">50</td>
+                    <td className="border p-2">4'8 – 4'9</td>
+                    <td className="border p-2">38"</td>
+                    <td className="border p-2">40"</td>
+                    <td className="border p-2">42"</td>
                   </tr>
                   <tr>
-                    <td className="border p-2">S</td>
-                    <td className="border p-2">33-34</td>
-                    <td className="border p-2">26-27</td>
-                    <td className="border p-2">36-37</td>
+                    <td className="border p-2 font-medium">S</td>
+                    <td className="border p-2">52</td>
+                    <td className="border p-2">5'0 – 5'1</td>
+                    <td className="border p-2">40"</td>
+                    <td className="border p-2">42"</td>
+                    <td className="border p-2">44"</td>
                   </tr>
                   <tr>
-                    <td className="border p-2">M</td>
-                    <td className="border p-2">35-36</td>
-                    <td className="border p-2">28-29</td>
-                    <td className="border p-2">38-39</td>
+                    <td className="border p-2 font-medium">M</td>
+                    <td className="border p-2">54</td>
+                    <td className="border p-2">5'2 – 5'3</td>
+                    <td className="border p-2">42"</td>
+                    <td className="border p-2">44"</td>
+                    <td className="border p-2">46"</td>
                   </tr>
                   <tr>
-                    <td className="border p-2">L</td>
-                    <td className="border p-2">37-39</td>
-                    <td className="border p-2">30-32</td>
-                    <td className="border p-2">40-42</td>
+                    <td className="border p-2 font-medium">L</td>
+                    <td className="border p-2">56</td>
+                    <td className="border p-2">5'4 – 5'5</td>
+                    <td className="border p-2">46"</td>
+                    <td className="border p-2">48"</td>
+                    <td className="border p-2">50"</td>
                   </tr>
                   <tr>
-                    <td className="border p-2">XL</td>
-                    <td className="border p-2">40-42</td>
-                    <td className="border p-2">33-35</td>
-                    <td className="border p-2">43-45</td>
+                    <td className="border p-2 font-medium">XL</td>
+                    <td className="border p-2">58</td>
+                    <td className="border p-2">5'6 – 5'7</td>
+                    <td className="border p-2">48"</td>
+                    <td className="border p-2">48"</td>
+                    <td className="border p-2">50"</td>
                   </tr>
                 </tbody>
               </table>

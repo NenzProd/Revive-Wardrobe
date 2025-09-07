@@ -11,7 +11,7 @@ import { useCartStore } from '../stores/useCartStore';
 const SignatureCollection = () => {
   const { toast } = useToast();
   const { products, loading, error } = useProductList();
-  const coupleLingerie = products.filter((p: any) => p.bestseller === true);
+  const gracefulAbayas = products.filter((p: any) => p.bestseller === true);
   const wishlist = useCartStore(state => state.wishlist)
   const setWishlist = useCartStore.setState
 
@@ -30,11 +30,11 @@ const SignatureCollection = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif mb-4 text-revive-black">
-              Revive Wardrobe's Signature: Couple Lingerie Collection
+              Revive Wardrobe's Signature: Graceful Abayas Collection
             </h2>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Discover our exclusive collection of intimate wear designed for couples. 
-              Elegant, playful, and sensual pieces to enhance your romantic moments.
+              Discover our exclusive collection of elegant abayas designed for modern women. 
+              Graceful, sophisticated, and timeless pieces to enhance your wardrobe.
             </p>
             <div className="w-24 h-1 bg-revive-red mx-auto"></div>
           </div>
@@ -71,18 +71,18 @@ const SignatureCollection = () => {
         {/* Section Title */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-serif mb-4 text-revive-black">
-            Revive Wardrobe's Signature: Couple Lingerie Collection
+            Revive Wardrobe's Signature: Graceful Abayas Collection
           </h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Discover our exclusive collection of intimate wear designed for couples. 
-            Elegant, playful, and sensual pieces to enhance your romantic moments.
+            Discover our exclusive collection of elegant abayas designed for modern women. 
+            Graceful, sophisticated, and timeless pieces to enhance your wardrobe.
           </p>
           <div className="w-24 h-1 bg-revive-red mx-auto"></div>
         </div>
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {coupleLingerie.map((product: any) => (
+          {gracefulAbayas.map((product: any) => (
             <ProductCard 
               key={product._id || product.id} 
               product={product} 
@@ -94,7 +94,7 @@ const SignatureCollection = () => {
         {/* View All Button */}
         <div className="text-center mt-12">
           <Link 
-            to="/shop?category=couple-lingerie" 
+            to="/shop?category=graceful-abayas" 
             className="inline-flex items-center px-8 py-3 bg-revive-red text-white font-medium rounded-lg hover:bg-revive-red/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
           >
             Explore Full Collection
@@ -145,7 +145,7 @@ const ProductCard = ({ product, onAddToWishlist }: ProductCardProps) => {
             </span>
           )}
           <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium shadow-md">
-            Couple Lingerie
+            Limited Sale
           </span>
         </div>
         
@@ -163,7 +163,7 @@ const ProductCard = ({ product, onAddToWishlist }: ProductCardProps) => {
                 target.parentElement!.innerHTML = `
                   <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-200 to-rose-200 text-gray-600">
                     <div class="text-center">
-                      <div class="text-4xl mb-2">💕</div>
+                      <div class="text-4xl mb-2">👗</div>
                       <div class="text-sm font-medium">${product.name}</div>
                     </div>
                   </div>

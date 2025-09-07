@@ -9,8 +9,16 @@ function About () {
       <Navbar />
       <div className='container mx-auto px-4 py-8 flex-grow'>
         <div className='max-w-3xl mx-auto bg-white rounded-lg shadow-sm border p-8'>
-          <h1 className='text-3xl md:text-4xl font-serif mb-6 text-center'>About Us</h1>
-          <div className='w-24 h-1 bg-revive-red mx-auto mb-8'></div>
+          {/* Logo Section */}
+          <div className='text-center mb-8'>
+            <img 
+              src='/logo.png' 
+              alt='Revive Wardrobe Logo' 
+              className='h-20 md:h-24 mx-auto mb-6'
+            />
+            <h1 className='text-3xl md:text-4xl font-serif mb-6'>About Us</h1>
+            <div className='w-24 h-1 bg-revive-red mx-auto'></div>
+          </div>
           <div className='prose max-w-none text-gray-700 text-lg'>
             <p className='mb-4'>
               Revive Wardrobe is a fashion-forward brand born in the UAE, where timeless tradition meets bold innovation. Our collections reflect a deep appreciation for elegance, cultural identity, and contemporary lifestyles.
