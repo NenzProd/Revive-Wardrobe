@@ -14,8 +14,8 @@ const Index = () => {
     <div className="min-h-screen bg-revive-white">
       <Navbar />
       <HeroSection />
-      <SignatureCollection />
       <FeaturedCategories />
+      <SignatureCollection />
       <FeaturedProducts />
       <StitchingPromo />
       <BlogPreview />

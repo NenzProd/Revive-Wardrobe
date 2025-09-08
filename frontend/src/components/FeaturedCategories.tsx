@@ -1,34 +1,35 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import { EthnicElegance, GracefulAbayas, IntimateCollection, StitchingServices } from '../assets/assets';
+import { useNavigate } from 'react-router-dom';
+import { EthnicElegance, GracefulAbayas, DesignerJalabiya } from '../assets/assets';
 
 interface CategoryCardProps {
   title: string;
-  description: string;
   imageUrl: string;
   link: string;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ title, description, imageUrl, link }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ title, imageUrl, link }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(link);
+  };
+
   return (
-    <div className="relative group overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-gray-100">
-      <div className="h-64 overflow-hidden">
-        <div 
-          className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-          style={{ backgroundImage: `url(${imageUrl})` }}
-        />
+    <div 
+      onClick={handleClick}
+      className="flex flex-col items-center cursor-pointer group transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+    >
+      <div className="w-48 h-48 mb-4 relative">
+        <div className="w-full h-full bg-pink-50 rounded-t-full rounded-b-3xl flex items-center justify-center overflow-hidden shadow-md border border-pink-100">
+          <img 
+            src={imageUrl} 
+            alt={title}
+            className="w-32 h-32 object-cover rounded-full shadow-sm"
+          />
+        </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-80"></div>
-      <div className="absolute bottom-0 left-0 p-6 text-white">
-        <h3 className="text-xl font-serif mb-2">{title}</h3>
-        <p className="text-sm text-gray-200 mb-4">{description}</p>
-        <a 
-          href={link} 
-          className="inline-flex items-center text-revive-gold hover:text-white transition-colors"
-        >
-          Discover <ArrowRight size={16} className="ml-1" />
-        </a>
-      </div>
+      <h3 className="text-lg font-semibold text-gray-800 text-center tracking-wide">{title}</h3>
     </div>
   );
 };
@@ -37,41 +38,36 @@ const FeaturedCategories = () => {
   const categories = [
     {
       title: "Ethnic Elegance",
-      description: "Traditional styles with a modern soul. Stitched or unstitched — your statement starts here.",
       imageUrl: EthnicElegance,
       link: "/shop?category=Ethnic%20Elegance"
     },
     {
       title: "Graceful Abayas",
-      description: "Modest yet mesmerizing. Discover designs that flow with grace and confidence.",
       imageUrl: GracefulAbayas,
       link: "/shop?category=Graceful%20Abayas"
     },
     {
-      title: "Intimate Collection",
-      description: "Crafted for comfort, styled for you. Explore lingerie that redefines innerwear elegance.",
-      imageUrl: IntimateCollection,
-      link: "/shop?category=Intimate%20Collection"
-    },
-    {
-      title: "Stitching Services",
-      description: "Your outfit, your way. Custom tailoring that brings your vision to life.",
-      imageUrl: StitchingServices,
-      link: "/shop?category=Stitching%20Services"
+      title: "Designer Jalabiya",
+      imageUrl: DesignerJalabiya,
+      link: "/shop?category=Designer%20Jalabiya"
     },
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Categories</h2>
-          <div className="w-24 h-1 bg-revive-red mx-auto"></div>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-serif mb-6 text-gray-800">Featured Categories</h2>
+          <div className="w-32 h-1 bg-revive-red mx-auto rounded-full"></div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category, index) => (
-            <CategoryCard key={index} {...category} />
-          ))}
+        <div className="overflow-x-auto scrollbar-hide pb-4 md:overflow-x-visible">
+          <div className="flex gap-8 px-4 md:px-0 md:justify-center md:gap-12 min-w-max md:min-w-0">
+            {categories.map((category, index) => (
+              <div key={index} className="flex-shrink-0">
+                <CategoryCard {...category} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

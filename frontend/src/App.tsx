@@ -24,6 +24,7 @@ import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import Shipping from './pages/Shipping'
 import Returns from './pages/Returns'
+import StichingService from "./pages/StichingService";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/stitching-service" element={<StichingService />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout/>} />
           <Route path="/payment-redirect" element={<PaymentRedirect />} />

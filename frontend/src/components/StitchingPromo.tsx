@@ -25,12 +25,10 @@ const StitchingPromo = () => {
               ensuring your garment fits perfectly and feels luxurious against your skin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="/services/measurement" className="btn-primary">
+              <a href="/stitching-service" className="btn-primary">
                 Get Measured
               </a>
-              <a href="/services/booking" className="bg-transparent border border-revive-gold text-revive-gold px-6 py-3 rounded hover:bg-revive-gold hover:text-revive-black transition-all inline-block">
-                Book Consultation
-              </a>
+              
             </div>
           </div>
           

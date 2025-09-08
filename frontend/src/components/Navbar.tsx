@@ -100,7 +100,14 @@ const Navbar = () => {
                               Shop
                             </Link>
                           </li>
-                          
+                          <li>
+                            <Link
+                              to="/stitching-service"
+                              className="block py-2 text-revive-black hover:text-revive-red transition-colors font-medium"
+                            >
+                              Services
+                            </Link>
+                          </li>
                           <li>
                             <Link
                               to="/account"
@@ -221,8 +228,14 @@ const Navbar = () => {
                   Shop
                 </Link>
               </li>
-             
-              
+              <li>
+                <Link
+                  to="/stitching-service"
+                  className="px-2 py-2 text-revive-black hover:text-revive-red transition-colors"
+                >
+                  Services
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/blog"

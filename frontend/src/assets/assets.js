@@ -1,7 +1,7 @@
 // Import all images
 import EthnicElegance from './img/EthnicElegance.jpg'
 import GracefulAbayas from './img/GracefulAbayas.jpg'
-import IntimateCollection from './img/IntimateCollection.webp'
+import DesignerJalabiya from './img/slide2.png'
 import StitchingServices from './img/Stitching Services.jpg'
 import ZainabChottani from './img/1.jpeg'
 import CrimsonLawn from './img/2.jpeg'
@@ -26,7 +26,7 @@ import productImage3 from './img/product-image3.png'
 export {
   EthnicElegance,
   GracefulAbayas,
-  IntimateCollection,
+  DesignerJalabiya,
   StitchingServices,
   ZainabChottani,
   CrimsonLawn,
