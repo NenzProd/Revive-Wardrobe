@@ -7,7 +7,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 const Footer = () => {
   return (
     <footer className="bg-revive-black text-white pt-16 pb-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-6 sm:px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-10">
           {/* About */}
           <div>
@@ -80,7 +80,7 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-10 pt-8">
+        <div className="border-t border-gray-800 mt-10 pt-8 pb-8">
           <div className="flex flex-col md:flex-row items-center">
             {/* Center copyright text */}
             <div className="text-center flex-grow mb-4 md:mb-0">

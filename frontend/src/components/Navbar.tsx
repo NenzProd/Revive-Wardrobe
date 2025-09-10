@@ -71,13 +71,10 @@ const Navbar = () => {
                       <div className="flex items-center justify-between mb-6 border-b pb-4">
                         <div className="flex items-center">
                           <img
-                            src="/logo.png"
+                            src="/logo_pc.png"
                             alt="REVIVE WARDROBE"
-                            className="h-10"
+                            className="h-10 "
                           />
-                          <span className="ml-2 text-lg font-serif text-revive-black">
-                            REVIVE WARDROBE
-                          </span>
                         </div>
                       </div>
 
@@ -147,7 +144,7 @@ const Navbar = () => {
                 </Sheet>
                 
                 <Link to="/" className="flex items-center">
-                  <img src="/logo.png" alt="REVIVE WARDROBE" className="h-8" />
+                  <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-8" />
                 </Link>
               </div>
               
@@ -202,16 +199,13 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex w-full md:w-auto justify-between items-center mb-4 md:mb-0">
             <a href="/" className="flex items-center">
-              <img src="/logo.png" alt="REVIVE WARDROBE" className="h-12" />
-              <span className="ml-2 text-lg font-serif text-revive-black">
-                REVIVE WARDROBE
-              </span>
+              <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-12" />
             </a>
           </div>
 
           {/* Nav Links - Center */}
-          <div className="flex-grow flex justify-center md:mx-10">
-            <ul className="flex flex-wrap justify-center space-x-1 md:space-x-8">
+          <div className="flex-grow flex justify-center md:mx-6 lg:mx-10">
+            <ul className="flex flex-wrap justify-center space-x-1 md:space-x-4 lg:space-x-8">
               <li>
                 <Link
                   to="/"
@@ -264,12 +258,12 @@ const Navbar = () => {
           </div>
 
           {/* Icons - Right */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 lg:space-x-6">
           <div className="relative">
             <input
               type="text"
               placeholder="Search products..."
-              className="border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none w-40 md:w-56"
+              className="border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none w-32 md:w-40 lg:w-56"
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
