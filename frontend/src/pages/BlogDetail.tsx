@@ -88,9 +88,9 @@ const BlogDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white ">
       <Navbar />
-      <div className="pt-20 md:pt-28 pb-16">
+      <div className="pt-20 md:pt-28 pb-16 ">
         <div className="container mx-auto px-4">
           {/* Back Button */}
           <div className="mb-6">

@@ -145,9 +145,9 @@ const Signup = () => {
 
   return (
     <>
-   
+   <Navbar />
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8'>
-    <Navbar />
+    
       <div className='w-full max-w-md'>
        
         <Card className='shadow-2xl border-0 bg-white/95 backdrop-blur-sm'>

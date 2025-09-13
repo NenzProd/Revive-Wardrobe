@@ -106,7 +106,7 @@ function PaymentRedirect() {
   }, [backendUrl, token, navigate, toast, clearCart, searchParams]);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
+     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
         <div className="max-w-md w-full text-center">

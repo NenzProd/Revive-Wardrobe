@@ -553,7 +553,7 @@ function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
+    <div className="min-h-screen bg-white flex flex-col pt-[88px] ">
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl font-serif mb-8 flex items-center gap-2">

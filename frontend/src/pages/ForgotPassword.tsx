@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { OTPInput } from "@/components/auth/OTPInput";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 type Step = "enter-contact" | "verify-otp" | "reset-password";
 
@@ -112,7 +114,10 @@ const ForgotPassword = () => {
   };
 
   return (
+    <>
+     <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8">
+     
       <div className="w-full max-w-md">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
@@ -313,6 +318,8 @@ const ForgotPassword = () => {
         </Card>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

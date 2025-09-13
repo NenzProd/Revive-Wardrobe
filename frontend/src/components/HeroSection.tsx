@@ -111,7 +111,7 @@ const HeroSection = () => {
           {/* Mobile Layout */}
           <div className="flex flex-col h-full md:hidden">
             {/* Model Image - First on mobile */}
-            <div className="w-full h-[40vh] relative mt-12">
+            <div className="w-full h-[40vh] relative">
               <img 
                 src={slide.modelImage}
                 alt={`Model for ${slide.title}`}
@@ -149,7 +149,7 @@ const HeroSection = () => {
           {/* Desktop Layout */}
           <div className="hidden md:flex flex-col h-full">
             {/* Model Image - Left half on desktop */}
-            <div className="w-1/2 h-full absolute left-0 top-0 relative mt-12">
+            <div className="w-1/2 h-full absolute left-0 top-0 relative">
               <img 
                 src={slide.modelImage}
                 alt={`Model for ${slide.title}`}
@@ -160,7 +160,7 @@ const HeroSection = () => {
             {/* Content Section - Right half on desktop */}
             <div className="w-1/2 h-full absolute right-0 top-0 flex flex-col bg-revive-black">
               {/* Product Image */}
-              <div className="w-full h-[50%] bg-white flex items-center justify-center p-4 mt-12">
+              <div className="w-full h-[50%] bg-white flex items-center justify-center p-4">
                 <img 
                   src={slide.productImage}
                   alt={slide.title}

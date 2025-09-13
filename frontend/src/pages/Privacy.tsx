@@ -4,7 +4,7 @@ import Footer from '@/components/Footer'
 
 function Privacy () {
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[64px] md:pt-[88px] pb-[70px] md:pb-0">
+    <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Privacy & Cookie Policy</h1>
@@ -30,4 +30,4 @@ function Privacy () {
   )
 }
 
-export default Privacy 
+export default Privacy

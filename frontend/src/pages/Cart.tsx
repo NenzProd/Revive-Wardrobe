@@ -95,7 +95,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">

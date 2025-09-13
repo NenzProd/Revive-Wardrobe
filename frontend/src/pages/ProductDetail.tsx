@@ -161,7 +161,8 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-[88px]">
+    
+      <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 flex-grow">

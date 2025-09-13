@@ -115,7 +115,7 @@ const BlogList = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="pt-20 md:pt-28 pb-16">
+      <div className="pb-16">
         <div className="container mx-auto px-4">
           {/* Page Header */}
           <div className="text-center mb-12">
