@@ -192,14 +192,14 @@ const HeroSection = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-revive-red hover:bg-revive-red/80 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-revive-red hover:bg-revive-red/80 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
         aria-label="Next slide"
       >
         <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
