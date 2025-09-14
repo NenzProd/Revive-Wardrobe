@@ -16,17 +16,11 @@ const Footer = () => {
               Elegance reimagined for the modern woman. Discover timeless fashion that empowers and inspires.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" aria-label="Facebook" className="text-revive-gold hover:text-white transition-colors">
+              <a href="https://www.facebook.com/revivewardrobe" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-revive-gold hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
+              <a href="https://www.instagram.com/revive_wardrobe_fashion" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
                 <Instagram size={20} />
-              </a>
-              <a href="#" aria-label="Twitter" className="text-revive-gold hover:text-white transition-colors">
-                <Twitter size={20} />
-              </a>
-              <a href="#" aria-label="LinkedIn" className="text-revive-gold hover:text-white transition-colors">
-                <Linkedin size={20} />
               </a>
             </div>
           </div>
@@ -35,7 +29,7 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-serif mb-4 text-white">Shop</h3>
             <ul className="space-y-2 text-gray-400">
-            <li><a href="/" className="hover:text-revive-gold transition-colors">Home</a></li>
+              <li><a href="/" className="hover:text-revive-gold transition-colors">Home</a></li>
               <li><a href="/about" className="hover:text-revive-gold transition-colors">About Us</a></li>
               <li><a href="/shop" className="hover:text-revive-gold transition-colors">Collections</a></li>
               <li><a href="/blog" className="hover:text-revive-gold transition-colors">Blog</a></li>
@@ -90,7 +84,7 @@ const Footer = () => {
               <div className="text-gray-400 text-sm mt-2">
                 Stitched with <FontAwesomeIcon icon={faHeart} className="text-red-500" /> by <a href="https://tensketch.com" className="hover:text-revive-gold transition-colors">TenSketch</a>
               </div>
-            </div>            
+            </div>
           </div>
         </div>
       </div>
