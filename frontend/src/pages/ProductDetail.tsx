@@ -12,12 +12,15 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { priceSymbol } from "../config/constants";
+import ProductReviews from "../components/ProductReviews";
 
 import { useCartStore } from "../stores/useCartStore";
 import { useProductBySlug } from "../hooks/useProduct";
 import logo from "/logo.png";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
+import StarRating from "@/components/StarRating";
+import { useReviewSummary } from "../hooks/useReviewSummary";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -34,6 +37,9 @@ const ProductDetail = () => {
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
+  
+  // Fetch review summary for the product
+  const { summary: reviewSummary } = useReviewSummary(product?._id || "");
 
   // Set default size and price when product loads
   React.useEffect(() => {
@@ -194,15 +200,32 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="lg:w-1/2">
             <h1 className="text-3xl font-serif mb-4">{name}</h1>
+            <div className="mb-6">
+              {/* Reviews rating and count */}
+              <div className="flex items-center gap-2">
+                {reviewSummary && reviewSummary.totalReviews > 0 ? (
+                  <>
+                    <StarRating 
+                      rating={reviewSummary.averageRating} 
+                      readonly 
+                      size="md" 
+                    />
+                    <span className="text-sm text-gray-600">
+                      ({reviewSummary.totalReviews} review{reviewSummary.totalReviews !== 1 ? 's' : ''})
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-500">No reviews yet</span>
+                )}
+              </div>
+            </div>
 
             <div className="text-2xl font-bold text-revive-red mb-6">
               {priceSymbol}{" "}
               {displayPrice !== null ? displayPrice.toLocaleString() : ""}
             </div>
 
-            <div className="mb-6">
-              <p className="text-gray-600">{description}</p>
-            </div>
+            
 
             {/* Size Selection */}
             {product.variants && product.variants.length > 0 && (
@@ -336,9 +359,10 @@ const ProductDetail = () => {
 
             {/* Product Tabs */}
             <Tabs defaultValue="details" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="shipping">Shipping</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
 
               <TabsContent value="details" className="py-4">
@@ -359,6 +383,10 @@ const ProductDetail = () => {
                     depending on your location.
                   </p>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="reviews" className="py-4">
+                <ProductReviews productId={product._id} productName={product.name} />
               </TabsContent>
             </Tabs>
           </div>
