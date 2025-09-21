@@ -1,8 +1,20 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import {blog1, blog3, blog2} from '../assets/assets.js'
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+interface Blog {
+  _id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  author: string;
+  slug: string;
+  category: string;
+}
 
 interface BlogPostProps {
   title: string;
@@ -11,9 +23,10 @@ interface BlogPostProps {
   date: string;
   author: string;
   link: string;
+  category: string;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, author, link }) => {
+const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, author, link, category }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
       <div className="h-56 overflow-hidden">
@@ -24,6 +37,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, aut
         />
       </div>
       <div className="p-6">
+        <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs mb-3">{category}</span>
         <div className="flex items-center text-sm text-gray-500 mb-3">
           <Calendar size={14} className="mr-1" />
           <span>{date} by {author}</span>
@@ -42,51 +56,94 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, aut
 };
 
 const BlogPreview = () => {
-  const blogPosts = [
-    {
-      title: "How to Choose the Right Abaya for Your Body Type",
-      excerpt: "A guide to flattering fits, trending cuts, and how to style your abaya with ease — so you always feel confident and covered.",
-      imageUrl: blog1,
-      date: "May 5, 2025",
-      author: "Amira Hassan",
-      link: "/blog/choose-right-abaya"
-    },
-    {
-      title: "Styling Unstitched Lawn for Summer 2025",
-      excerpt: "From tailoring tips to accessory pairings, learn how to make every unstitched suit uniquely yours.",
-      imageUrl: blog2,
-      date: "May 2, 2025",
-      author: "Zara Ahmed",
-      link: "/blog/styling-unstitched-lawn"
-    },
-    {
-      title: "Why Every Woman Needs a Signature Dupatta",
-      excerpt: "Discover the cultural charm and styling power of a statement dupatta — and how to wear it five modern ways.",
-      imageUrl: blog3,
-      date: "April 28, 2025",
-      author: "Priya Sharma",
-      link: "/blog/signature-dupatta-style"
+  const [blogs, setBlogs] = useState<BlogPostProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function fetchBlogs() {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch(backendUrl + '/api/blog/list');
+        if (!res.ok) {
+          setError('Failed to load blogs');
+          setLoading(false);
+          return;
+        }
+        const data: { success: boolean; blogs: Blog[]; message?: string } = await res.json();
+        if (data.success) {
+          // Get only the first 3 blogs for preview
+          const previewBlogs = data.blogs.slice(0, 3).map((b) => ({
+            title: b.title,
+            excerpt: b.excerpt,
+            imageUrl: b.image,
+            date: new Date(b.date).toLocaleDateString(),
+            author: b.author,
+            link: `/blog/${b.slug}`,
+            category: b.category
+          }));
+          setBlogs(previewBlogs);
+        } else {
+          setError(data.message || 'Failed to load blogs');
+        }
+      } catch (err) {
+        setError('Could not connect to blog API');
+      }
+      setLoading(false);
     }
-  ];
+    fetchBlogs();
+  }, []);
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif mb-4">From Our Blog</h2>
-          <div className="w-24 h-1 bg-revive-red mx-auto"></div>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            Fashion insights, style guides, and behind-the-scenes glimpses into our world of elegance.
+          <h2 className="text-3xl md:text-4xl font-serif mb-4">Latest from Our Blog</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Discover style tips, cultural insights, and fashion inspiration to help you express your unique identity.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
-            <BlogPost key={index} {...post} />
-          ))}
-        </div>
-        <div className="text-center mt-10">
-          <Link to="/blog" className="btn-outline inline-block">
-            View All Articles
+        
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-revive-red"></div>
+            <p className="mt-2 text-gray-600">Loading blogs...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="text-center py-8">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-revive-red text-white rounded hover:bg-revive-black transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+        
+        {!loading && !error && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogs.map((post, index) => (
+              <BlogPost key={index} {...post} />
+            ))}
+          </div>
+        )}
+        
+        {!loading && !error && blogs.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No blog posts available at the moment.</p>
+          </div>
+        )}
+        
+        <div className="text-center mt-12">
+          <Link 
+            to="/blog" 
+            className="inline-flex items-center px-6 py-3 bg-revive-red text-white rounded-lg hover:bg-revive-black transition-colors"
+          >
+            View All Posts <ArrowRight size={20} className="ml-2" />
           </Link>
         </div>
       </div>

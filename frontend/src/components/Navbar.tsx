@@ -84,22 +84,51 @@ const Navbar = () => {
     <>
       {/* Luxury Promo Bar */}
       {promoVisible && (
-        <div className="bg-gradient-to-r from-amber-900 via-yellow-800 to-amber-900 text-white py-2 px-4 text-center relative overflow-hidden">
+        <div className="bg-gradient-to-r from-amber-900 via-yellow-800 to-amber-900 text-white py-2 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
           <div className="relative z-10">
-            <p className="text-sm font-serif tracking-wide animate-fade-in">
-              <span className="inline-block animate-bounce-subtle">✨</span>
-              <span className="mx-2 font-light">Exclusive Drop</span>
-              <span className="mx-2 text-amber-200">·</span>
-              <span className="mx-2 font-medium">One Design, One Masterpiece</span>
-              <span className="mx-2 text-amber-200">·</span>
-              <span className="mx-2 font-light">Limited Edition Sales</span>
-              <span className="inline-block animate-bounce-subtle">✨</span>
-            </p>
+            <div className="marquee-container">
+              <div className="marquee-track">
+                <div className="marquee-content">
+                  <span className="text-sm font-serif tracking-wide inline-flex items-center whitespace-nowrap">
+                    <span className="inline-block animate-bounce-subtle">✨</span>
+                    <span className="mx-2 font-light">Exclusive Drop</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-medium">One Design, One Masterpiece</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-light">Limited Edition Sales</span>
+                    <span className="inline-block animate-bounce-subtle mx-4">✨</span>
+                    <span className="mx-2 font-light">Premium Quality</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-medium">Handcrafted Excellence</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-light">Free Worldwide Shipping</span>
+                    <span className="inline-block animate-bounce-subtle mx-4">✨</span>
+                  </span>
+                </div>
+                <div className="marquee-content">
+                  <span className="text-sm font-serif tracking-wide inline-flex items-center whitespace-nowrap">
+                    <span className="inline-block animate-bounce-subtle">✨</span>
+                    <span className="mx-2 font-light">Exclusive Drop</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-medium">One Design, One Masterpiece</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-light">Limited Edition Sales</span>
+                    <span className="inline-block animate-bounce-subtle mx-4">✨</span>
+                    <span className="mx-2 font-light">Premium Quality</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-medium">Handcrafted Excellence</span>
+                    <span className="mx-2 text-amber-200">·</span>
+                    <span className="mx-2 font-light">Free Worldwide Shipping</span>
+                    <span className="inline-block animate-bounce-subtle mx-4">✨</span>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           <button
             onClick={() => setPromoVisible(false)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-20"
           >
             <X size={16} />
           </button>
@@ -162,22 +191,28 @@ const Navbar = () => {
 
                       {/* Mobile Nav Links */}
                       <div className="flex-1 space-y-2">
-                        {/* Main Navigation Links */}
-                        {navigationLinks.main.filter(link => !link.dropdown).map((link) => (
-                          <Link
-                            key={link.path}
-                            to={link.path}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
+                        {/* Home */}
+                        <Link
+                          to="/"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                        >
+                          Home
+                        </Link>
 
-                        {/* Mobile Collections */}
+                        {/* Shop */}
+                        <Link
+                          to="/shop"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                        >
+                          Shop
+                        </Link>
+
+                        {/* Categories Dropdown */}
                         <div className="space-y-1">
                           <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100">
-                            Collections
+                            Categories
                           </div>
                           {navigationLinks.collections.map((collection) => (
                             <Link
@@ -190,13 +225,54 @@ const Navbar = () => {
                             </Link>
                           ))}
                         </div>
+
+                        {/* Services Dropdown */}
+                        <div className="space-y-1">
+                          <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100">
+                            Services
+                          </div>
+                          <Link
+                            to="/stitching-service"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300"
+                          >
+                            Stitching Service
+                          </Link>
+                        </div>
+
+                        {/* About Us */}
+                        <Link
+                          to="/about"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                        >
+                          About Us
+                        </Link>
+
+                        {/* Blog */}
+                        <Link
+                          to="/blog"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                        >
+                          Blog
+                        </Link>
+
+                        {/* Contact Us */}
+                        <Link
+                          to="/contact"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                        >
+                          Contact Us
+                        </Link>
                       </div>
                     </div>
                   </SheetContent>
                 </Sheet>
 
                 <Link to="/" className="flex items-center gap-2">
-                  <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-8" />
+                  <img src="/logo_notag.png" alt="REVIVE WARDROBE" className="h-10" />
 
                 </Link>
               </div>
@@ -258,64 +334,103 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-8">
-            {navigationLinks.main.map((link) => {
-              if (link.dropdown) {
-                return (
-                  <div
-                    key={link.name}
-                    className="relative"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => setCollectionsOpen(!collectionsOpen)}
-                      className="flex items-center gap-1 py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
-                    >
-                      {link.name}
-                      <ChevronDown
-                        size={16}
-                        className={`transition-transform duration-300 ${collectionsOpen ? 'rotate-180' : ''}`}
-                      />
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
-                    </button>
+            {/* Home */}
+            <Link
+              to="/"
+              className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+            >
+              Home
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+            </Link>
 
-                    {collectionsOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-amber-100 overflow-hidden z-50">
-                        <div className="p-2">
-                          {collections.map((collection, index) => (
-                            <Link
-                              key={collection.path}
-                              to={collection.path}
-                              onClick={() => setCollectionsOpen(false)}
-                              className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group ${index !== collections.length - 1 ? 'border-b border-amber-100/50' : ''
-                                }`}
-                              style={{ animationDelay: `${index * 50}ms` }}
-                            >
-                              <span className="block group-hover:translate-x-1 transition-transform duration-300">
-                                {collection.name}
-                              </span>
-                              <span className="block text-xs text-amber-600 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                Explore Collection →
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+            {/* Shop */}
+            <Link
+              to="/shop"
+              className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+            >
+              Shop
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+
+            {/* Categories Dropdown */}
+            <div
+              className="relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setCollectionsOpen(!collectionsOpen)}
+                className="flex items-center gap-1 py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+              >
+                Categories
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-300 ${collectionsOpen ? 'rotate-180' : ''}`}
+                />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+              </button>
+
+              {collectionsOpen && (
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-amber-100 overflow-hidden z-50">
+                  <div className="p-2">
+                    {collections.map((collection, index) => (
+                      <Link
+                        key={collection.path}
+                        to={collection.path}
+                        onClick={() => setCollectionsOpen(false)}
+                        className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group ${index !== collections.length - 1 ? 'border-b border-amber-100/50' : ''
+                          }`}
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <span className="block group-hover:translate-x-1 transition-transform duration-300">
+                          {collection.name}
+                        </span>
+                        <span className="block text-xs text-amber-600 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Explore Collection →
+                        </span>
+                      </Link>
+                    ))}
                   </div>
-                );
-              } else {
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
-                  >
-                    {link.name}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
-                  </Link>
-                );
-              }
-            })}
+                </div>
+              )}
+            </div>
+
+            {/* Services Dropdown */}
+            <div className="relative">
+              <Link
+                to="/stitching-service"
+                className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+              >
+                Services
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            </div>
+
+            {/* About Us */}
+            <Link
+              to="/about"
+              className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+            >
+              About Us
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+
+            {/* Blog */}
+            <Link
+              to="/blog"
+              className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+            >
+              Blog
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+
+            {/* Contact Us */}
+            <Link
+              to="/contact"
+              className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+            >
+              Contact Us
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
+            </Link>
           </div>
 
           {/* Right Side Icons */}

@@ -139,3 +139,30 @@ html {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Seamless Marquee Animation */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  position: relative;
+}
+
+.marquee-track {
+  display: flex;
+  animation: marquee-scroll 35s linear infinite;
+}
+
+.marquee-content {
+  flex-shrink: 0;
+  padding-right: 2rem;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
