@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
   lead_time: { type: String },
   replenishment_period: { type: String },
   hs_code: { type: String },
-  country: { type: String, default: 'India' },
+  country: { type: String, default: 'UAE' },
   tax: { type: String },
   filter_name: { type: String, default: 'Size' },                       // E.g. ["Size"]
   variants: [variantSchema],                             // Array of variant objects

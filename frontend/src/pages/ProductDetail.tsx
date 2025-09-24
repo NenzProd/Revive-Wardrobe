@@ -368,10 +368,7 @@ const ProductDetail = () => {
               <TabsContent value="details" className="py-4">
                 <div className="text-gray-600 space-y-4">
                   <p>
-                    Every design is unique, thoughtfully crafted in the UAE.
-                    Proudly a women-owned business, we focus on blending
-                    tradition with modern style, ensuring every piece tells its
-                    own story.{" "}
+                    {product.description}
                   </p>
                 </div>
               </TabsContent>
