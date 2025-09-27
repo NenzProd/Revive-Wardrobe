@@ -4,12 +4,11 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProductImageGalleryProps {
   images: string[];
+  onImageClick?: (index: number) => void;
 }
 
-const ProductImageGallery = ({ images }: ProductImageGalleryProps) => {
+const ProductImageGallery = ({ images, onImageClick }: ProductImageGalleryProps) => {
   const [mainImage, setMainImage] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   
   const handleThumbClick = (index: number) => {
     setMainImage(index);
@@ -22,23 +21,11 @@ const ProductImageGallery = ({ images }: ProductImageGalleryProps) => {
   const handleNext = () => {
     setMainImage(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
-  
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isZoomed) return;
-    
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - left) / width;
-    const y = (e.clientY - top) / height;
-    
-    setZoomPosition({ x, y });
-  };
-  
-  const handleMouseEnter = () => {
-    setIsZoomed(true);
-  };
-  
-  const handleMouseLeave = () => {
-    setIsZoomed(false);
+
+  const handleImageClick = () => {
+    if (onImageClick) {
+      onImageClick(mainImage);
+    }
   };
 
   return (
@@ -46,22 +33,13 @@ const ProductImageGallery = ({ images }: ProductImageGalleryProps) => {
       {/* Main Image */}
       <div className="relative mb-4 overflow-hidden rounded-lg border border-gray-200">
         <div 
-          className="relative h-[500px] overflow-hidden"
-          onMouseMove={handleMouseMove}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          className="relative h-[500px] overflow-hidden cursor-pointer"
+          onClick={handleImageClick}
         >
           <img
             src={images[mainImage]}
             alt="Product"
-            className={`w-full h-full object-cover transition-transform duration-300 ${isZoomed ? 'scale-150' : ''}`}
-            style={
-              isZoomed
-                ? {
-                    transformOrigin: `${zoomPosition.x * 100}% ${zoomPosition.y * 100}%`,
-                  }
-                : undefined
-            }
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
         

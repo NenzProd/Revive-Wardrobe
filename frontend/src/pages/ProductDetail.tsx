@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductImageGallery from "../components/ProductImageGallery";
+import ImageModal from "../components/ImageModal";
 import SizeGuide from "../components/SizeGuide";
 import RelatedProducts from "../components/RelatedProducts";
 import Newsletter from "../components/Newsletter";
@@ -23,17 +24,18 @@ import StarRating from "@/components/StarRating";
 import { useReviewSummary } from "../hooks/useReviewSummary";
 
 const ProductDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [displayPrice, setDisplayPrice] = useState<number | null>(null);
-  const [maxStock, setMaxStock] = useState<number>(0);
-  const { toast } = useToast();
-  const { addToCart } = useCartStore();
-  const wishlist = useCartStore((state) => state.wishlist);
-  const setWishlist = useCartStore.setState;
+  const { slug } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { addToCart, wishlist, addToWishlist } = useCartStore();
+  
+  const [selectedSize, setSelectedSize] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [displayPrice, setDisplayPrice] = useState<number | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [maxStock, setMaxStock] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
@@ -166,6 +168,16 @@ const ProductDetail = () => {
     });
   };
 
+  // Modal handlers
+  const handleImageClick = (index: number) => {
+    setModalImageIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     
       <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
@@ -194,7 +206,7 @@ const ProductDetail = () => {
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Product Images */}
           <div className="lg:w-1/2">
-            <ProductImageGallery images={image} />
+            <ProductImageGallery images={image} onImageClick={handleImageClick} />
           </div>
 
           {/* Product Info */}
@@ -403,6 +415,14 @@ const ProductDetail = () => {
 
       {/* Size Guide Modal */}
       <SizeGuide />
+
+      {/* Image Modal */}
+      <ImageModal
+        images={image}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        initialIndex={modalImageIndex}
+      />
 
       <Newsletter />
       <Footer />

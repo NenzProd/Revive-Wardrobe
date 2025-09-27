@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { X } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,13 +23,12 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   const [priceRange, setPriceRange] = useState([currentPriceMin, currentPriceMax]);
   const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>(currentColors);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(currentType);
+
   
   const categories = [
     { id: 'Ethnic Elegance', name: 'Ethnic Elegance' },
     { id: 'Graceful Abayas', name: 'Graceful Abayas' },
     { id: 'Intimate Collection', name: 'Intimate Collection' },
-    { id: 'Stitching Services', name: 'Stitching Services' },
   ];
   
   const colors = [
@@ -41,10 +40,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     { id: 'color-pink', name: 'Pink', hex: '#FFC0CB' },
   ];
   
-  const types = [
-    { id: 'type-stitched', name: 'Stitched' },
-    { id: 'type-unstitched', name: 'Unstitched' },
-  ];
+
   
   const fabricOptions = [
     { id: 'Lawn', name: 'Lawn' },
@@ -78,13 +74,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     }
   };
   
-  const handleTypeChange = (checked: boolean | "indeterminate", type: string) => {
-    if (checked) {
-      setSelectedTypes(prev => [...prev, type]);
-    } else {
-      setSelectedTypes(prev => prev.filter(item => item !== type));
-    }
-  };
+
   
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
@@ -110,10 +100,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     params.set('minPrice', priceRange[0].toString());
     params.set('maxPrice', priceRange[1].toString());
     
-    // Set type filters
-    selectedTypes.forEach(type => {
-      params.append('type', type);
-    });
+
     
     setSearchParams(params);
     
@@ -132,8 +119,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     setPriceRange([0, 10000]);
     setSelectedFabrics([]);
     setSelectedColors([]);
-    setSelectedTypes([]);
-    
+
     const params = new URLSearchParams(searchParams);
     params.delete('minPrice');
     params.delete('maxPrice');
@@ -217,25 +203,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
         </div>
       </div>
       
-      {/* Stitched/Unstitched */}
-      <div className="mb-8">
-        <h4 className="font-serif text-lg mb-4">Type</h4>
-        <div className="space-y-2">
-          {[{ id: 'Stitched', name: 'Stitched' }, { id: 'Unstitched', name: 'Unstitched' }].map((type) => (
-            <div key={type.id} className="flex items-center">
-              <Checkbox
-                id={type.id}
-                checked={selectedTypes.includes(type.id)}
-                onCheckedChange={(checked) => handleTypeChange(checked, type.id)}
-                className="h-4 w-4 rounded border-gray-300 text-revive-red focus:ring-revive-red"
-              />
-              <Label htmlFor={type.id} className="ml-2 text-gray-600">
-                {type.name}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
+   
       
       {/* Filter Actions */}
       <div className="flex gap-2">

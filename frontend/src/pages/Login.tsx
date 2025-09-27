@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,9 +15,8 @@ import { OTPInput } from '@/components/auth/OTPInput'
 
 
 const Login = () => {
-  const [loginMethod, setLoginMethod] = useState('email')
   const [formData, setFormData] = useState({
-    emailOrPhone: '',
+    email: '',
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
@@ -43,7 +42,7 @@ const Login = () => {
     setIsLoading(true)
     try {
       const payload = {
-        identifier: formData.emailOrPhone,
+        identifier: formData.email,
         password: formData.password
       }
       const response = await axios.post(
@@ -91,7 +90,7 @@ const Login = () => {
     setOtpError('')
     try {
       // Only allow if identifier is an email
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.emailOrPhone)
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
       if (!isEmail) {
         setOtpError('OTP verification is only available for email accounts.')
         setOtpLoading(false)
@@ -99,7 +98,7 @@ const Login = () => {
       }
       const res = await axios.post(
         backendUrl + '/api/user/verify-email-otp',
-        { email: formData.emailOrPhone, otp }
+        { email: formData.email, otp }
       )
       if (res.data.success) {
         setShowOtpModal(false)
@@ -145,44 +144,16 @@ const Login = () => {
             </div>
             <form onSubmit={handleSubmit} className='space-y-5'>
               <div className='space-y-3'>
-                <div className='flex space-x-2'>
-                  <Button
-                    type='button'
-                    variant={loginMethod === 'email' ? 'default' : 'outline'}
-                    size='sm'
-                    onClick={() => setLoginMethod('email')}
-                    className={`flex-1 ${loginMethod === 'email' 
-                      ? 'bg-revive-red hover:bg-revive-red/90 text-white' 
-                      : 'border-revive-black/30 text-revive-black hover:bg-revive-black hover:text-white'
-                    }`}
-                  >
-                    <Mail className='h-4 w-4 mr-1' />
-                    Email
-                  </Button>
-                  <Button
-                    type='button'
-                    variant={loginMethod === 'phone' ? 'default' : 'outline'}
-                    size='sm'
-                    onClick={() => setLoginMethod('phone')}
-                    className={`flex-1 ${loginMethod === 'phone' 
-                      ? 'bg-revive-red hover:bg-revive-red/90 text-white' 
-                      : 'border-revive-black/30 text-revive-black hover:bg-revive-black hover:text-white'
-                    }`}
-                  >
-                    <Phone className='h-4 w-4 mr-1' />
-                    Phone
-                  </Button>
-                </div>
                 <div className='space-y-2'>
-                  <Label htmlFor='emailOrPhone' className='text-revive-black font-medium'>
-                    {loginMethod === 'email' ? 'Email' : 'Phone Number'}
+                  <Label htmlFor='email' className='text-revive-black font-medium'>
+                    Email
                   </Label>
                   <Input
-                    id='emailOrPhone'
-                    name='emailOrPhone'
-                    type={loginMethod === 'email' ? 'email' : 'tel'}
-                    placeholder={loginMethod === 'email' ? 'Enter your email' : 'Enter your phone number'}
-                    value={formData.emailOrPhone}
+                    id='email'
+                    name='email'
+                    type='email'
+                    placeholder='Enter your email'
+                    value={formData.email}
                     onChange={handleInputChange}
                     className='border-revive-black/30 focus:border-revive-red focus:ring-revive-red'
                     required
@@ -249,7 +220,7 @@ const Login = () => {
         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
           <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-full max-w-md'>
             <h2 className='text-lg font-semibold text-revive-black'>Verify Your Email</h2>
-            <p className='text-sm text-revive-black/70 mb-2'>Enter the OTP sent to <b>{formData.emailOrPhone}</b></p>
+            <p className='text-sm text-revive-black/70 mb-2'>Enter the OTP sent to <b>{formData.email}</b></p>
             <OTPInput value={otp} onChange={setOtp} length={6} />
             {otpError && <div className='text-red-500 text-sm'>{otpError}</div>}
             <div className='flex justify-center'>

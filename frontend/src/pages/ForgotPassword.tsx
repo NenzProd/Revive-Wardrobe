@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Eye, EyeOff, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,6 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const ForgotPassword = () => {
   const [step, setStep] = useState<Step>("enter-contact");
-  const [contactMethod, setContactMethod] = useState<"email" | "phone">("email");
   const [contact, setContact] = useState("");
   const [otp, setOtp] = useState("");
   const [passwords, setPasswords] = useState({
@@ -37,11 +36,6 @@ const ForgotPassword = () => {
     setIsLoading(true);
     setError('')
     try {
-      if (contactMethod !== 'email') {
-        setError('Only email-based reset is supported.')
-        setIsLoading(false)
-        return
-      }
       const res = await axios.post(`${BACKEND_URL}/api/user/forgot-password`, { email: contact })
       if (res.data.success) {
         toast({
@@ -119,15 +113,6 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8">
      
       <div className="w-full max-w-md">
-        {/* Logo/Brand Section */}
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-4xl font-bold text-revive-black mb-2">
-            REVIVE WARDROBE
-          </h1>
-          <p className="text-revive-black/70 text-sm">
-            Reset Your Password
-          </p>
-        </div>
 
         <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
           <CardHeader className="pb-6">
@@ -151,43 +136,15 @@ const ForgotPassword = () => {
             {step === "enter-contact" && (
               <form onSubmit={handleSendOTP} className="space-y-5">
                 <div className="space-y-3">
-                  <div className="flex space-x-2">
-                    <Button
-                      type="button"
-                      variant={contactMethod === "email" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setContactMethod("email")}
-                      className={`flex-1 ${contactMethod === "email" 
-                        ? "bg-revive-red hover:bg-revive-red/90 text-white" 
-                        : "border-revive-black/30 text-revive-black hover:bg-revive-black hover:text-white"
-                      }`}
-                    >
-                      <Mail className="h-4 w-4 mr-1" />
-                      Email
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={contactMethod === "phone" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setContactMethod("phone")}
-                      className={`flex-1 ${contactMethod === "phone" 
-                        ? "bg-revive-red hover:bg-revive-red/90 text-white" 
-                        : "border-revive-black/30 text-revive-black hover:bg-revive-black hover:text-white"
-                      }`}
-                    >
-                      <Phone className="h-4 w-4 mr-1" />
-                      Phone
-                    </Button>
-                  </div>
                   {error && <div className='text-red-500 text-sm'>{error}</div>}
                   <div className="space-y-2">
                     <Label htmlFor="contact" className="text-revive-black font-medium">
-                      {contactMethod === "email" ? "Email Address" : "Phone Number"}
+                      Email Address
                     </Label>
                     <Input
                       id="contact"
-                      type={contactMethod === "email" ? "email" : "tel"}
-                      placeholder={contactMethod === "email" ? "Enter your email" : "Enter your phone number"}
+                      type="email"
+                      placeholder="Enter your email"
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
                       className="border-revive-black/30 focus:border-revive-red focus:ring-revive-red"
@@ -210,7 +167,7 @@ const ForgotPassword = () => {
               <div className="space-y-6">
                 <div className="text-center p-4 bg-revive-blush/50 rounded-lg">
                   <p className="text-sm text-revive-black/70 mb-1">
-                    We sent a verification code to your {contactMethod}
+                    We sent a verification code to your email
                   </p>
                   <p className="font-medium text-revive-black">{contact}</p>
                 </div>
