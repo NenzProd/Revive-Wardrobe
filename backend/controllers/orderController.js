@@ -99,7 +99,7 @@ const createPaymenntOrder = async (req, res) => {
     };
 
     const paymenntRes = await axios.post(
-      "https://api.test.paymennt.com/mer/v2.0/checkout/web",
+      "https://api.paymennt.com/mer/v2.0/checkout/web",
       payload,
       {
         headers: {
@@ -140,7 +140,7 @@ const verifyPaymennt = async (req, res) => {
 
     // Verify payment with Paymennt
     const verifyRes = await axios.get(
-      `https://api.test.paymennt.com/mer/v2.0/checkout/${paymentId}`,
+      `https://api.paymennt.com/mer/v2.0/checkout/${paymentId}`,
       {
         headers: {
           "X-Paymennt-Api-Key": process.env.PAYMENNT_API_KEY,
