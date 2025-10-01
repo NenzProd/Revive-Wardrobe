@@ -45,6 +45,8 @@ interface CartState {
   updateQuantity: (productId: string, quantity: number) => void;
   updateQuantityById: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
+  addToWishlist: (product: Product) => void;
+  removeFromWishlist: (productId: string) => void;
   moveToWishlist: (productId: string) => void;
   fetchUser: (token: string) => Promise<void>;
   logout: () => void;
@@ -356,6 +358,49 @@ export const useCartStore = create<CartState>()(
         toast({
           title: "Cart cleared",
           description: "All items have been removed from your cart.",
+        });
+      },
+      
+      // Add item to wishlist
+      addToWishlist: (product) => {
+        set((state) => {
+          // Check if item is already in wishlist
+          const isInWishlist = state.wishlist.some(item => item._id === product._id);
+          
+          if (isInWishlist) {
+            toast({
+              title: "Already in wishlist",
+              description: `${product.name} is already in your wishlist.`,
+            });
+            return state;
+          }
+          
+          // Add to wishlist
+          const updatedWishlist = [...state.wishlist, product];
+          
+          toast({
+            title: "Added to wishlist",
+            description: `${product.name} has been added to your wishlist.`,
+          });
+          
+          return { ...state, wishlist: updatedWishlist };
+        });
+      },
+      
+      // Remove item from wishlist
+      removeFromWishlist: (productId) => {
+        set((state) => {
+          const itemToRemove = state.wishlist.find(item => item._id === productId);
+          const updatedWishlist = state.wishlist.filter(item => item._id !== productId);
+          
+          if (itemToRemove) {
+            toast({
+              title: "Removed from wishlist",
+              description: `${itemToRemove.name} has been removed from your wishlist.`,
+            });
+          }
+          
+          return { ...state, wishlist: updatedWishlist };
         });
       },
       

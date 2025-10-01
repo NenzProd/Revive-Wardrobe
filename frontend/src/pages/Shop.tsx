@@ -10,13 +10,14 @@ import { useProductList } from '../hooks/useProduct'
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCartStore } from '../stores/useCartStore';
 import { useToast } from '@/hooks/use-toast';
+import { Product } from '../types/product';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(false);
   const { toast } = useToast();
-  const wishlist = useCartStore(state => state.wishlist)
-  const setWishlist = useCartStore.setState
+  const wishlist = useCartStore(state => state.wishlist);
+  const addToWishlist = useCartStore(state => state.addToWishlist);
   
   // Extract all filter parameters from URL
   const category = searchParams.get('category') || 'all';
@@ -47,18 +48,13 @@ const Shop = () => {
   const filteredProducts = products.filter(p => {
     const matchesSearch = search ? p.name.toLowerCase().includes(search) : true
     const matchesCategory = category === 'all' ? true : p.category === category
-    const matchesFabric = fabrics.length > 0 ? fabrics.includes(p.fabric) : true
+    const matchesFabric = fabrics.length > 0 ? fabrics.includes(p.filter_name || '') : true
     const matchesType = typesParam.length > 0 ? typesParam.includes(p.type) : true
     return matchesSearch && matchesCategory && matchesFabric && matchesType
   });
 
-  const handleAddToWishlist = (product: any) => {
-    if (wishlist.some(item => item._id === product._id)) {
-      toast({ title: 'Already in wishlist', description: `${product.name} is already in your wishlist.` })
-      return
-    }
-    setWishlist(state => ({ ...state, wishlist: [...state.wishlist, product] }))
-    toast({ title: 'Added to wishlist', description: `${product.name} has been added to your wishlist` })
+  const handleAddToWishlist = (product: Product) => {
+    addToWishlist(product);
   }
 
   if (loading) {
@@ -80,7 +76,7 @@ const Shop = () => {
             <div className="md:w-3/4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(9)].map((_, idx) => (
-                  <div key={idx} className="group bg-white rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+                  <div key={idx} className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border-2 border-transparent shadow-[8px_8px_20px_rgba(0,0,0,0.1),-8px_-8px_20px_rgba(255,255,255,0.7)]">
                     <div className="relative overflow-hidden">
                       <div className="h-80 overflow-hidden">
                         <Skeleton className="w-full h-full" />

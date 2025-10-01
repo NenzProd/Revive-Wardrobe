@@ -133,13 +133,6 @@ const ProductDetail = () => {
   };
 
   const handleAddToWishlist = () => {
-    if (wishlist.some((item) => item._id === product._id)) {
-      toast({
-        title: "Already in wishlist",
-        description: `${name} is already in your wishlist`,
-      });
-      return;
-    }
     if (!selectedVariant || selectedVariant.stock === 0) {
       toast({
         title: "Out of stock",
@@ -148,14 +141,7 @@ const ProductDetail = () => {
       });
       return;
     }
-    setWishlist((state) => ({
-      ...state,
-      wishlist: [...state.wishlist, product],
-    }));
-    toast({
-      title: "Added to wishlist",
-      description: `${name} has been added to your wishlist`,
-    });
+    addToWishlist(product);
   };
 
   // Share button handler

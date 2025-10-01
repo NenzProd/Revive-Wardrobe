@@ -18,18 +18,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
   const navigate = useNavigate();
   
   const {
-    id,
+    _id,
     name,
-    price,
     slug,
-    isNew,
-    isSale,
-    salePrice,
-    type
+    type,
+    variants
   } = product;
   
+  // Derive price information from variants
+  const price = variants?.[0]?.retail_price || 0;
+  const discount = variants?.[0]?.discount || 0;
+  const salePrice = discount > 0 ? price - (price * discount / 100) : null;
+  const isSale = discount > 0;
+  const isNew = false; // This would need to be determined by date or a separate field
+  
   const wishlist = useCartStore(state => state.wishlist);
-  const isInWishlist = wishlist.some(item => item._id === id);
+  const isInWishlist = wishlist.some(item => item._id === _id);
 
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
   if (layout === 'list') {
     return (
       <div 
-        className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex"
+        className="group bg-white rounded-lg overflow-hidden transition-all duration-300 flex border-2 border-transparent hover:border-revive-red/20 shadow-[8px_8px_20px_rgba(0,0,0,0.1),-8px_-8px_20px_rgba(255,255,255,0.7)] hover:shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.8)]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -131,7 +135,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
 
   return (
     <div 
-      className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+      className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border-2 border-transparent hover:border-revive-red/20 shadow-[8px_8px_20px_rgba(0,0,0,0.1),-8px_-8px_20px_rgba(255,255,255,0.7)] hover:shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.8)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -6,20 +6,25 @@ import { useToast } from '@/hooks/use-toast'
 import { useProductList } from '../hooks/useProduct'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCartStore } from '../stores/useCartStore'
+import { Product } from '../types/product'
 
-const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishlist: (product: any) => void }) => {
+const ProductCard = ({ product, onAddToWishlist }: { product: Product, onAddToWishlist: (product: Product) => void }) => {
   const [isHovered, setIsHovered] = useState(false)
   const { toast } = useToast()
   const navigate = useNavigate()
   const {
     name,
-    price,
-    salePrice,
-    isNew,
-    isSale,
     slug,
-    image
+    image,
+    variants
   } = product
+  
+  // Derive price information from variants
+  const price = variants?.[0]?.retail_price || 0;
+  const discount = variants?.[0]?.discount || 0;
+  const salePrice = discount > 0 ? price - (price * discount / 100) : null;
+  const isSale = discount > 0;
+  const isNew = false; // This would need to be determined by date or a separate field
 
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -33,7 +38,7 @@ const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishli
     navigate(`/product/${slug}`)
   }
 
-  const getProductImage = (product: any) => {
+  const getProductImage = (product: Product) => {
     if (Array.isArray(product.image) && product.image.length > 0) return product.image[0]
     if (typeof product.image === 'string') return product.image
     return '/placeholder.png'
@@ -41,7 +46,7 @@ const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishli
 
   return (
     <div 
-      className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+      className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border-2 border-transparent hover:border-revive-red/20 shadow-[8px_8px_20px_rgba(0,0,0,0.1),-8px_-8px_20px_rgba(255,255,255,0.7)] hover:shadow-[12px_12px_24px_rgba(0,0,0,0.15),-12px_-12px_24px_rgba(255,255,255,0.8)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -113,11 +118,15 @@ const FeaturedProducts = () => {
   const setWishlist = useCartStore.setState
   const { toast } = useToast()
   // Sort by date descending, take 6 most recent
-  const sorted = [...products].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sorted = [...products].sort((a: Product, b: Product) => {
+    const dateA = a.date ? new Date(a.date).getTime() : 0;
+    const dateB = b.date ? new Date(b.date).getTime() : 0;
+    return dateB - dateA;
+  });
   const featuredProducts = sorted.slice(0, 6);
   const rows = [featuredProducts.slice(0, 3), featuredProducts.slice(3, 6)];
 
-  const handleAddToWishlist = (product: any) => {
+  const handleAddToWishlist = (product: Product) => {
     if (wishlist.some(item => item._id === product._id)) {
       toast({ title: 'Already in wishlist', description: `${product.name} is already in your wishlist.` })
       return
@@ -137,7 +146,7 @@ const FeaturedProducts = () => {
           {[0, 1].map(rowIdx => (
             <div key={rowIdx} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {[0, 1, 2].map(idx => (
-                <div key={idx} className="group bg-white rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+                <div key={idx} className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border-2 border-transparent shadow-[8px_8px_20px_rgba(0,0,0,0.1),-8px_-8px_20px_rgba(255,255,255,0.7)]">
                   <div className="relative overflow-hidden">
                     <div className="h-80 overflow-hidden">
                       <Skeleton className="w-full h-full" />
@@ -172,7 +181,7 @@ const FeaturedProducts = () => {
         {rows.map((row, i) => (
           <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {row.map(product => (
-              <ProductCard key={product._id || product.id} product={product} onAddToWishlist={handleAddToWishlist} />
+              <ProductCard key={product._id} product={product} onAddToWishlist={handleAddToWishlist} />
             ))}
           </div>
         ))}
