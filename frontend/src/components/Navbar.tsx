@@ -138,7 +138,7 @@ const Navbar = () => {
       {/* Main Navigation */}
       <nav className={`sticky ${promoVisible ? 'top-0' : 'top-0'} left-0 w-full z-40 bg-white/95 backdrop-blur-md shadow-lg border-b border-amber-100`}>
         {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center justify-between px-4 py-4">
+        <div className="lg:hidden flex items-center justify-between px-4 py-4">
           {searchActive ? (
             <div className="flex items-center w-full gap-3">
               <button
@@ -326,7 +326,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex container mx-auto px-6 py-4 items-center justify-between">
+        <div className="hidden lg:flex container mx-auto px-6 py-4 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-12 transition-transform group-hover:scale-105" />
@@ -501,7 +501,7 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Bottom Tab Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-amber-100 z-40">
+      <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-amber-100 z-40">
         <div className="flex justify-around py-2">
           {navigationLinks.mobile.bottom.map((item) => {
             const IconComponent = item.name === 'Home' ? Home :

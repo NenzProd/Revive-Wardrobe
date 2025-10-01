@@ -1,6 +1,5 @@
-import { useState} from 'react';
+import { useState, useRef, useEffect, useCallback} from 'react';
 import { X } from 'lucide-react';
-import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
@@ -15,20 +14,20 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   
   // Get current filters from URL parameters
   const currentCategory = searchParams.get('category') || 'all';
-  const currentPriceMin = parseInt(searchParams.get('minPrice') || '0');
-  const currentPriceMax = parseInt(searchParams.get('maxPrice') || '10000');
+  const currentPriceMin = parseInt(searchParams.get('minPrice') || '100');
+  const currentPriceMax = parseInt(searchParams.get('maxPrice') || '2000');
   const currentColors = searchParams.getAll('color');
   const currentType = searchParams.getAll('type');
   
   const [priceRange, setPriceRange] = useState([currentPriceMin, currentPriceMax]);
-  const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
+  // const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>(currentColors);
 
   
   const categories = [
     { id: 'Ethnic Elegance', name: 'Ethnic Elegance' },
     { id: 'Graceful Abayas', name: 'Graceful Abayas' },
-    { id: 'Intimate Collection', name: 'Intimate Collection' },
+    // { id: 'Intimate Collection', name: 'Intimate Collection' },
   ];
   
   const colors = [
@@ -42,29 +41,77 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   
 
   
-  const fabricOptions = [
-    { id: 'Lawn', name: 'Lawn' },
-    { id: 'Chiffon', name: 'Chiffon' },
-    { id: 'Silk', name: 'Silk' },
-    { id: 'Cotton', name: 'Cotton' },
-    { id: 'Organza', name: 'Organza' },
-  ];
+  // const fabricOptions = [
+  //   { id: 'Lawn', name: 'lawn' },
+  //   { id: 'Chiffon', name: 'chiffon' },
+  //   { id: 'Silk', name: 'silk' },
+  //   { id: 'Cotton', name: 'cotton' },
+  //   { id: 'Organza', name: 'organza' },
+  // ];
   
-  const handlePriceChange = (values: number[]) => {
-    setPriceRange(values);
+  const minRange = 100;
+  const maxRange = 2000;
+  const [isDragging, setIsDragging] = useState({ min: false, max: false });
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  const handleSliderChange = useCallback((clientX: number, isMin: boolean) => {
+    if (!sliderRef.current) return;
+    
+    const rect = sliderRef.current.getBoundingClientRect();
+    const percentage = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const value = Math.round(minRange + percentage * (maxRange - minRange));
+    
+    setPriceRange(prev => {
+      if (isMin) {
+        return [Math.min(value, prev[1] - 50), prev[1]];
+      } else {
+        return [prev[0], Math.max(value, prev[0] + 50)];
+      }
+    });
+  }, []);
+
+  const handleMouseDown = (isMin: boolean) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging({ min: isMin, max: !isMin });
   };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging.min) {
+        handleSliderChange(e.clientX, true);
+      } else if (isDragging.max) {
+        handleSliderChange(e.clientX, false);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging({ min: false, max: false });
+    };
+
+    if (isDragging.min || isDragging.max) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, handleSliderChange]);
   
   const formatPriceLabel = (value: number) => {
     return `AED ${value.toLocaleString()}`;
   };
 
-  const handleFabricChange = (checked: boolean | "indeterminate", fabric: string) => {
-    if (checked) {
-      setSelectedFabrics(prev => [...prev, fabric]);
-    } else {
-      setSelectedFabrics(prev => prev.filter(item => item !== fabric));
-    }
-  };
+  // const handleFabricChange = (checked: boolean | "indeterminate", fabric: string) => {
+  //   if (checked) {
+  //     setSelectedFabrics(prev => [...prev, fabric]);
+  //   } else {
+  //     setSelectedFabrics(prev => prev.filter(item => item !== fabric));
+  //   }
+  // };
   
   const handleColorChange = (checked: boolean | "indeterminate", color: string) => {
     if (checked) {
@@ -79,33 +126,34 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
     
-    // Clear existing filters
-    params.delete('category');
+    // Clear existing price filters
     params.delete('minPrice');
     params.delete('maxPrice');
     params.delete('fabric');
-    params.delete('type');
     
-    // Set category filter
+    // Keep the current category if it exists
     if (currentCategory && currentCategory !== 'all') {
       params.set('category', currentCategory);
     }
     
-    // Set fabric filter
-    selectedFabrics.forEach(fabric => {
-      params.append('fabric', fabric);
+    // Set price range only if different from default
+    if (priceRange[0] > 100) {
+      params.set('minPrice', priceRange[0].toString());
+    }
+    if (priceRange[1] < 2000) {
+      params.set('maxPrice', priceRange[1].toString());
+    }
+    
+    // Set color filters
+    params.delete('color');
+    selectedColors.forEach(color => {
+      params.append('color', color);
     });
-    
-    // Set price range
-    params.set('minPrice', priceRange[0].toString());
-    params.set('maxPrice', priceRange[1].toString());
-    
-
     
     setSearchParams(params);
     
     // On mobile, close the filter sidebar after applying
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 1024) {
       onClose();
     }
     
@@ -116,16 +164,14 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   };
   
   const resetFilters = () => {
-    setPriceRange([0, 10000]);
-    setSelectedFabrics([]);
+    setPriceRange([100, 2000]);
+    // setSelectedFabrics([]);
     setSelectedColors([]);
 
-    const params = new URLSearchParams(searchParams);
-    params.delete('minPrice');
-    params.delete('maxPrice');
-    params.delete('color');
-    params.delete('type');
-    params.set('category', 'all');
+    const params = new URLSearchParams();
+    // Clear all filter parameters and reset to show all products
+    // Don't set category to 'all' - just remove all filters
+    
     setSearchParams(params);
     
     toast({
@@ -136,7 +182,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   
   return (
     <aside className="bg-white p-4 md:p-0">
-      <div className="flex items-center justify-between md:hidden mb-6">
+      <div className="flex items-center justify-between lg:hidden mb-6">
         <h3 className="font-serif text-lg">Filters</h3>
         <button 
           className="text-gray-500 hover:text-revive-red"
@@ -148,18 +194,60 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
       
       {/* Price Range */}
       <div className="mb-8">
-        <h4 className="font-serif text-lg mb-4">Price Range</h4>
-        <Slider 
-          value={priceRange} 
-          min={0} 
-          max={25000} 
-          step={500}
-          onValueChange={handlePriceChange}
-          className="mb-2"
-        />
-        <div className="flex justify-between text-sm text-gray-600">
-          <span>{formatPriceLabel(priceRange[0])}</span>
-          <span>{formatPriceLabel(priceRange[1])}</span>
+        <h4 className="font-serif text-lg mb-4 text-gray-800">Price Range</h4>
+        <div className="px-3 py-4">
+          {/* Custom Dual Range Slider */}
+          <div className="relative mb-6">
+            <div 
+              ref={sliderRef}
+              className="relative h-2 bg-gray-200 rounded-full cursor-pointer"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX;
+                const midPoint = priceRange[0] + (priceRange[1] - priceRange[0]) / 2;
+                const clickValue = minRange + ((clickX - rect.left) / rect.width) * (maxRange - minRange);
+                handleSliderChange(clickX, clickValue < midPoint);
+              }}
+            >
+              {/* Active Range */}
+              <div 
+                className="absolute h-2 bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                style={{
+                  left: `${((priceRange[0] - minRange) / (maxRange - minRange)) * 100}%`,
+                  width: `${((priceRange[1] - priceRange[0]) / (maxRange - minRange)) * 100}%`
+                }}
+              />
+              
+              {/* Min Handle */}
+              <div
+                className={`absolute w-5 h-5 bg-white border-2 border-amber-500 rounded-full shadow-md cursor-grab transform -translate-y-1.5 transition-all duration-150 hover:scale-110 ${
+                  isDragging.min ? 'scale-110 border-amber-600 shadow-lg cursor-grabbing' : ''
+                }`}
+                style={{
+                  left: `${((priceRange[0] - minRange) / (maxRange - minRange)) * 100}%`,
+                  transform: 'translateX(-50%) translateY(-6px)'
+                }}
+                onMouseDown={handleMouseDown(true)}
+              />
+              
+              {/* Max Handle */}
+              <div
+                className={`absolute w-5 h-5 bg-white border-2 border-amber-500 rounded-full shadow-md cursor-grab transform -translate-y-1.5 transition-all duration-150 hover:scale-110 ${
+                  isDragging.max ? 'scale-110 border-amber-600 shadow-lg cursor-grabbing' : ''
+                }`}
+                style={{
+                  left: `${((priceRange[1] - minRange) / (maxRange - minRange)) * 100}%`,
+                  transform: 'translateX(-50%) translateY(-6px)'
+                }}
+                onMouseDown={handleMouseDown(false)}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-between text-sm text-gray-600 font-medium">
+            <span className="bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">{formatPriceLabel(priceRange[0])}</span>
+            <span className="bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">{formatPriceLabel(priceRange[1])}</span>
+          </div>
         </div>
       </div>
       
@@ -183,8 +271,8 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
         </div>
       </div>
       
-      {/* Fabric */}
-      <div className="mb-8">
+      {/* Fabric - Commented out for now */}
+      {/* <div className="mb-8">
         <h4 className="font-serif text-lg mb-4">Fabric</h4>
         <div className="space-y-2">
           {fabricOptions.map((fabric) => (
@@ -201,23 +289,23 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
       
    
       
       {/* Filter Actions */}
-      <div className="flex gap-2">
+      <div className="flex gap-3 mt-6">
         <button 
-          className="w-1/2 py-2 bg-revive-red text-white rounded hover:bg-opacity-90 transition-colors"
+          className="flex-1 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
           onClick={applyFilters}
         >
-          Apply
+          Apply Filters
         </button>
         <button 
-          className="w-1/2 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+          className="flex-1 py-3 border-2 border-amber-200 text-amber-800 rounded-lg hover:bg-amber-50 hover:border-amber-300 transition-all duration-300 font-medium"
           onClick={resetFilters}
         >
-          Reset
+          Reset All
         </button>
       </div>
     </aside>

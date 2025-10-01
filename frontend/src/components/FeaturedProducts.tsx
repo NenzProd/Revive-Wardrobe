@@ -68,8 +68,8 @@ const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishli
           </Link>
         </div>
         {/* Quick actions */}
-        <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="flex space-x-2">
+        <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
+          <div className="flex space-x-2 pointer-events-auto">
             <button 
               onClick={handleAddToWishlist}
               aria-label="Add to wishlist"
@@ -88,11 +88,11 @@ const ProductCard = ({ product, onAddToWishlist }: { product: any, onAddToWishli
         </div>
       </div>
       {/* Product info */}
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 border-t border-gray-100 text-center">
         <Link to={`/product/${slug}`}>
           <h3 className="text-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors line-clamp-2">{name}</h3>
         </Link>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-center items-center">
           {isSale && salePrice ? (
             <div className="flex items-center gap-2">
               <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>

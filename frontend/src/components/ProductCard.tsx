@@ -92,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
           )}
           
           <Link to={`/product/${slug}`}>
-            <h3 className="font-medium text-revive-black text-lg mb-3 group-hover:text-revive-red transition-colors">{name}</h3>
+            <h3 className="font-medium text-revive-black text-lg mb-3 group-hover:text-revive-red transition-colors text-center">{name}</h3>
           </Link>
           
           <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
@@ -160,8 +160,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
         </div>
         
         {/* Quick actions - Only keep the wishlist heart */}
-        <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="flex space-x-2">
+        <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
+          <div className="flex space-x-2 pointer-events-auto">
             {onAddToWishlist && (
               <button
                 className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
@@ -178,7 +178,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
             )}
             <button 
               onClick={handleView}
-              aria-label="Add to wishlist"
+              aria-label="Quick view"
               className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
             >
               <Eye size={18} />
@@ -188,7 +188,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
       </div>
       
       {/* Product info */}
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 border-t border-gray-100 text-center">
         {type === 'Unstitched' && (
           <span className="inline-block bg-revive-black text-white text-xs px-2 py-1 rounded mb-2">
             Unstitched
@@ -199,7 +199,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
           <h3 className="font-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors line-clamp-2">{name}</h3>
         </Link>
         
-        <div className="flex justify-between items-center">
+        <div className="flex justify-center items-center">
           {isSale && salePrice ? (
             <div className="flex items-center gap-2">
               <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>

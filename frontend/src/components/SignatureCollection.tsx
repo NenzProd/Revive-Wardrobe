@@ -174,8 +174,8 @@ const ProductCard = ({ product, onAddToWishlist }: ProductCardProps) => {
         </div>
         
         {/* Quick actions overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-t from-black/30 to-transparent transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="flex space-x-3">
+        <div className={`absolute inset-0 bg-gradient-to-t from-black/30 to-transparent transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
+          <div className="flex space-x-3 pointer-events-auto">
             <button 
               onClick={handleAddToWishlist}
               aria-label="Add to wishlist"
