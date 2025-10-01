@@ -91,7 +91,7 @@ const Navbar = () => {
             <div className="marquee-container">
               <div className="marquee-track">
                 <div className="marquee-content">
-                  <span className="text-sm font-serif tracking-wide inline-flex items-center whitespace-nowrap">
+                  <span className="text-sm font-playfair tracking-wide inline-flex items-center whitespace-nowrap">
                     <span className="inline-block animate-bounce-subtle">✨</span>
                     <span className="mx-2 font-light">Exclusive Drop</span>
                     <span className="mx-2 text-amber-200">·</span>
@@ -108,13 +108,13 @@ const Navbar = () => {
                   </span>
                 </div>
                 <div className="marquee-content">
-                  <span className="text-sm font-serif tracking-wide inline-flex items-center whitespace-nowrap">
+                  <span className="text-sm font-playfair tracking-wide inline-flex items-center whitespace-nowrap">
                     <span className="inline-block animate-bounce-subtle">✨</span>
                     <span className="mx-2 font-light">Exclusive Drop</span>
                     <span className="mx-2 text-amber-200">·</span>
                     <span className="mx-2 font-medium">One Design, One Masterpiece</span>
                     <span className="mx-2 text-amber-200">·</span>
-                    <span className="mx-2 font-light">Limited Edition Desgin</span>
+                    <span className="mx-2 font-light">Limited Edition Design</span>
                     <span className="inline-block animate-bounce-subtle mx-4">✨</span>
                     <span className="mx-2 font-light">Premium Quality</span>
                     <span className="mx-2 text-amber-200">·</span>
@@ -152,7 +152,7 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search luxury collections..."
-                  className="w-full py-2 px-4 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90"
+                  className="w-full py-2 px-4 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90 font-playfair"
                   autoFocus
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
@@ -196,7 +196,7 @@ const Navbar = () => {
                           if (link.name === 'Collections') {
                             return (
                               <div key={link.name} className="space-y-1">
-                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100">
+                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
                                   {link.name}
                                 </div>
                                 {navigationLinks.collections.map((collection) => (
@@ -204,7 +204,7 @@ const Navbar = () => {
                                     key={collection.path}
                                     to={collection.path}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300"
+                                    className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
                                   >
                                     {collection.name}
                                   </Link>
@@ -216,13 +216,13 @@ const Navbar = () => {
                           if (link.name === 'Services') {
                             return (
                               <div key={link.name} className="space-y-1">
-                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100">
+                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
                                   {link.name}
                                 </div>
                                 <Link
                                   to={link.path}
                                   onClick={() => setMobileMenuOpen(false)}
-                                  className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300"
+                                  className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
                                 >
                                   Stitching Service
                                 </Link>
@@ -236,7 +236,7 @@ const Navbar = () => {
                                 key={link.name}
                                 to={link.path}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium"
+                                className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium font-playfair"
                               >
                                 {link.name}
                               </Link>
@@ -323,7 +323,7 @@ const Navbar = () => {
                   >
                     <button
                       onClick={() => setCollectionsOpen(!collectionsOpen)}
-                      className="flex items-center gap-1 py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+                      className="flex items-center gap-1 py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group font-playfair"
                     >
                       {link.name}
                       <ChevronDown
@@ -341,7 +341,7 @@ const Navbar = () => {
                               key={collection.path}
                               to={collection.path}
                               onClick={() => setCollectionsOpen(false)}
-                              className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group ${index !== collections.length - 1 ? 'border-b border-amber-100/50' : ''
+                              className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group font-playfair ${index !== collections.length - 1 ? 'border-b border-amber-100/50' : ''
                                 }`}
                               style={{ animationDelay: `${index * 50}ms` }}
                             >
@@ -365,7 +365,7 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group"
+                    className="relative py-2 text-gray-800 hover:text-amber-800 transition-all duration-300 font-medium group font-playfair"
                   >
                     {link.name}
                     <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
@@ -384,7 +384,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search luxury collections..."
-                className="w-48 lg:w-64 px-4 py-2 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90 backdrop-blur-sm transition-all duration-300 focus:w-72"
+                className="w-48 lg:w-64 px-4 py-2 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90 backdrop-blur-sm transition-all duration-300 focus:w-72 font-playfair"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
@@ -468,7 +468,7 @@ const Navbar = () => {
                   }`}
               >
                 <IconComponent size={20} />
-                <span className="text-xs mt-1 font-medium">{item.name}</span>
+                <span className="text-xs mt-1 font-medium font-playfair">{item.name}</span>
               </Link>
             );
           })}
