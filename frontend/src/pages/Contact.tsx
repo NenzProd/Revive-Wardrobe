@@ -122,7 +122,7 @@ const Contact = () => {
       icon: MapPin,
       title: "Warehouse Address",
       content:
-        "Revive Wardrobe FZ-LLC\nCompass Building, Al Shohada Road, Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates",
+        "Depoter\nWarehouse 14, street 24, Al Quoz 4 , Dubai, United Arab Emirates",
       description: "For any queries or assistance, please contact us.",
     },
   ];

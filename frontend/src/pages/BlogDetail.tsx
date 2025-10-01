@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { Calendar, User, ArrowLeft, Share2, Clock } from 'lucide-react'
+import { Calendar, User, ArrowLeft, Share2, Clock, Copy, Check } from 'lucide-react'
+import { toast } from '@/hooks/use-toast'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -36,6 +37,25 @@ const BlogDetail = () => {
   const [post, setPost] = useState<BlogPostContent | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      toast({
+        title: "Link copied!",
+        description: "Blog post link has been copied to your clipboard."
+      })
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please copy the URL manually from your browser.",
+        variant: "destructive"
+      })
+    }
+  }
 
   useEffect(() => {
     async function fetchBlog() {
@@ -134,13 +154,26 @@ const BlogDetail = () => {
           <div className="max-w-3xl mx-auto">
             <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
             {/* Share Links */}
-            <div className="mt-12 pt-8 border-t">
-              <div className="flex items-center">
-                <span className="text-gray-600 mr-4">Share this article:</span>
+            <div className="mt-12 pt-8 border-t border-amber-100">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600 font-medium">Share this article:</span>
                 <div className="flex space-x-4">
-                  <a href="#" className="text-gray-500 hover:text-revive-red transition-colors">
-                    <Share2 size={18} />
-                  </a>
+                  <button 
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg transition-all duration-300 border border-amber-200 hover:border-amber-300 group"
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={18} className="text-green-600" />
+                        <span className="text-green-600 font-medium">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={18} className="group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">Copy Link</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

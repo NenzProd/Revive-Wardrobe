@@ -96,7 +96,7 @@ const Navbar = () => {
                     <span className="mx-2 text-amber-200">·</span>
                     <span className="mx-2 font-medium">One Design, One Masterpiece</span>
                     <span className="mx-2 text-amber-200">·</span>
-                    <span className="mx-2 font-light">Limited Edition Sales</span>
+                    <span className="mx-2 font-light">Limited Edition Design</span>
                     <span className="inline-block animate-bounce-subtle mx-4">✨</span>
                     <span className="mx-2 font-light">Premium Quality</span>
                     <span className="mx-2 text-amber-200">·</span>
@@ -113,7 +113,7 @@ const Navbar = () => {
                     <span className="mx-2 text-amber-200">·</span>
                     <span className="mx-2 font-medium">One Design, One Masterpiece</span>
                     <span className="mx-2 text-amber-200">·</span>
-                    <span className="mx-2 font-light">Limited Edition Sales</span>
+                    <span className="mx-2 font-light">Limited Edition Desgin</span>
                     <span className="inline-block animate-bounce-subtle mx-4">✨</span>
                     <span className="mx-2 font-light">Premium Quality</span>
                     <span className="mx-2 text-amber-200">·</span>
