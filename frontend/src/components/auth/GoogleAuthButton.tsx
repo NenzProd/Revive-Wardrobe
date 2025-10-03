@@ -31,7 +31,14 @@ export function GoogleAuthButton ({ isSignup = false, onSignupPhoneRequired }) {
         localStorage.setItem('token', res.data.token)
         await fetchUser(res.data.token)
         toast({ title: isSignup ? 'Signup Successful' : 'Login Successful', description: 'Welcome!' })
-        window.location.href = '/'
+        
+        // Redirect based on cart items
+        const currentCart = useCartStore.getState().cart
+        if (currentCart && currentCart.length > 0) {
+          window.location.href = '/cart'
+        } else {
+          window.location.href = '/shop'
+        }
       } else if (isSignup && res.data.message === 'Phone number required for signup.' && onSignupPhoneRequired) {
         // Ask for phone, then retry
         onSignupPhoneRequired(credentialResponse)

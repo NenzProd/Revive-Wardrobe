@@ -39,7 +39,7 @@ const ProductImageGallery = ({ images, onImageClick }: ProductImageGalleryProps)
           <img
             src={images[mainImage]}
             alt="Product"
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            className="w-full h-full object-contain transition-transform duration-300 hover:scale-105 bg-white"
           />
         </div>
         
@@ -71,7 +71,7 @@ const ProductImageGallery = ({ images, onImageClick }: ProductImageGalleryProps)
             <img
               src={image}
               alt={`Thumbnail ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-white"
             />
           </button>
         ))}

@@ -25,6 +25,7 @@ const Signup = () => {
   const { toast } = useToast()
   const setToken = useCartStore(state => state.setToken)
   const token = useCartStore(state => state.token)
+  const cart = useCartStore(state => state.cart)
   const backendUrl = useCartStore(state => state.backendUrl)
   const navigate = useNavigate()
   const [showPhoneModal, setShowPhoneModal] = useState(false)
@@ -101,7 +102,14 @@ const Signup = () => {
         localStorage.setItem('token', res.data.token)
         await fetchUser(res.data.token)
         toast({ title: 'Signup Successful', description: 'Welcome!' })
-        navigate('/')
+        
+        // Redirect based on cart items
+        const currentCart = useCartStore.getState().cart
+        if (currentCart && currentCart.length > 0) {
+          navigate('/cart')
+        } else {
+          navigate('/shop')
+        }
       } else {
         toast({ title: 'Google Signup Failed', description: res.data.message, variant: 'destructive' })
       }
@@ -139,9 +147,14 @@ const Signup = () => {
 
   useEffect(() => {
     if (token) {
-      navigate('/')
+      // Check if user has cart items
+      if (cart && cart.length > 0) {
+        navigate('/cart')
+      } else {
+        navigate('/shop')
+      }
     }
-  }, [token, navigate])
+  }, [token, cart, navigate])
 
   return (
     <>

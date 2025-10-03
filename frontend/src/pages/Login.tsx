@@ -26,11 +26,24 @@ const Login = () => {
   const token = useCartStore(state => state.token)
   const backendUrl = useCartStore(state => state.backendUrl)
   const fetchUser = useCartStore(state => state.fetchUser)
+  const cart = useCartStore(state => state.cart)
   const navigate = useNavigate()
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [otp, setOtp] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
   const [otpError, setOtpError] = useState('')
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (token) {
+      // Check if user has cart items
+      if (cart && cart.length > 0) {
+        navigate('/cart')
+      } else {
+        navigate('/shop')
+      }
+    }
+  }, [token, cart, navigate])
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -57,7 +70,14 @@ const Login = () => {
           title: 'Login Successful',
           description: 'Welcome back!'
         })
-        navigate('/')
+        
+        // Redirect based on cart items
+        const currentCart = useCartStore.getState().cart
+        if (currentCart && currentCart.length > 0) {
+          navigate('/cart')
+        } else {
+          navigate('/shop')
+        }
       } else {
         if (response.data.message && response.data.message.includes('verify your email before logging in')) {
           setShowOtpModal(true)
