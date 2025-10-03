@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import GlobalLoader from "./components/GlobalLoader";
+import { useLoaderStore } from "./stores/useLoaderStore";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -28,14 +30,18 @@ import StichingService from "./pages/StichingService";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
+const App = () => {
+  const { isLoading } = useLoaderStore();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <GlobalLoader isLoading={isLoading} />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
@@ -62,6 +68,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

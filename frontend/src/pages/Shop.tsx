@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCartStore } from '../stores/useCartStore';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '../types/product';
+import { usePageLoader } from '@/hooks/usePageLoader';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -30,6 +31,9 @@ const Shop = () => {
   const search = searchParams.get('search')?.toLowerCase() || '';
 
   const { products, loading, error } = useProductList();
+  
+  // Show global loader while products are loading
+  usePageLoader(loading);
 
   const toggleFilter = () => {
     setFilterOpen(!filterOpen);

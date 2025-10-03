@@ -9,6 +9,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchActive, setSearchActive] = useState(false);
+  const [desktopSearchActive, setDesktopSearchActive] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,8 +29,8 @@ const Navbar = () => {
       { name: 'Contact', path: '/contact', icon: 'Phone' }
     ],
     collections: [
-      { name: 'Ethnic Elegance', path: '/shop' },
-      { name: 'Graceful Abayas', path: '/shop' },
+      { name: 'Ethnic Elegance', path: '/shop?category=Ethnic+Elegance' },
+      { name: 'Graceful Abayas', path: '/shop?category=Graceful+Abayas' },
       { name: 'Designer Jalabiya', path: '/shop' }
     ],
     actions: [
@@ -56,6 +57,7 @@ const Navbar = () => {
     if (searchInput.trim()) {
       navigate(`/shop?search=${encodeURIComponent(searchInput.trim())}`);
       setSearchActive(false);
+      setDesktopSearchActive(false);
       setSearchInput('');
     }
   };
@@ -103,7 +105,7 @@ const Navbar = () => {
                     <span className="mx-2 text-amber-200">·</span>
                     <span className="mx-2 font-medium">Handcrafted Excellence</span>
                     <span className="mx-2 text-amber-200">·</span>
-                    <span className="mx-2 font-light">Free Worldwide Shipping</span>
+                    <span className="mx-2 font-light">Free Shipping</span>
                     <span className="inline-block animate-bounce-subtle mx-4">✨</span>
                   </span>
                 </div>
@@ -312,7 +314,7 @@ const Navbar = () => {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
             {navigationLinks.main.map((link) => {
               if (link.name === 'Collections' && link.dropdown) {
                 return (
@@ -380,22 +382,37 @@ const Navbar = () => {
           {/* Right Side Icons */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <div className="relative group">
-              <input
-                type="text"
-                placeholder="Search luxury collections..."
-                className="w-48 lg:w-64 px-4 py-2 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90 backdrop-blur-sm transition-all duration-300 focus:w-72 font-playfair"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-              />
+            {desktopSearchActive ? (
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="Search luxury collections..."
+                  className="w-48 lg:w-64 px-4 py-2 text-sm border border-amber-200 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent bg-white/90 backdrop-blur-sm transition-all duration-300 focus:w-72 font-playfair"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  autoFocus
+                  onBlur={() => {
+                    if (!searchInput.trim()) {
+                      setDesktopSearchActive(false);
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleSearch}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-amber-700 hover:text-amber-900 transition-colors p-1 hover:bg-amber-100 rounded-full"
+                >
+                  <Search size={16} />
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={handleSearch}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-amber-700 hover:text-amber-900 transition-colors p-1 hover:bg-amber-100 rounded-full"
+                onClick={() => setDesktopSearchActive(true)}
+                className="text-amber-700 hover:text-amber-900 transition-colors p-2 hover:bg-amber-50 rounded-full"
               >
-                <Search size={16} />
+                <Search size={20} />
               </button>
-            </div>
+            )}
 
             {/* Action Buttons */}
             {navigationLinks.actions.map((action) => {

@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 import StarRating from "@/components/StarRating";
 import { useReviewSummary } from "../hooks/useReviewSummary";
+import { usePageLoader } from "@/hooks/usePageLoader";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -39,6 +40,9 @@ const ProductDetail = () => {
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
+  
+  // Show global loader while product is loading
+  usePageLoader(loading);
   
   // Fetch review summary for the product
   const { summary: reviewSummary } = useReviewSummary(product?._id || "");
