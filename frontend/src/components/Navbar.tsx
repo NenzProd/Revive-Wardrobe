@@ -31,7 +31,7 @@ const Navbar = () => {
     collections: [
       { name: 'Ethnic Elegance', path: '/shop?category=Ethnic+Elegance' },
       { name: 'Graceful Abayas', path: '/shop?category=Graceful+Abayas' },
-      { name: 'Designer Jalabiya', path: '/shop' }
+      // { name: 'Designer Jalabiya', path: '/shop' }
     ],
     actions: [
       { name: 'Search', path: null, icon: 'Search', action: 'search' },

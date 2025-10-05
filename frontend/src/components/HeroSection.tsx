@@ -67,7 +67,7 @@ const HeroSection = () => {
       title: "\"Royal Comfort\" Designer Jalabiya",
       description: "Experience effortless charm with our flowy Jalabiya — a fusion of tradition and comfort. Tailored for women who embrace culture with a touch of luxury.",
       offer: "",
-      ctaText: "Explore Jalabiya Styles",
+      ctaText: "Launching Soon",
       modelImage: slide2,
       productImage: productImage2,
       link: "/shop"
@@ -77,7 +77,7 @@ const HeroSection = () => {
       title: "\"Heritage Chic\" Pakistani Dresses",
       description: "Celebrate culture with our elegant Pakistani dresses, adorned with intricate embroidery and timeless patterns. Crafted for weddings, festivities, and everyday elegance.",
       offer: "",
-      ctaText: "Discover Pakistani Wear",
+      ctaText: "Launching Soon",
       modelImage: slide3,
       productImage: productImage3,
       link: "/shop"
