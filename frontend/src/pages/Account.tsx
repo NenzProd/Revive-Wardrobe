@@ -138,9 +138,26 @@ const Account = () => {
       state: addr.state || '',
       city: addr.city || '',
       landmark: addr.landmark || '',
-      email: addr.email || '',
-      phone: addr.phone || ''
+      email: addr.email || user?.email || '',
+      phone: addr.phone || user?.phone || ''
     })
+  }
+
+  const handleAddNewAddress = () => {
+    setShowAddressForm(true);
+    setEditAddressIdx(-1);
+    setAddressForm({
+      first_name: '',
+      last_name: '',
+      address: '',
+      country: '',
+      postcode: '',
+      state: '',
+      city: '',
+      landmark: '',
+      email: user?.email || '',
+      phone: user?.phone || ''
+    });
   }
 
   const handleRemoveAddress = async idx => {
@@ -500,69 +517,83 @@ const Account = () => {
                     <p className="text-gray-500">No addresses saved yet</p>
                     <button 
                       className="mt-4 bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
-                      onClick={() => setShowAddressForm(true)}
+                      onClick={handleAddNewAddress}
                     >
                       Add New Address
                     </button>
                   </div>
                 ) : showAddressForm ? (
-                  <form className="max-w-lg mx-auto border rounded-lg p-6 bg-gray-50" onSubmit={handleAddAddress}>
+                  <form className="max-w-4xl mx-auto border rounded-lg p-6 bg-gray-50" onSubmit={handleAddAddress}>
                     <h3 className="text-lg font-semibold mb-4">{editAddressIdx !== -1 ? 'Edit Address' : 'Add New Address'}</h3>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">First Name</label>
-                      <input type="text" name="first_name" value={addressForm.first_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">First Name *</label>
+                        <input type="text" name="first_name" value={addressForm.first_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Last Name</label>
+                        <input type="text" name="last_name" value={addressForm.last_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium mb-1">Address</label>
+                        <input type="text" name="address" value={addressForm.address} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Landmark</label>
+                        <input type="text" name="landmark" value={addressForm.landmark} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">City *</label>
+                        <input type="text" name="city" value={addressForm.city} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">State *</label>
+                        <input type="text" name="state" value={addressForm.state} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Postcode *</label>
+                        <input type="text" name="postcode" value={addressForm.postcode} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium mb-1">Country *</label>
+                        <select
+                          name="country"
+                          value={addressForm.country}
+                          onChange={handleAddressInput}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          required
+                        >
+                          <option value="">Select Country</option>
+                          <option value="UAE">UAE</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Email *</label>
+                        <input 
+                          type="email" 
+                          name="email" 
+                          value={addressForm.email} 
+                          onChange={handleAddressInput} 
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed" 
+                          disabled 
+                          required 
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Email is auto-filled from your account</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Phone</label>
+                        <input 
+                          type="tel" 
+                          name="phone" 
+                          value={addressForm.phone} 
+                          onChange={handleAddressInput} 
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                          placeholder="Enter phone number (optional)"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Phone is optional and can be edited</p>
+                      </div>
                     </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Last Name</label>
-                      <input type="text" name="last_name" value={addressForm.last_name} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Address</label>
-                      <input type="text" name="address" value={addressForm.address} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Landmark</label>
-                      <input type="text" name="landmark" value={addressForm.landmark} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">City</label>
-                      <input type="text" name="city" value={addressForm.city} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">State</label>
-                      <input type="text" name="state" value={addressForm.state} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Postcode</label>
-                      <input type="text" name="postcode" value={addressForm.postcode} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Country</label>
-                      <select
-                        name="country"
-                        value={addressForm.country}
-                        onChange={handleAddressInput}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        required
-                      >
-                        <option value="">Select Country</option>
-                        <option value="UAE">UAE</option>
-                        <option value="Oman">Oman</option>
-                        <option value="Saudi Arabia">Saudi Arabia</option>
-                        <option value="Qatar">Qatar</option>
-                        <option value="Bahrain">Bahrain</option>
-                        <option value="Kuwait">Kuwait</option>
-                      </select>
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Email</label>
-                      <input type="email" name="email" value={addressForm.email} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                    </div>
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium mb-1">Phone</label>
-                      <input type="tel" name="phone" value={addressForm.phone} onChange={handleAddressInput} className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                    </div>
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 mt-6">
                       <button type="submit" className="bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300" disabled={isSavingAddress}>
                         {isSavingAddress ? (editAddressIdx !== -1 ? 'Saving...' : 'Saving...') : (editAddressIdx !== -1 ? 'Save Changes' : 'Save Address')}
                       </button>
@@ -630,7 +661,7 @@ const Account = () => {
                     </ul>
                     <button 
                       className="mt-6 bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
-                      onClick={() => { setShowAddressForm(true); setEditAddressIdx(-1); setAddressForm({ first_name: '', last_name: '', address: '', country: '', postcode: '', state: '', city: '', landmark: '', email: '', phone: '' }) }}
+                      onClick={handleAddNewAddress}
                     >
                       Add New Address
                     </button>

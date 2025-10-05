@@ -275,8 +275,7 @@ const Contact = () => {
                       Shipping & Delivery
                     </h3>
                     <p className="text-gray-600 text-sm">
-                      We deliver across India within 3-7 business days. Free
-                      shipping on orders above ₹2,000.
+                      We deliver across UAE within 3-7 business days.
                     </p>
                   </div>
 

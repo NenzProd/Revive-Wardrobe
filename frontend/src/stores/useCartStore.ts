@@ -5,7 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { Product, CartItem } from "../types/product";
 import { priceSymbol } from "../config/constants";
 
-const currency = "₹";
+const currency = "AED"; // Default currency
 const deliveryFee = 10;
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
