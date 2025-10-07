@@ -307,10 +307,10 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex container mx-auto px-6 py-4 items-center justify-between">
+        <div className="hidden lg:flex container mx-auto px-6 py-2 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-12 transition-transform group-hover:scale-105" />
+            <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-12 w-40 transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Navigation Links */}
