@@ -198,7 +198,8 @@ const Navbar = () => {
                           if (link.name === 'Collections') {
                             return (
                               <div key={link.name} className="space-y-1">
-                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
+                                <div className="flex items-center gap-3 py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
+                                  <Tag size={18} className="text-amber-700" />
                                   {link.name}
                                 </div>
                                 {navigationLinks.collections.map((collection) => (
@@ -206,8 +207,9 @@ const Navbar = () => {
                                     key={collection.path}
                                     to={collection.path}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
+                                    className="flex items-center gap-3 py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
                                   >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
                                     {collection.name}
                                   </Link>
                                 ))}
@@ -218,14 +220,16 @@ const Navbar = () => {
                           if (link.name === 'Services') {
                             return (
                               <div key={link.name} className="space-y-1">
-                                <div className="py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
+                                <div className="flex items-center gap-3 py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
+                                  <Info size={18} className="text-amber-700" />
                                   {link.name}
                                 </div>
                                 <Link
                                   to={link.path}
                                   onClick={() => setMobileMenuOpen(false)}
-                                  className="block py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
+                                  className="flex items-center gap-3 py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
                                 >
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
                                   Stitching Service
                                 </Link>
                               </div>
@@ -233,13 +237,18 @@ const Navbar = () => {
                           }
 
                           if (link.path) {
+                            const IconComponent = link.name === 'Shop' ? Tag : 
+                                                 link.name === 'Contact' ? Phone : 
+                                                 link.name === 'Home' ? Home : null;
+                            
                             return (
                               <Link
                                 key={link.name}
                                 to={link.path}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium font-playfair"
+                                className="flex items-center gap-3 py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium font-playfair"
                               >
+                                {IconComponent && <IconComponent size={18} className="text-amber-700" />}
                                 {link.name}
                               </Link>
                             );
@@ -310,7 +319,7 @@ const Navbar = () => {
         <div className="hidden lg:flex container mx-auto px-6 py-2 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="h-12 w-40 transition-transform group-hover:scale-105" />
+            <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="w-40 transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Navigation Links */}
