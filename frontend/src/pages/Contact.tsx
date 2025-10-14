@@ -87,7 +87,7 @@ const Contact = () => {
       console.error("Error:", error);
       
       // Fallback: Show contact info instead of error
-      setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 52 191 9358");
+      setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 58 244 7684");
       toast({
         title: "Connection Issue",
         description: "Please contact us directly using the information provided above.",
@@ -108,7 +108,7 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Call Us",
-      content: "+971 52 191 9358",
+      content: "+971 58 244 7684",
       description: "Sun-Thu, 9AM-6PM UAE Time",
     },
     {

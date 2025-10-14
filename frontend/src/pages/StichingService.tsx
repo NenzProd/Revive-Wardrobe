@@ -104,7 +104,7 @@ const StichingService = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 52 191 9358");
+      setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 58 244 7684");
       toast({
         title: "Connection Issue",
         description: "Please contact us directly using the information provided.",
@@ -449,7 +449,7 @@ const StichingService = () => {
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                     <Phone size={16} />
-                    <span>+971 52 191 9358</span>
+                    <span>+971 58 244 7684</span>
                   </div>
                   <div className="flex items-center space-x-2 text-sm text-gray-500 mt-2">
                     <Mail size={16} />
