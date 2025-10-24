@@ -94,7 +94,7 @@ const SignatureCollection = () => {
         {/* View All Button */}
         <div className="text-center mt-12">
           <Link 
-            to="/shop?category=graceful-abayas" 
+            to="/shop?category=Graceful+Abayas" 
             className="inline-flex items-center px-8 py-3 bg-revive-red text-white font-medium rounded-lg hover:bg-revive-red/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
           >
             Explore Full Collection

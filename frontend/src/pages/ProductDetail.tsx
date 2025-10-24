@@ -29,7 +29,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart, wishlist, addToWishlist } = useCartStore();
-  
+
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
@@ -40,10 +40,10 @@ const ProductDetail = () => {
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
-  
+
   // Show global loader while product is loading
   usePageLoader(loading);
-  
+
   // Fetch review summary for the product
   const { summary: reviewSummary } = useReviewSummary(product?._id || "");
 
@@ -169,8 +169,8 @@ const ProductDetail = () => {
   };
 
   return (
-    
-      <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+
+    <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 flex-grow">
@@ -207,10 +207,10 @@ const ProductDetail = () => {
               <div className="flex items-center gap-2">
                 {reviewSummary && reviewSummary.totalReviews > 0 ? (
                   <>
-                    <StarRating 
-                      rating={reviewSummary.averageRating} 
-                      readonly 
-                      size="md" 
+                    <StarRating
+                      rating={reviewSummary.averageRating}
+                      readonly
+                      size="md"
                     />
                     <span className="text-sm text-gray-600">
                       ({reviewSummary.totalReviews} review{reviewSummary.totalReviews !== 1 ? 's' : ''})
@@ -227,27 +227,43 @@ const ProductDetail = () => {
               {displayPrice !== null ? displayPrice.toLocaleString() : ""}
             </div>
 
-            
+
 
             {/* Size Selection */}
             {product.variants && product.variants.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Size</h3>
                 <div className="flex gap-2 flex-wrap">
-                  {product.variants.map((variant) => (
-                    <button
-                      key={variant.filter_value}
-                      className={`px-4 py-2 border ${
-                        selectedSize === variant.filter_value
-                          ? "border-revive-red bg-revive-red text-white"
-                          : "border-gray-300 hover:border-revive-red"
-                      } rounded-md transition-colors`}
-                      onClick={() => setSelectedSize(variant.filter_value)}
-                      disabled={variant.stock === 0}
-                    >
-                      {variant.filter_value}
-                    </button>
-                  ))}
+                  {product.variants.map((variant) => {
+                    // Map size to measurement (you can adjust these values based on your actual size chart)
+                    const sizeMeasurements: Record<string, string> = {
+                      'XS': '50',
+                      'S': '52',
+                      'M': '54',
+                      'L': '56',
+                      'XL': '58',
+                      'XXL': '60'
+                    };
+                    const measurement = sizeMeasurements[variant.filter_value] || '';
+
+                    return (
+                      <button
+                        key={variant.filter_value}
+                        className={`px-4 py-2 border ${selectedSize === variant.filter_value
+                            ? "border-revive-red bg-revive-red text-white"
+                            : "border-gray-300 hover:border-revive-red"
+                          } rounded-md transition-colors flex flex-col items-center ${variant.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        onClick={() => setSelectedSize(variant.filter_value)}
+                        disabled={variant.stock === 0}
+                      >
+                        <span className="font-medium">{variant.filter_value}</span>
+                        {measurement && (
+                          <span className="text-xs mt-0.5">{measurement}</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="mt-2 flex items-center gap-4">
                   <button
@@ -264,7 +280,7 @@ const ProductDetail = () => {
                   <span className="text-xs font-medium">
                     {selectedVariant?.stock !== undefined ? (
                       selectedVariant.stock > 20 ? (
-                        <span className="text-green-600">In stock</span>
+                        <span className="text-green-600"></span>
                       ) : selectedVariant.stock > 10 ? (
                         <span className="text-yellow-600">
                           Only {selectedVariant.stock} left in stock
