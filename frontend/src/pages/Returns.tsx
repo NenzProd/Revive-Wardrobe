@@ -1,9 +1,16 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SEO from '@/components/SEO'
 
 function Returns () {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Returns & Refunds Policy - Easy Returns"
+        description="Learn about Revive Wardrobe's return, refund, and cancellation policy. Easy returns within 3 days for unopened products."
+        keywords="returns policy, refunds, cancellation, exchange, return process"
+        canonical="/returns"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Returns, Refunds & Cancellation Policy</h1>

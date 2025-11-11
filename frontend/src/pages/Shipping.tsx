@@ -1,9 +1,16 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SEO from '@/components/SEO'
 
 function Shipping() {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Shipping & Delivery Policy - Fast Delivery"
+        description="Learn about Revive Wardrobe's shipping and delivery policy. UAE delivery in 1-3 days, international shipping available. Flat AED 20 shipping within UAE."
+        keywords="shipping policy, delivery, UAE shipping, international delivery, shipping fees"
+        canonical="/shipping"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Shipping, Delivery & Payment Policies</h1>

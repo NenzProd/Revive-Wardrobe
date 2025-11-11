@@ -12,6 +12,7 @@ import { useCartStore } from "@/stores/useCartStore";
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { OTPInput } from '@/components/auth/OTPInput'
+import SEO from '@/components/SEO'
 
 
 const Login = () => {
@@ -135,7 +136,12 @@ const Login = () => {
 
   return (
     <>
-
+      <SEO 
+        title="Login - Sign In to Your Account"
+        description="Sign in to your Revive Wardrobe account to access your orders, wishlist, and personalized shopping experience."
+        keywords="login, sign in, customer account, user login"
+        canonical="/login"
+      />
          <Navbar />
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8'>
  

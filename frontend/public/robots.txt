@@ -1,3 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /checkout
+Disallow: /account
+Disallow: /cart
+
+Sitemap: https://revivewardrobe.com/sitemap.xml
+
+# Specific bot rules
 User-agent: Googlebot
 Allow: /
 
@@ -8,7 +19,4 @@ User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /

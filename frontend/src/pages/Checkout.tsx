@@ -9,6 +9,7 @@ import { priceSymbol } from "../config/constants";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from '../types/product'
+import SEO from "../components/SEO";
 type CartItemWithPrice = CartItem & { price?: number, sku_id?: string }
 
 // Add Razorpay type declaration for TypeScript
@@ -554,6 +555,12 @@ function Checkout() {
 
   return (
      <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Checkout - Complete Your Order"
+        description="Complete your purchase at Revive Wardrobe. Secure checkout with multiple payment options and fast delivery across UAE."
+        keywords="checkout, secure payment, online payment, order completion"
+        canonical="/checkout"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl font-serif mb-8 flex items-center gap-2">

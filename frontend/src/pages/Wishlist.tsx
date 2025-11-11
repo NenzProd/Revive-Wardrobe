@@ -5,6 +5,7 @@ import Newsletter from '../components/Newsletter'
 import { Heart } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import { useCartStore } from '../stores/useCartStore'
+import SEO from '../components/SEO'
 
 const Wishlist = () => {
   const wishlist = useCartStore(state => state.wishlist)
@@ -19,6 +20,12 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="My Wishlist - Saved Items"
+        description="View your saved fashion items at Revive Wardrobe. Keep track of your favorite products and add them to cart when ready."
+        keywords="wishlist, saved items, favorite products, fashion wishlist"
+        canonical="/wishlist"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         {/* Page Header */}

@@ -23,6 +23,7 @@ import React from "react";
 import StarRating from "@/components/StarRating";
 import { useReviewSummary } from "../hooks/useReviewSummary";
 import { usePageLoader } from "@/hooks/usePageLoader";
+import SEO from "../components/SEO";
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -171,6 +172,14 @@ const ProductDetail = () => {
   return (
 
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title={`${product.name} - ${product.category}`}
+        description={product.description || `Shop ${product.name} at Revive Wardrobe. ${product.type} clothing with premium quality and elegant design.`}
+        keywords={`${product.name}, ${product.category}, ${product.type}, buy ${product.name}, fashion, clothing`}
+        canonical={`/product/${product.slug}`}
+        ogImage={product.image[0]}
+        ogType="product"
+      />
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 flex-grow">

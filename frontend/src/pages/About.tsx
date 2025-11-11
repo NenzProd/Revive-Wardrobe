@@ -2,10 +2,17 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Newsletter from '../components/Newsletter'
+import SEO from '../components/SEO'
 
 function About () {
   return (
     <div className='min-h-screen bg-white flex flex-col pb-[70px] md:pb-0'>
+      <SEO 
+        title="About Us - Our Story & Mission"
+        description="Learn about Revive Wardrobe - A fashion-forward brand born in the UAE, blending timeless tradition with bold innovation. Discover our commitment to affordable, eco-conscious fashion."
+        keywords="about revive wardrobe, fashion brand UAE, eco-conscious fashion, sustainable clothing, our story"
+        canonical="/about"
+      />
       <Navbar />
       <div className='container mx-auto px-4 py-8 flex-grow'>
         <div className='max-w-3xl mx-auto bg-white rounded-lg shadow-sm border p-8'>

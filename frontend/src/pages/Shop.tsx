@@ -12,6 +12,7 @@ import { useCartStore } from '../stores/useCartStore';
 import { useToast } from '@/hooks/use-toast';
 import { Product } from '../types/product';
 import { usePageLoader } from '@/hooks/usePageLoader';
+import SEO from '../components/SEO';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
@@ -107,6 +108,12 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Shop - Browse Our Fashion Collection"
+        description="Shop the latest fashion trends at Revive Wardrobe. Browse our curated collection of elegant attire, stitched and unstitched clothing with various fabrics and styles."
+        keywords="shop fashion, buy clothing online, women's fashion, men's fashion, stitched clothing, unstitched fabric, online boutique"
+        canonical="/shop"
+      />
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">

@@ -1,10 +1,17 @@
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import React from 'react'
+import SEO from '@/components/SEO'
 
 function Terms () {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Terms & Conditions - Legal Information"
+        description="Read Revive Wardrobe's terms and conditions. Learn about our policies, user agreements, and legal information for shopping with us."
+        keywords="terms and conditions, legal, user agreement, policies, terms of service"
+        canonical="/terms"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Terms & Conditions</h1>

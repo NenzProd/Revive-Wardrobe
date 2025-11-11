@@ -5,6 +5,7 @@ import Newsletter from "../components/Newsletter";
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import SEO from "../components/SEO";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -129,6 +130,12 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Contact Us - Get in Touch"
+        description="Contact Revive Wardrobe for any queries about our fashion collections, orders, or services. We're here to help you. Email: info@revivewardrobe.com | Phone: +971 58 244 7684"
+        keywords="contact revive wardrobe, customer service, fashion support, UAE contact, email support"
+        canonical="/contact"
+      />
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 flex-grow">

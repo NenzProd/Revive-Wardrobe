@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import axios from 'axios'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SEO from '@/components/SEO'
 
 type Step = "enter-contact" | "verify-otp" | "reset-password";
 
@@ -109,6 +110,12 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <SEO 
+        title="Forgot Password - Reset Your Password"
+        description="Reset your Revive Wardrobe account password. Enter your email to receive a verification code and create a new password."
+        keywords="forgot password, reset password, password recovery, account recovery"
+        canonical="/forgot-password"
+      />
      <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8">
      

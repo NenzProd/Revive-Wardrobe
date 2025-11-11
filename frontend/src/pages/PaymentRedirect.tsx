@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 function PaymentRedirect() {
   const [searchParams] = useSearchParams();
@@ -107,6 +108,12 @@ function PaymentRedirect() {
 
   return (
      <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Payment Processing - Verifying Your Order"
+        description="Processing your payment. Please wait while we verify your transaction."
+        keywords="payment processing, order verification, payment confirmation"
+        canonical="/payment-redirect"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
         <div className="max-w-md w-full text-center">

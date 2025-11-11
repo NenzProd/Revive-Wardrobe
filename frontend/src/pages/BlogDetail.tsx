@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { Calendar, User, ArrowLeft, Share2, Clock } from 'lucide-react'
+import SEO from '../components/SEO'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -115,6 +116,14 @@ const BlogDetail = () => {
 
   return (
     <div className="min-h-screen bg-white ">
+      <SEO 
+        title={post ? `${post.title} - Blog` : "Blog Post"}
+        description={post ? post.excerpt : "Read our latest fashion blog post at Revive Wardrobe"}
+        keywords={post ? `${post.category}, fashion blog, style guide, ${post.title}` : "fashion blog, style guide"}
+        canonical={`/blog/${slug}`}
+        ogImage={post?.imageUrl}
+        ogType="article"
+      />
       <Navbar />
       <div className="pt-20 md:pt-28 pb-16 ">
         <div className="container mx-auto px-4">

@@ -5,6 +5,7 @@ import Newsletter from "../components/Newsletter";
 import { Scissors, MapPin, Phone, Mail, Send, Package, Ruler, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import SEO from "../components/SEO";
 
 const StichingService = () => {
   const { toast } = useToast();
@@ -152,6 +153,12 @@ const StichingService = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Custom Stitching Service - Expert Tailoring"
+        description="Get custom stitching services at Revive Wardrobe. Expert tailors create beautiful ethnic wear, abayas, and jalabiya with precision and care."
+        keywords="custom stitching, tailoring service, custom clothing, bespoke fashion, alterations, custom abayas"
+        canonical="/stitching-service"
+      />
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 flex-grow">

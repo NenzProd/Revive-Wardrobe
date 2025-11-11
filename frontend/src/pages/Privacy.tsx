@@ -1,10 +1,17 @@
 import React from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SEO from '@/components/SEO'
 
 function Privacy () {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="Privacy & Cookie Policy - Data Protection"
+        description="Learn how Revive Wardrobe protects your privacy and handles your personal data. Read our comprehensive privacy and cookie policy."
+        keywords="privacy policy, cookie policy, data protection, personal information, security"
+        canonical="/privacy"
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl md:text-4xl font-serif mb-4 text-center">Privacy & Cookie Policy</h1>

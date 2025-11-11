@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { priceSymbol } from '../config/constants';
+import SEO from '../components/SEO';
 
 const Cart = () => {
   const { 
@@ -96,6 +97,12 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <SEO 
+        title="Shopping Cart - Review Your Items"
+        description="Review your shopping cart at Revive Wardrobe. Check your selected items, update quantities, and proceed to secure checkout."
+        keywords="shopping cart, checkout, online shopping, fashion cart"
+        canonical="/cart"
+      />
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">

@@ -12,6 +12,7 @@ import { useCartStore } from '@/stores/useCartStore'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { OTPInput } from '@/components/auth/OTPInput'
+import SEO from '@/components/SEO'
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -158,6 +159,12 @@ const Signup = () => {
 
   return (
     <>
+      <SEO 
+        title="Sign Up - Create Your Account"
+        description="Create your Revive Wardrobe account to enjoy personalized shopping, exclusive offers, and easy order tracking."
+        keywords="sign up, create account, register, new customer, join revive wardrobe"
+        canonical="/signup"
+      />
    <Navbar />
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-revive-blush to-white px-4 py-8'>
     

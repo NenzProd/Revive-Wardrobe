@@ -7,6 +7,7 @@ import { User, Package, Heart, Settings, LogOut, MapPin, Pencil, Trash2 } from '
 import { useCartStore } from '../stores/useCartStore';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
+import SEO from '../components/SEO';
 
 const Account = () => {
   const [activeTab, setActiveTab] = useState('orders');
@@ -330,6 +331,12 @@ const Account = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
+      <SEO 
+        title="My Account - Manage Your Profile"
+        description="Manage your Revive Wardrobe account. View orders, update profile, manage addresses, and track your fashion purchases."
+        keywords="my account, user profile, order history, manage account, customer dashboard"
+        canonical="/account"
+      />
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 flex-grow">

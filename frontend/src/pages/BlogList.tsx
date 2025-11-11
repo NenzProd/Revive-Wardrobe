@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowRight, Calendar, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -114,6 +115,12 @@ const BlogList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO 
+        title="Fashion Blog - Style Guides & Insights"
+        description="Explore Revive Wardrobe's fashion blog. Get style guides, fashion insights, and behind-the-scenes glimpses into our world of elegance."
+        keywords="fashion blog, style guide, fashion tips, clothing trends, fashion insights, wardrobe ideas"
+        canonical="/blog"
+      />
       <Navbar />
       <div className="pb-16">
         <div className="container mx-auto px-4">
