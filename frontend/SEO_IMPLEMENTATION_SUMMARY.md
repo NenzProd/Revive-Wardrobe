@@ -65,6 +65,8 @@ All pages now have dynamic SEO with proper metadata:
 Updated `frontend/vite.config.ts` with vite-plugin-sitemap:
 - Hostname: https://revivewardrobe.com
 - All main routes included
+- **Dynamic product URLs** - Automatically fetches all products from backend during build
+- Product URLs format: `/product/{slug}` (e.g., `/product/emerald-bloom-ensemble`)
 - Excluded: /404, /admin, /api
 - Readable format enabled
 

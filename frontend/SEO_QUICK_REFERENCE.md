@@ -181,12 +181,13 @@ Open DevTools (F12) → Elements → Look for `<head>` section:
 - Automatically generated during build
 - Located at: `dist/sitemap.xml`
 - Accessible at: `https://revivewardrobe.com/sitemap.xml`
+- **Includes all product URLs dynamically** - Fetched from backend during build
 
 ### Robots.txt
 - Located at: `frontend/public/robots.txt`
 - Accessible at: `https://revivewardrobe.com/robots.txt`
 
-### Adding New Routes to Sitemap
+### Adding New Static Routes to Sitemap
 Edit `frontend/vite.config.ts`:
 
 ```typescript
@@ -196,9 +197,17 @@ sitemap({
     '/',
     '/shop',
     '/your-new-route', // Add here
+    ...productRoutes, // Dynamic product routes
   ],
 })
 ```
+
+### Dynamic Product URLs
+Product URLs are automatically included in the sitemap:
+- Format: `/product/{slug}`
+- Example: `/product/emerald-bloom-ensemble`
+- Fetched from backend API during production build
+- See `SITEMAP_GUIDE.md` for detailed information
 
 ## Need Help?
 
