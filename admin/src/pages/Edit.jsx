@@ -6,11 +6,13 @@ import { toast } from 'react-toastify'
 import PropTypes from 'prop-types'
 import { assets } from '../assets/assets'
 import Select from 'react-select'
+import Swal from 'sweetalert2'
 
 function Edit ({ token }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState(false)
   const [image1, setImage1] = useState(null)
   const [image2, setImage2] = useState(null)
   const [image3, setImage3] = useState(null)
@@ -22,7 +24,6 @@ function Edit ({ token }) {
   const [type, setType] = useState('Stitched')
   const [bestseller, setBestseller] = useState(false)
   const [slug, setSlug] = useState('')
-  const [fabric, setFabric] = useState('Lawn')
   const [variants, setVariants] = useState([
     {
       sku: '',
@@ -69,7 +70,6 @@ function Edit ({ token }) {
           setType(p.type || 'Stitched')
           setBestseller(!!p.bestseller)
           setSlug(p.slug || '')
-          setFabric(p.fabric || 'Lawn')
           setVariants(Array.isArray(p.variants) && p.variants.length > 0 ? p.variants : [{
             sku: '',
             purchase_price: '',
@@ -100,20 +100,7 @@ function Edit ({ token }) {
     fetchProduct()
   }, [id, navigate])
 
-  useEffect(() => {
-    // Auto-generate slug from name
-    if (name) {
-      setSlug(
-        name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)+/g, '')
-      )
-    } else {
-      setSlug('')
-    }
-    // No longer auto-generate SKUs here, will do per variant below
-  }, [name])
+  // Removed auto-slug generation on edit - slug should not change
 
   function handleImageChange (idx, file) {
     if (idx === 0) setImage1(file)
@@ -134,8 +121,44 @@ function Edit ({ token }) {
     setVariants(v)
   }
 
-  function handleRemoveVariant (idx) {
-    if (variants.length > 1) setVariants(variants.filter((_, i) => i !== idx))
+  async function handleRemoveVariant (idx) {
+    if (variants.length <= 1) {
+      Swal.fire({
+        title: 'Cannot Remove',
+        text: 'At least one variant is required for the product.',
+        icon: 'warning',
+        confirmButtonColor: '#3b82f6'
+      })
+      return
+    }
+
+    const variant = variants[idx]
+    const variantInfo = variant.filter_value ? `Size: ${variant.filter_value}` : `Variant ${idx + 1}`
+    
+    const result = await Swal.fire({
+      title: 'Remove Variant?',
+      html: `
+        <p class="text-gray-700 mb-3">Are you sure you want to remove this variant?</p>
+        <div class="bg-gray-50 border border-gray-200 p-3 rounded text-left">
+          <p class="text-sm"><strong>SKU:</strong> ${generateSku(slug, variant.filter_value) || 'Not set'}</p>
+          <p class="text-sm"><strong>${variantInfo}</strong></p>
+          <p class="text-sm"><strong>Price:</strong> ${variant.retail_price || 'Not set'}</p>
+        </div>
+        ${variant.deporterId ? '<p class="text-yellow-600 text-sm mt-3">⚠️ This variant exists in Depoter and will be removed from there as well.</p>' : ''}
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, remove it',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    })
+
+    if (result.isConfirmed) {
+      setVariants(variants.filter((_, i) => i !== idx))
+      toast.success('Variant removed')
+    }
   }
 
   function handleAddVariant () {
@@ -153,7 +176,11 @@ function Edit ({ token }) {
 
   async function handleSubmit (e) {
     e.preventDefault()
+    
+    if (updating) return // Prevent double submission
+    
     try {
+      setUpdating(true)
       const formData = new FormData()
       formData.append('id', id)
       formData.append('name', name)
@@ -162,7 +189,6 @@ function Edit ({ token }) {
       formData.append('type', type)
       formData.append('bestseller', bestseller)
       formData.append('slug', slug)
-      formData.append('fabric', fabric)
       // Ensure each variant has a unique SKU before submitting
       const variantsWithSku = variants.map(variant => ({
         ...variant,
@@ -179,9 +205,11 @@ function Edit ({ token }) {
         navigate('/list')
       } else {
         toast.error(res.data.message)
+        setUpdating(false)
       }
     } catch {
       toast.error('Error updating product')
+      setUpdating(false)
     }
   }
 
@@ -239,15 +267,15 @@ function Edit ({ token }) {
               />
             </div>
             <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug (Cannot be changed)</label>
               <input
                 id="slug"
-                onChange={e => setSlug(e.target.value)}
                 value={slug}
-                className="w-full px-3 py-2 bg-white"
+                className="w-full px-3 py-2 bg-gray-100 cursor-not-allowed"
                 type="text"
                 placeholder="product-url-slug"
-                required
+                readOnly
+                disabled
               />
             </div>
           </div>
@@ -292,22 +320,6 @@ function Edit ({ token }) {
               >
                 <option value="Stitched">Stitched</option>
                 <option value="Unstitched">Unstitched</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="fabric" className="block text-sm font-medium text-gray-700 mb-1">Fabric</label>
-              <select
-                id="fabric"
-                onChange={e => setFabric(e.target.value)}
-                value={fabric}
-                className="w-full px-3 py-2 bg-white"
-                required
-              >
-                <option value="Lawn">Lawn</option>
-                <option value="Chiffon">Chiffon</option>
-                <option value="Silk">Silk</option>
-                <option value="Cotton">Cotton</option>
-                <option value="Organza">Organza</option>
               </select>
             </div>
           </div>
@@ -363,13 +375,25 @@ function Edit ({ token }) {
                       placeholder="Select filter value..."
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                    <input 
+                      type="number" 
+                      className="w-full px-3 py-2 bg-gray-100 cursor-not-allowed" 
+                      value={variant.stock || 0} 
+                      readOnly 
+                      disabled
+                      title="Stock is managed by Depoter"
+                    />
+                  </div>
                   <div className="flex items-end">
-                    {/* Only allow removing new variants (no deporterId/id) and if more than 1 variant */}
-                    {(!('deporterId' in variant || 'id' in variant) && variants.length > 1) && (
-                      <button type="button" className="text-red-600 font-medium ml-2" onClick={() => handleRemoveVariant(idx)}>
-                        Remove
-                      </button>
-                    )}
+                    <button 
+                      type="button" 
+                      className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium" 
+                      onClick={() => handleRemoveVariant(idx)}
+                    >
+                      Remove Variant
+                    </button>
                   </div>
                 </div>
               </div>
@@ -393,9 +417,17 @@ function Edit ({ token }) {
         </div>
         <button 
           type="submit" 
-          className="mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start"
+          disabled={updating}
+          className={`mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start flex items-center justify-center gap-2 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Update Product
+          {updating ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Updating...</span>
+            </>
+          ) : (
+            'Update Product'
+          )}
         </button>
       </form>
     </div>

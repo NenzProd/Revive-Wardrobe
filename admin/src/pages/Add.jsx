@@ -9,6 +9,7 @@ import Select from "react-select";
 export const backendUrls = import.meta.env.VITE_BACKEND_URL;
 
 const Add = ({ token }) => {
+  const [submitting, setSubmitting] = useState(false);
   const [image1, setImage1] = useState(false);
   const [image2, setImage2] = useState(false);
   const [image3, setImage3] = useState(false);
@@ -21,7 +22,6 @@ const Add = ({ token }) => {
   const [type, setType] = useState("Stitched");
   const [bestseller, setBestseller] = useState(false);
   const [slug, setSlug] = useState("");
-  const [fabric, setFabric] = useState("Lawn");
   const [variants, setVariants] = useState([
     {
       sku: '',
@@ -75,7 +75,10 @@ const Add = ({ token }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
+    if (submitting) return // Prevent double submission
+
     try {
+      setSubmitting(true)
       const formData = new FormData();
 
       // Ensure each variant has a unique SKU before submitting
@@ -91,7 +94,6 @@ const Add = ({ token }) => {
       formData.append("type", type);
       formData.append("bestseller", bestseller);
       formData.append("slug", slug);
-      formData.append("fabric", fabric);
       formData.append("variants", JSON.stringify(variantsWithSku));
 
       image1 && formData.append("image1", image1);
@@ -115,7 +117,6 @@ const Add = ({ token }) => {
         setImage4(false);
         setPrice("");
         setSlug("");
-        setFabric("Lawn");
         setBestseller(false);
         setVariants([
           {
@@ -135,6 +136,8 @@ const Add = ({ token }) => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    } finally {
+      setSubmitting(false)
     }
   };
 
@@ -296,22 +299,6 @@ const Add = ({ token }) => {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="fabric" className="block text-sm font-medium text-gray-700 mb-1">Fabric</label>
-              <select
-                id="fabric"
-                onChange={(e) => setFabric(e.target.value)}
-                value={fabric}
-                className="w-full px-3 py-2 bg-white"
-                required
-              >
-                <option value="Lawn">Lawn</option>
-                <option value="Chiffon">Chiffon</option>
-                <option value="Silk">Silk</option>
-                <option value="Cotton">Cotton</option>
-                <option value="Organza">Organza</option>
-              </select>
-            </div>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -434,9 +421,17 @@ const Add = ({ token }) => {
 
         <button 
           type="submit" 
-          className="mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start"
+          disabled={submitting}
+          className={`mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start flex items-center justify-center gap-2 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Add Product
+          {submitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Adding...</span>
+            </>
+          ) : (
+            'Add Product'
+          )}
         </button>
       </form>
     </div>

@@ -20,7 +20,6 @@ const productSchema = new mongoose.Schema({
   image: { type: [String], required: true },
   category: { type: String, required: true },
   sub_category: { type: String },
-  Fabric: { type: String },
   type: { type: String },
   bestseller: { type: Boolean, default: false },
   brand: { type: String },

@@ -6,21 +6,22 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcEleme
 
 export const backendUrls = import.meta.env.VITE_BACKEND_URL;
 
-const Dashboard = () => {
+const Dashboard = ({ token }) => {
   const [dashboardData, setDashboardData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    if (token) {
+      fetchDashboardData()
+    }
+  }, [token])
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
       setError(null)
       
-      const token = localStorage.getItem('token')
       if (!token) {
         throw new Error('No authentication token found')
       }

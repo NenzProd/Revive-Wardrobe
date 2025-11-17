@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const addProduct = async (req, res) => {
     try {
-        const { name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug, fabric } = req.body
+        const { name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug } = req.body
 
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -83,7 +83,6 @@ const addProduct = async (req, res) => {
             type,
             bestseller: bestseller === 'true' || bestseller === true,
             slug,
-            fabric,
             image: imagesUrl,
             date: Date.now(),
             deporterId: depoterProductId // store depoter product id as deporterId
@@ -133,7 +132,7 @@ const singleProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
     try {
-        const { id, name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug, fabric } = req.body
+        const { id, name, description, category, sub_category, brand, currency, lead_time, replenishment_period, hs_code, country, tax, filter_name, variants, type, bestseller, slug } = req.body
         if (!id) return res.json({ success: false, message: 'Product ID is required' })
         const product = await productModel.findById(id)
         if (!product) return res.json({ success: false, message: 'Product not found' })
@@ -315,7 +314,6 @@ const editProduct = async (req, res) => {
           type,
           bestseller: bestseller === 'true' || bestseller === true,
           slug,
-          fabric,
           image: filteredImagesUrl
         }
         await productModel.findByIdAndUpdate(id, updateFields)
