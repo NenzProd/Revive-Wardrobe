@@ -73,22 +73,22 @@ const ProductImageGallery = ({ images, onImageClick }: ProductImageGalleryProps)
       {/* Main Image (on small screens shown first, on lg screens shown to the right) */}
       <div className="order-1 lg:order-2 w-full lg:flex-1">
         <div className="relative mb-4 overflow-hidden rounded-lg border border-gray-200">
-          <div
-            ref={containerRef}
-            className="relative h-[520px] lg:h-[760px] overflow-hidden cursor-zoom-in"
-            onClick={handleImageClick}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <img
-              src={images[mainImage]}
-              alt="Product"
-              className="w-full h-full object-contain bg-white transition-transform duration-150 ease-out"
-              style={isZoomed ? { ...zoomStyle, willChange: 'transform' } : {}}
-              draggable={false}
-            />
-          </div>
+            <div
+              ref={containerRef}
+              className="relative h-[520px] lg:h-[760px] overflow-hidden cursor-zoom-in"
+              onClick={handleImageClick}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={images[mainImage]}
+                alt="Product"
+                className="w-full h-full object-contain bg-white transition-transform duration-150 ease-out"
+                style={isZoomed ? { ...zoomStyle, willChange: 'transform' } : {}}
+                draggable={false}
+              />
+            </div>
 
           {/* Navigation Arrows */}
           <button
@@ -104,28 +104,14 @@ const ProductImageGallery = ({ images, onImageClick }: ProductImageGalleryProps)
             <ChevronRight size={16} />
           </button>
         </div>
-        
-        {/* Navigation Arrows */}
-        <button
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-800 hover:bg-white transition-colors"
-          onClick={handlePrevious}
-        >
-          <ChevronLeft size={16} />
-        </button>
-        <button
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-800 hover:bg-white transition-colors"
-          onClick={handleNext}
-        >
-          <ChevronRight size={16} />
-        </button>
       </div>
-      
-      {/* Thumbnails */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+
+      {/* Thumbnails (stacked vertically on lg screens, horizontal scroll on small screens) */}
+      <div className="order-2 lg:order-1 flex lg:flex-col gap-2 lg:h-[760px] lg:overflow-y-auto w-full lg:w-auto lg:items-center lg:justify-center">
         {images.map((image, index) => (
           <button
             key={index}
-            className={`w-20 h-20 border rounded-md overflow-hidden ${
+            className={`flex-shrink-0 w-20 h-20 border rounded-md overflow-hidden ${
               index === mainImage ? 'border-revive-red' : 'border-gray-200'
             }`}
             onClick={() => handleThumbClick(index)}

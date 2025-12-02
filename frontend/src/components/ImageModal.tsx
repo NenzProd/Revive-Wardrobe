@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ImageModalProps {
@@ -10,10 +10,29 @@ interface ImageModalProps {
 
 const ImageModal = ({ images, isOpen, onClose, initialIndex = 0 }: ImageModalProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  
+  const ZOOM_LEVEL = 2.5;
+  const BASE_IMAGE_BOUNDS: React.CSSProperties = {
+    maxWidth: '80vw',
+    maxHeight: '80vh',
+    width: 'auto',
+    height: 'auto',
+  };
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
+    setIsZoomed(false);
+    setZoomStyle({});
   }, [initialIndex]);
+
+  useEffect(() => {
+    setIsZoomed(false);
+    setZoomStyle({});
+  }, [currentIndex]);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,6 +54,37 @@ const ImageModal = ({ images, isOpen, onClose, initialIndex = 0 }: ImageModalPro
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || !imageRef.current) return;
+    
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Get mouse position relative to container
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate the percentage position
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    // Set transform origin and scale
+    setZoomStyle({
+      transform: `scale(${ZOOM_LEVEL})`,
+      transformOrigin: `${xPercent}% ${yPercent}%`,
+      cursor: 'zoom-in',
+    });
+  };
+
+  const handleMouseEnter = () => {
+    setIsZoomed(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsZoomed(false);
+    setZoomStyle({});
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       onClose();
@@ -50,7 +100,7 @@ const ImageModal = ({ images, isOpen, onClose, initialIndex = 0 }: ImageModalPro
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen]);
+  }, [isOpen, currentIndex]);
 
   if (!isOpen) return null;
 
@@ -85,11 +135,28 @@ const ImageModal = ({ images, isOpen, onClose, initialIndex = 0 }: ImageModalPro
 
       {/* Main Image */}
       <div className="w-full h-full flex items-center justify-center p-4">
-        <img
-          src={images[currentIndex]}
-          alt={`Product image ${currentIndex + 1}`}
-          className="max-w-full max-h-full object-contain"
-        />
+        <div
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="relative rounded-lg"
+          style={{ maxWidth: '90vw', maxHeight: '90vh' }}
+        >
+          <img
+            ref={imageRef}
+            src={images[currentIndex]}
+            alt={`Product image ${currentIndex + 1}`}
+            className="object-contain transition-transform duration-150 ease-out"
+            style={{
+              ...BASE_IMAGE_BOUNDS,
+              ...(isZoomed
+                ? { ...zoomStyle, willChange: 'transform' }
+                : {}),
+            }}
+            draggable={false}
+          />
+        </div>
       </div>
 
       {/* Image Counter */}
