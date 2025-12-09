@@ -19,7 +19,7 @@ const Footer = () => {
               <a href="https://www.facebook.com/revivewardrobe" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-revive-gold hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="https://www.instagram.com/revive_wardrobe_fashion" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
+              <a href="https://www.instagram.com/revivewardrobe_uae" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
             </div>
