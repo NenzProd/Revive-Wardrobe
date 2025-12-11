@@ -100,7 +100,7 @@ const Cart = () => {
       <SEO 
         title="Shopping Cart - Review Your Items"
         description="Review your shopping cart at Revive Wardrobe. Check your selected items, update quantities, and proceed to secure checkout."
-        keywords="shopping cart, checkout, online shopping, fashion cart"
+        keywords="shopping cart, checkout, online shopping, fashion cart, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/cart"
       />
       <Navbar />
@@ -146,7 +146,7 @@ const Cart = () => {
                 {/* Cart Items */}
                 <div className="divide-y divide-gray-200">
                   {cart.map((item) => {
-                    const itemPrice = item.salePrice || item.price;
+                    const itemPrice = (item as any).salePrice || item.price;
                     const itemTotal = itemPrice * item.quantity;
                     const stock = getVariantStock(item);
                     

@@ -162,7 +162,7 @@ const Signup = () => {
       <SEO 
         title="Sign Up - Create Your Account"
         description="Create your Revive Wardrobe account to enjoy personalized shopping, exclusive offers, and easy order tracking."
-        keywords="sign up, create account, register, new customer, join revive wardrobe"
+        keywords="sign up, create account, register, new customer, join revive wardrobe, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/signup"
       />
    <Navbar />

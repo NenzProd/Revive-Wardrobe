@@ -111,7 +111,7 @@ const Shop = () => {
       <SEO 
         title="Shop - Browse Our Fashion Collection"
         description="Shop the latest fashion trends at Revive Wardrobe. Browse our curated collection of elegant attire, stitched and unstitched clothing with various fabrics and styles."
-        keywords="shop fashion, buy clothing online, women's fashion, men's fashion, stitched clothing, unstitched fabric, online boutique"
+        keywords="shop fashion, buy clothing online, women's fashion, men's fashion, stitched clothing, unstitched fabric, online boutique, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/shop"
       />
       <Navbar />

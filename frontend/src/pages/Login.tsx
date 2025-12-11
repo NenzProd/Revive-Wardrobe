@@ -139,7 +139,7 @@ const Login = () => {
       <SEO 
         title="Login - Sign In to Your Account"
         description="Sign in to your Revive Wardrobe account to access your orders, wishlist, and personalized shopping experience."
-        keywords="login, sign in, customer account, user login"
+        keywords="login, sign in, customer account, user login, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/login"
       />
          <Navbar />

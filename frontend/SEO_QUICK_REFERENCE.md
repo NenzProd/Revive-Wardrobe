@@ -17,7 +17,7 @@ const MyNewPage = () => {
       <SEO 
         title="Page Title"
         description="A compelling description of your page (150-160 characters)"
-        keywords="keyword1, keyword2, keyword3"
+        keywords="keyword1, keyword2, keyword3, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/page-url"
       />
       <Navbar />
@@ -33,7 +33,7 @@ const MyNewPage = () => {
 |------|------|----------|-------------|---------|
 | `title` | string | ✅ Yes | Page title (will be appended with "| Revive Wardrobe") | "Shop Fashion" |
 | `description` | string | ✅ Yes | Meta description for search engines | "Browse our collection..." |
-| `keywords` | string | ❌ No | Comma-separated keywords | "fashion, clothing, shop" |
+| `keywords` | string | ❌ No | Comma-separated keywords | "fashion, clothing, shop, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online" |
 | `canonical` | string | ❌ No | Canonical URL path | "/shop" |
 | `ogImage` | string | ❌ No | Open Graph image URL | "/product-image.jpg" |
 | `ogType` | string | ❌ No | Open Graph type | "website" or "product" or "article" |

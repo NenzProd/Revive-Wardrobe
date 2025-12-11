@@ -111,7 +111,7 @@ function PaymentRedirect() {
       <SEO 
         title="Payment Processing - Verifying Your Order"
         description="Processing your payment. Please wait while we verify your transaction."
-        keywords="payment processing, order verification, payment confirmation"
+        keywords="payment processing, order verification, payment confirmation, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/payment-redirect"
       />
       <Navbar />

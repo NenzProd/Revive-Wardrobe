@@ -9,7 +9,7 @@ function Terms () {
       <SEO 
         title="Terms & Conditions - Legal Information"
         description="Read Revive Wardrobe's terms and conditions. Learn about our policies, user agreements, and legal information for shopping with us."
-        keywords="terms and conditions, legal, user agreement, policies, terms of service"
+        keywords="terms and conditions, legal, user agreement, policies, terms of service, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/terms"
       />
       <Navbar />

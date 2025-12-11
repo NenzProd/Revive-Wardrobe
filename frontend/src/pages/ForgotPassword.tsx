@@ -113,7 +113,7 @@ const ForgotPassword = () => {
       <SEO 
         title="Forgot Password - Reset Your Password"
         description="Reset your Revive Wardrobe account password. Enter your email to receive a verification code and create a new password."
-        keywords="forgot password, reset password, password recovery, account recovery"
+        keywords="forgot password, reset password, password recovery, account recovery, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/forgot-password"
       />
      <Navbar />

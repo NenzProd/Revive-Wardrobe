@@ -12,7 +12,7 @@ interface SEOProps {
 const SEO = ({ 
   title, 
   description, 
-  keywords = 'fashion, clothing, online shopping, revive wardrobe',
+  keywords = 'fashion, clothing, online shopping, revive wardrobe, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online',
   canonical,
   ogImage = '/logo.png',
   ogType = 'website'

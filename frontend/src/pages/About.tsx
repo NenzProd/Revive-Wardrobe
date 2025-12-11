@@ -10,7 +10,7 @@ function About () {
       <SEO 
         title="About Us - Our Story & Mission"
         description="Learn about Revive Wardrobe - A fashion-forward brand born in the UAE, blending timeless tradition with bold innovation. Discover our commitment to affordable, eco-conscious fashion."
-        keywords="about revive wardrobe, fashion brand UAE, eco-conscious fashion, sustainable clothing, our story"
+        keywords="about revive wardrobe, fashion brand UAE, eco-conscious fashion, sustainable clothing, our story, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/about"
       />
       <Navbar />

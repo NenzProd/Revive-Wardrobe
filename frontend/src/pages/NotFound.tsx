@@ -17,7 +17,7 @@ const NotFound = () => {
       <SEO 
         title="404 - Page Not Found"
         description="The page you're looking for doesn't exist. Return to Revive Wardrobe homepage to continue shopping."
-        keywords="404, page not found, error"
+        keywords="404, page not found, error, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/404"
       />
       <div className="text-center">

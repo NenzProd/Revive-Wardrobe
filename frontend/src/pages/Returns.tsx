@@ -8,7 +8,7 @@ function Returns () {
       <SEO 
         title="Returns & Refunds Policy - Easy Returns"
         description="Learn about Revive Wardrobe's return, refund, and cancellation policy. Easy returns within 3 days for unopened products."
-        keywords="returns policy, refunds, cancellation, exchange, return process"
+        keywords="returns policy, refunds, cancellation, exchange, return process, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/returns"
       />
       <Navbar />

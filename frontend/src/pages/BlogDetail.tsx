@@ -119,7 +119,7 @@ const BlogDetail = () => {
       <SEO 
         title={post ? `${post.title} - Blog` : "Blog Post"}
         description={post ? post.excerpt : "Read our latest fashion blog post at Revive Wardrobe"}
-        keywords={post ? `${post.category}, fashion blog, style guide, ${post.title}` : "fashion blog, style guide"}
+        keywords={post ? `${post.category}, fashion blog, style guide, ${post.title}, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online` : "fashion blog, style guide, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"}
         canonical={`/blog/${slug}`}
         ogImage={post?.imageUrl}
         ogType="article"

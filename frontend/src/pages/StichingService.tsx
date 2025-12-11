@@ -156,7 +156,7 @@ const StichingService = () => {
       <SEO 
         title="Custom Stitching Service - Expert Tailoring"
         description="Get custom stitching services at Revive Wardrobe. Expert tailors create beautiful ethnic wear, abayas, and jalabiya with precision and care."
-        keywords="custom stitching, tailoring service, custom clothing, bespoke fashion, alterations, custom abayas"
+        keywords="custom stitching, tailoring service, custom clothing, bespoke fashion, alterations, custom abayas, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/stitching-service"
       />
       <Navbar />

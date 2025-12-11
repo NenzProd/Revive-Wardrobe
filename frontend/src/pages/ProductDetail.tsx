@@ -175,7 +175,7 @@ const ProductDetail = () => {
       <SEO 
         title={`${product.name} - ${product.category}`}
         description={product.description || `Shop ${product.name} at Revive Wardrobe. ${product.type} clothing with premium quality and elegant design.`}
-        keywords={`${product.name}, ${product.category}, ${product.type}, buy ${product.name}, fashion, clothing`}
+        keywords={`${product.name}, ${product.category}, ${product.type}, buy ${product.name}, fashion, clothing, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online`}
         canonical={`/product/${product.slug}`}
         ogImage={product.image[0]}
         ogType="product"

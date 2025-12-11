@@ -9,7 +9,7 @@ function Privacy () {
       <SEO 
         title="Privacy & Cookie Policy - Data Protection"
         description="Learn how Revive Wardrobe protects your privacy and handles your personal data. Read our comprehensive privacy and cookie policy."
-        keywords="privacy policy, cookie policy, data protection, personal information, security"
+        keywords="privacy policy, cookie policy, data protection, personal information, security, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/privacy"
       />
       <Navbar />

@@ -334,7 +334,7 @@ const Account = () => {
       <SEO 
         title="My Account - Manage Your Profile"
         description="Manage your Revive Wardrobe account. View orders, update profile, manage addresses, and track your fashion purchases."
-        keywords="my account, user profile, order history, manage account, customer dashboard"
+        keywords="my account, user profile, order history, manage account, customer dashboard, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/account"
       />
       <Navbar />

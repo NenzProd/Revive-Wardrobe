@@ -133,7 +133,7 @@ const Contact = () => {
       <SEO 
         title="Contact Us - Get in Touch"
         description="Contact Revive Wardrobe for any queries about our fashion collections, orders, or services. We're here to help you. Email: info@revivewardrobe.com | Phone: +971 58 244 7684"
-        keywords="contact revive wardrobe, customer service, fashion support, UAE contact, email support"
+        keywords="contact revive wardrobe, customer service, fashion support, UAE contact, email support, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
         canonical="/contact"
       />
       <Navbar />
