@@ -72,16 +72,16 @@ const HeroSection = () => {
       productImage: productImage2,
       link: "/shop"
     },
-    {
-      id: 3,
-      title: "\"Heritage Chic\" Pakistani Dresses",
-      description: "Celebrate culture with our elegant Pakistani dresses, adorned with intricate embroidery and timeless patterns. Crafted for weddings, festivities, and everyday elegance.",
-      offer: "",
-      ctaText: "Launching Soon",
-      modelImage: slide3,
-      productImage: productImage3,
-      link: "/shop"
-    },
+    // {
+    //   id: 3,
+    //   title: "\"Heritage Chic\" Pakistani Dresses",
+    //   description: "Celebrate culture with our elegant Pakistani dresses, adorned with intricate embroidery and timeless patterns. Crafted for weddings, festivities, and everyday elegance.",
+    //   offer: "",
+    //   ctaText: "Launching Soon",
+    //   modelImage: slide3,
+    //   productImage: productImage3,
+    //   link: "/shop"
+    // },
   ];
   
   const nextSlide = () => {
