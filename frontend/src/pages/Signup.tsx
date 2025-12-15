@@ -29,9 +29,9 @@ const Signup = () => {
   const cart = useCartStore(state => state.cart)
   const backendUrl = useCartStore(state => state.backendUrl)
   const navigate = useNavigate()
-  const [showPhoneModal, setShowPhoneModal] = useState(false)
-  const [pendingCredential, setPendingCredential] = useState(null)
-  const [googlePhone, setGooglePhone] = useState('')
+  // const [showPhoneModal, setShowPhoneModal] = useState(false)
+  // const [pendingCredential, setPendingCredential] = useState(null)
+  // const [googlePhone, setGooglePhone] = useState('')
   const fetchUser = useCartStore(state => state.fetchUser)
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [otp, setOtp] = useState('')
@@ -80,48 +80,7 @@ const Signup = () => {
     }
   }
 
-  const handleGoogleSignupPhoneRequired = credentialResponse => {
-    setPendingCredential(credentialResponse)
-    setShowPhoneModal(true)
-  }
 
-  const handlePhoneSubmit = async e => {
-    e.preventDefault()
-    if (!googlePhone || !pendingCredential) return
-
-    try {
-      const res = await axios.post(
-        backendUrl + '/api/user/google-login',
-        {
-          credential: pendingCredential.credential,
-          signupAllowed: true,
-          phone: googlePhone
-        }
-      )
-      if (res.data.success) {
-        setToken(res.data.token)
-        localStorage.setItem('token', res.data.token)
-        await fetchUser(res.data.token)
-        toast({ title: 'Signup Successful', description: 'Welcome!' })
-        
-        // Redirect based on cart items
-        const currentCart = useCartStore.getState().cart
-        if (currentCart && currentCart.length > 0) {
-          navigate('/cart')
-        } else {
-          navigate('/shop')
-        }
-      } else {
-        toast({ title: 'Google Signup Failed', description: res.data.message, variant: 'destructive' })
-      }
-    } catch (err) {
-      toast({ title: 'Google Signup Failed', description: err.message, variant: 'destructive' })
-    } finally {
-      setShowPhoneModal(false)
-      setGooglePhone('')
-      setPendingCredential(null)
-    }
-  }
 
   const handleOtpSubmit = async e => {
     e.preventDefault()
@@ -178,8 +137,8 @@ const Signup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-6'>
-          <div className='flex justify-center w-full'>
-            <GoogleAuthButton isSignup={true} onSignupPhoneRequired={handleGoogleSignupPhoneRequired} />
+            <div className='flex justify-center w-full'>
+            <GoogleAuthButton isSignup={true} />
             </div>
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
@@ -284,29 +243,6 @@ const Signup = () => {
         </Card>
       </div>
     </div>
-    {showPhoneModal && (
-      <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
-        <form onSubmit={handlePhoneSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-80'>
-          <h2 className='text-lg font-semibold text-revive-black'>Enter your phone number</h2>
-          <input
-            type='tel'
-            value={googlePhone}
-            onChange={e => setGooglePhone(e.target.value)}
-            className='w-full border border-revive-black/30 rounded px-3 py-2 focus:outline-none focus:border-revive-red'
-            placeholder='Phone number'
-            required
-          />
-          <div className='flex justify-center w-full'>
-            <button
-              type='submit'
-              className='px-4 py-2 rounded bg-revive-red text-white hover:bg-revive-red/90 w-full'
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-    )}
     {showOtpModal && (
       <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
         <form onSubmit={handleOtpSubmit} className='bg-white p-6 rounded shadow-lg space-y-4 w-full max-w-md'>

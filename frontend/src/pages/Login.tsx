@@ -156,7 +156,7 @@ const Login = () => {
           </CardHeader>
           <CardContent className='space-y-6'>
             <div className='flex justify-center w-full'>
-            <GoogleAuthButton isSignup={false} onSignupPhoneRequired={() => {}} />
+            <GoogleAuthButton isSignup={false} />
             </div>
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
