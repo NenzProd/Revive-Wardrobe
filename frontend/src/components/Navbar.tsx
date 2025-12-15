@@ -24,7 +24,7 @@ const Navbar = () => {
       { name: 'Collections', path: null, icon: null, dropdown: true },
       { name: 'Services', path: '/stitching-service', icon: null },
       // { name: 'About', path: '/about', icon: 'Info' },
-      // { name: 'Blog', path: '/blog', icon: null },
+      { name: 'Blog', path: '/blog', icon: null },
 
       { name: 'Contact', path: '/contact', icon: 'Phone' }
     ],

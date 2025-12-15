@@ -25,7 +25,7 @@ const Index = () => {
       <SignatureCollection />
       <FeaturedProducts />
       <StitchingPromo />
-      <BlogPreview />
+      {/* <BlogPreview /> */}
       <Newsletter />
       <Footer />
     </div>
