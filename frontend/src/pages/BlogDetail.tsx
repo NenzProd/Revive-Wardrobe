@@ -45,6 +45,15 @@ const BlogDetail = () => {
     return txt.value;
   }
 
+  const linkify = (text: string) => {
+    // Regex matches URLs that are NOT preceded by a quote (to avoid matching href="...")
+    const urlRegex = /(?<!['"])(https?:\/\/[^\s<]+)/g;
+    return text.replace(urlRegex, (url) => {
+      // Clean trailing punctuation if any (simple approach)
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline break-words">${url}</a>`;
+    })
+  }
+
   useEffect(() => {
     async function fetchBlog() {
       setLoading(true)
@@ -64,7 +73,7 @@ const BlogDetail = () => {
               id: found._id,
               title: found.title,
               excerpt: found.excerpt,
-              content: decodeHtml(found.content),
+              content: linkify(decodeHtml(found.content)),
               imageUrl: found.image,
               date: new Date(found.date).toLocaleDateString(),
               author: found.author,
