@@ -39,6 +39,12 @@ const BlogDetail = () => {
   const [error, setError] = useState('')
   const [copySuccess, setCopySuccess] = useState(false)
 
+  const decodeHtml = (html: string) => {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
   useEffect(() => {
     async function fetchBlog() {
       setLoading(true)
@@ -58,7 +64,7 @@ const BlogDetail = () => {
               id: found._id,
               title: found.title,
               excerpt: found.excerpt,
-              content: found.content,
+              content: decodeHtml(found.content),
               imageUrl: found.image,
               date: new Date(found.date).toLocaleDateString(),
               author: found.author,
