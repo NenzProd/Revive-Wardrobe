@@ -42,6 +42,18 @@ declare global {
   }
 }
 
+
+// GCC Countries and Phone Codes
+const GCC_COUNTRIES = ["UAE", "Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman"];
+const COUNTRY_CODES = {
+  "UAE": "+971",
+  "Saudi Arabia": "+966",
+  "Qatar": "+974",
+  "Kuwait": "+965",
+  "Bahrain": "+973",
+  "Oman": "+968"
+};
+
 function Checkout() {
   const store = useCartStore();
   const cart = store.cart as CartItemWithPrice[];
@@ -115,7 +127,23 @@ function Checkout() {
   // Address form handlers
   const handleAddressInput = (e) => {
     const { name, value } = e.target;
-    setAddressForm((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === 'country') {
+      const code = COUNTRY_CODES[value] || '';
+      setAddressForm((prev) => {
+        // Only update phone if it's empty or just contains a country code
+        // Or if the current phone number starts with an old country code, replace it?
+        // Simpler: if it's empty or one of the codes, set it.
+        const shouldUpdatePhone = !prev.phone || Object.values(COUNTRY_CODES).includes(prev.phone);
+        return {
+          ...prev,
+          [name]: value,
+          phone: shouldUpdatePhone ? code : prev.phone
+        };
+      });
+    } else {
+      setAddressForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
   const handleAddAddress = () => {
     setShowAddressForm(true);
@@ -758,7 +786,7 @@ function Checkout() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Postcode / P.O. Box *
+                          Postcode / P.O. Box <span className="text-gray-400 font-normal">(Optional)</span>
                         </label>
                         <input
                           type="text"
@@ -766,7 +794,6 @@ function Checkout() {
                           value={addressForm.postcode}
                           onChange={handleAddressInput}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          required
                         />
                       </div>
                       <div className="md:col-span-2">
@@ -781,7 +808,9 @@ function Checkout() {
                           required
                         >
                           <option value="">Select Country</option>
-                          <option value="UAE">UAE</option>
+                          {GCC_COUNTRIES.map(country => (
+                            <option key={country} value={country}>{country}</option>
+                          ))}
                         </select>
                       </div>
                       <div>
@@ -811,7 +840,11 @@ function Checkout() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md"
                           placeholder="Enter phone number (optional)"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Phone is optional and can be edited</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {addressForm.country && COUNTRY_CODES[addressForm.country] 
+                            ? `Format: ${COUNTRY_CODES[addressForm.country]} followed by your number` 
+                            : 'Phone is optional and can be edited'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex gap-2 mt-6">
