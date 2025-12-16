@@ -202,9 +202,9 @@ const BlogDetail = () => {
   return (
     <div className="min-h-screen bg-white ">
       <SEO 
-        title={post ? `${post.title} - Blog` : "Blog Post"}
+        title={post ? `${post.title.replace(/<[^>]*>?/gm, '')} - Blog` : "Blog Post"}
         description={post ? post.excerpt : "Read our latest fashion blog post at Revive Wardrobe"}
-        keywords={post ? `${post.category}, fashion blog, style guide, ${post.title}, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online` : "fashion blog, style guide, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"}
+        keywords={post ? `${post.category}, fashion blog, style guide, ${post.title.replace(/<[^>]*>?/gm, '')}, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online` : "fashion blog, style guide, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"}
         canonical={`/blog/${slug}`}
         ogImage={post?.imageUrl}
         ogType="article"
@@ -224,7 +224,7 @@ const BlogDetail = () => {
           </div>
           {/* Blog Header */}
           <div className="max-w-3xl mx-auto mb-8">
-            <h1 className="text-2xl md:text-4xl font-serif mb-6">{post.title}</h1>
+            <h1 className="text-2xl md:text-4xl font-serif mb-6" dangerouslySetInnerHTML={{ __html: post.title }} />
             <div className="flex flex-wrap items-center text-gray-500 mb-6 gap-4">
               <div className="flex items-center">
                 <Calendar size={16} className="mr-2" />

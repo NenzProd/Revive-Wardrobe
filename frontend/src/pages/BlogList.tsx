@@ -44,7 +44,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, aut
           <Calendar size={14} className="mr-1" />
           <span>{date} by {author}</span>
         </div>
-        <h3 className="text-xl font-serif mb-3 group-hover:text-revive-red transition-colors">{title}</h3>
+        <h3 className="text-xl font-serif mb-3 group-hover:text-revive-red transition-colors" dangerouslySetInnerHTML={{ __html: title }} />
         <p className="text-gray-600 mb-4 line-clamp-3">{excerpt}</p>
         <Link 
           to={link} 
