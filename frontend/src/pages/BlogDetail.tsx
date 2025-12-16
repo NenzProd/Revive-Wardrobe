@@ -46,12 +46,82 @@ const BlogDetail = () => {
   }
 
   const linkify = (text: string) => {
-    // Regex matches URLs that are NOT preceded by a quote (to avoid matching href="...")
-    const urlRegex = /(?<!['"])(https?:\/\/[^\s<]+)/g;
-    return text.replace(urlRegex, (url) => {
-      // Clean trailing punctuation if any (simple approach)
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline break-words">${url}</a>`;
-    })
+    // Determine if text looks like HTML (has tags)
+    const hasTags = /<[a-z][\s\S]*>/i.test(text);
+
+    if (hasTags) {
+      // If it has tags, we only want to linkify text nodes that strictly contain URLs 
+      // AND are not already inside an <a> tag.
+      // BUT, parsing HTML in a string replacement is brittle. 
+      // Simple heuristic: If the text is FULL of HTML, we might assume the user 
+      // provided their own links for the URLs that matter.
+      // However, to be helpful, we can try to linkify *only* plain text URLs that 
+      // are NOT inside href attributes and NOT between > and </a>.
+      
+      // A safer approach for Mixed content:
+      // 1. If it looks like raw HTML, trust the user's HTML mostly.
+      // 2. But if they wrote "Check this: https://google.com" inside a <p>, we want to linkify it.
+      // 3. If they wrote "<a href='...'>https://google.com</a>", we MUST NOT linkify it.
+      
+      // Negative lookbehind for > (end of tag) might work if we assume well-formed HTML matches.
+      // text.replace(/((?<!>|["'])https?:\/\/[^\s<]+)/g ...) 
+      // But > is present in <a ...>URL</a>.
+      
+      // Let's use a temporary DOM parser to be safe.
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      
+      const walk = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const parent = node.parentNode as HTMLElement;
+          // If parent is <a>, do not touch.
+          if (parent && parent.tagName !== 'A' && parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE') {
+            const content = node.textContent || '';
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            if (urlRegex.test(content)) {
+               // We need to replace this text node with a fragment of nodes (text + a + text)
+               // But we can't easily return it here to stringify later.
+               // Easier: Do regex replacement on the textContent, but we are working on a DOM.
+               // We can update the parent's innerHTML? No, that destroys siblings.
+               // We can replace the node.
+               
+               const matches = content.split(urlRegex);
+               // Interleave: even indices are text, odd are URLs (capturing group).
+               // content: "Visit https://foo.com now" -> ["Visit ", "https://foo.com", " now"]
+               
+               if (matches.length > 1) {
+                  const fragment = document.createDocumentFragment();
+                  matches.forEach((part, i) => {
+                    if (i % 2 === 1) { // URL
+                      const a = document.createElement('a');
+                      a.href = part;
+                      a.target = "_blank";
+                      a.rel = "noopener noreferrer";
+                      a.className = "text-blue-600 hover:underline break-words";
+                      a.textContent = part;
+                      fragment.appendChild(a);
+                    } else {
+                      fragment.appendChild(document.createTextNode(part));
+                    }
+                  });
+                  parent.replaceChild(fragment, node);
+               }
+            }
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+           (node as Element).childNodes.forEach(child => walk(child));
+        }
+      };
+      
+      doc.body.childNodes.forEach(child => walk(child));
+      return doc.body.innerHTML; 
+    } else {
+      // Plain text fallback
+      const urlRegex = /(?<!['"])(https?:\/\/[^\s<]+)/g;
+      return text.replace(urlRegex, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline break-words">${url}</a>`;
+      })
+    }
   }
 
   useEffect(() => {

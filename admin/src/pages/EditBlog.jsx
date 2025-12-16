@@ -7,12 +7,15 @@ import 'react-quill/dist/quill.snow.css'
 import { useNavigate, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
+import { Code, Eye } from 'lucide-react'
+
 const EditBlog = ({ token }) => {
   const { id } = useParams()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [content, setContent] = useState('')
+  const [isHtmlMode, setIsHtmlMode] = useState(false)
   const [image, setImage] = useState('')
   const [date, setDate] = useState('')
   const [author, setAuthor] = useState('')
@@ -108,15 +111,33 @@ const EditBlog = ({ token }) => {
             <textarea id='excerpt' value={excerpt} onChange={e => setExcerpt(e.target.value)} className='w-full px-3 py-2 bg-white min-h-[60px]' required />
           </div>
           <div className='mt-4'>
-            <label htmlFor='content' className='block text-sm font-medium text-gray-700 mb-1'>Content (HTML allowed)</label>
-            <ReactQuill
-              value={content}
-              onChange={setContent}
-              modules={quillModules}
-              theme='snow'
-              className='bg-white rounded'
-              style={{ minHeight: 200 }}
-            />
+            <div className='flex justify-between items-center mb-1'>
+              <label htmlFor='content' className='block text-sm font-medium text-gray-700'>Content (HTML allowed)</label>
+              <button
+                type='button'
+                onClick={() => setIsHtmlMode(!isHtmlMode)}
+                className='flex items-center text-xs text-gray-600 hover:text-gray-900 border border-gray-300 px-2 py-1 rounded transition-colors'
+              >
+                {isHtmlMode ? <><Eye size={14} className="mr-1" /> Visual Editor</> : <><Code size={14} className="mr-1" /> Edit HTML</>}
+              </button>
+            </div>
+            {isHtmlMode ? (
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className='w-full px-3 py-2 bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 font-mono text-sm'
+                style={{ minHeight: 200 }}
+              />
+            ) : (
+              <ReactQuill
+                value={content}
+                onChange={setContent}
+                modules={quillModules}
+                theme='snow'
+                className='bg-white rounded'
+                style={{ minHeight: 200 }}
+              />
+            )}
           </div>
           <div className='mt-4'>
             <label htmlFor='image' className='block text-sm font-medium text-gray-700 mb-1'>Image URL</label>
