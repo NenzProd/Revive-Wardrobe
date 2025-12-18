@@ -21,7 +21,7 @@ const StitchingPromo = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-serif mb-4">Custom Stitching Service</h2>
             <p className="text-lg mb-8 text-gray-300 max-w-lg">
-              Your dream outfit is just a measurement away. Our expert tailors bring precision and artistry to every stitch, 
+              Your dream outfit is just a measurement away. Our expert custom stitching service in Dubai brings precision and artistry to every stitch, 
               ensuring your garment fits perfectly and feels luxurious against your skin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">

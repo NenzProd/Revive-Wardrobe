@@ -16,10 +16,10 @@ const Footer = () => {
               Elegance reimagined for the modern woman. Discover timeless fashion that empowers and inspires.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="https://www.facebook.com/revivewardrobe" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-revive-gold hover:text-white transition-colors">
+              <a href="https://www.facebook.com/revivewardrobe/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-revive-gold hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="https://www.instagram.com/revivewardrobe_uae" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
+              <a href="https://www.instagram.com/revivewardrobe_uae?igsh=OXFwbHFpOHVzaWFp&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-revive-gold hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
             </div>

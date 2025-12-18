@@ -55,7 +55,7 @@ const HeroSection = () => {
     {
       id: 1,
       title: "\"Elegance Redefined\" Premium Abaya",
-      description: "Step into timeless grace with our handcrafted Abaya — a blend of modesty and modern sophistication. Perfect for every occasion, from casual outings to elegant evenings.",
+      description: "Step into timeless grace with our handcrafted Abaya collection in Dubai — a blend of modesty and modern sophistication. Perfect for every occasion, from casual outings to elegant evenings in the UAE.",
       offer: "",
       ctaText: "Shop Abaya Collection",
       modelImage: slide1,
@@ -65,7 +65,7 @@ const HeroSection = () => {
     {
       id: 2,
       title: "\"Royal Comfort\" Designer Jalabiya",
-      description: "Experience effortless charm with our flowy Jalabiya — a fusion of tradition and comfort. Tailored for women who embrace culture with a touch of luxury.",
+      description: "Experience effortless charm with our flowy Jalabiya dresses — a fusion of tradition and comfort. Tailored for women who embrace modest fashion in Dubai with a touch of luxury.",
       offer: "",
       ctaText: "Launching Soon",
       modelImage: slide2,
@@ -122,7 +122,7 @@ const HeroSection = () => {
             {/* Text Content - Second on mobile */}
             <div className="w-full h-[20vh] bg-revive-black text-white flex items-center justify-center px-4 py-6">
               <div className="max-w-sm space-y-3 text-center">
-                <h2 className="text-lg font-serif leading-tight">{slide.title}</h2>
+                <h1 className="text-lg font-serif leading-tight">{slide.title}</h1>
                 <p className="text-sm opacity-90 hidden sm:block">{slide.description}</p>
                 <p className="text-revive-gold text-sm font-medium">{slide.offer}</p>
                 <Link to={slide.link}>
@@ -171,7 +171,7 @@ const HeroSection = () => {
               {/* Text Content */}
               <div className="w-full h-[50%] flex items-center justify-center bg-revive-black text-white p-8">
                 <div className="max-w-md space-y-4 text-center">
-                  <h2 className="text-xl lg:text-2xl xl:text-3xl font-serif leading-tight">{slide.title}</h2>
+                  <h1 className="text-xl lg:text-2xl xl:text-3xl font-serif leading-tight">{slide.title}</h1>
                   <p className="text-sm lg:text-base opacity-90">{slide.description}</p>
                   <p className="text-revive-gold text-sm lg:text-lg font-medium">{slide.offer}</p>
                   <Link to={slide.link}>

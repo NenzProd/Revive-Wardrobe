@@ -33,7 +33,7 @@ const SignatureCollection = () => {
               Revive Wardrobe's Signature: Graceful Abayas Collection
             </h2>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              Discover our exclusive collection of elegant abayas designed for modern women. 
+              Discover our exclusive collection of elegant abayas and modest fashion in Dubai designed for modern women. 
               Graceful, sophisticated, and timeless pieces to enhance your wardrobe.
             </p>
             <div className="w-24 h-1 bg-revive-red mx-auto"></div>
@@ -74,7 +74,7 @@ const SignatureCollection = () => {
             Revive Wardrobe's Signature: Graceful Abayas Collection
           </h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Discover our exclusive collection of elegant abayas designed for modern women. 
+            Discover our exclusive collection of elegant abayas and modest fashion in Dubai designed for modern women. 
             Graceful, sophisticated, and timeless pieces to enhance your wardrobe.
           </p>
           <div className="w-24 h-1 bg-revive-red mx-auto"></div>
