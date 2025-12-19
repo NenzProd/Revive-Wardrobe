@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductGrid from '../components/ProductGrid';
 import FilterSidebar from '../components/FilterSidebar';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import Newsletter from '../components/Newsletter';
 import { Sliders } from 'lucide-react';
 import { useProductList } from '../hooks/useProduct'
@@ -16,20 +16,32 @@ import SEO from '../components/SEO';
 
 const Shop = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const { categorySlug, searchSlug } = useParams<{ categorySlug?: string; searchSlug?: string }>();
   const [filterOpen, setFilterOpen] = useState(false);
   const { toast } = useToast();
   const wishlist = useCartStore(state => state.wishlist);
   const addToWishlist = useCartStore(state => state.addToWishlist);
+
+  const toSlug = (value: string) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/["']/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
   
   // Extract all filter parameters from URL
-  const category = searchParams.get('category') || 'all';
+  const categoryParam = searchParams.get('category') || 'all';
+  const effectiveCategorySlug = categorySlug || (categoryParam !== 'all' ? toSlug(categoryParam) : 'all');
   const sortOption = searchParams.get('sort') || 'newest';
   const minPrice = parseInt(searchParams.get('minPrice') || '0');
   const maxPrice = parseInt(searchParams.get('maxPrice') || '25000');
   const colors = searchParams.getAll('color');
   const fabrics = searchParams.getAll('fabric');
   const typesParam = searchParams.getAll('type');
-  const search = searchParams.get('search')?.toLowerCase() || '';
+  const searchParam = searchParams.get('search')?.toLowerCase() || '';
+  const effectiveSearchSlug = (searchSlug || '').toLowerCase();
 
   const { products, loading, error } = useProductList();
   
@@ -51,8 +63,16 @@ const Shop = () => {
 
   // Filter products by search, category, fabric, and type
   const filteredProducts = products.filter(p => {
-    const matchesSearch = search ? p.name.toLowerCase().includes(search) : true
-    const matchesCategory = category === 'all' ? true : p.category === category
+    const matchesSearch = searchParam
+      ? p.name.toLowerCase().includes(searchParam)
+      : effectiveSearchSlug
+        ? toSlug(p.name).includes(effectiveSearchSlug)
+        : true
+
+    const matchesCategory = effectiveCategorySlug === 'all'
+      ? true
+      : toSlug(p.category || '') === effectiveCategorySlug
+
     const matchesFabric = fabrics.length > 0 ? fabrics.includes(p.filter_name || '') : true
     const matchesType = typesParam.length > 0 ? typesParam.includes(p.type) : true
     return matchesSearch && matchesCategory && matchesFabric && matchesType
@@ -109,10 +129,10 @@ const Shop = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
       <SEO 
-        title="Shop - Browse Our Fashion Collection"
-        description="Shop the latest fashion trends at Revive Wardrobe. Browse our curated collection of elegant attire, stitched and unstitched clothing with various fabrics and styles."
+        title="Our Collection"
+        description="Explore our curated collection of elegant modest fashion at Revive Wardrobe. Shop abayas, jalebia dresses, and premium attire with various fabrics and styles."
         keywords="shop fashion, buy clothing online, women's fashion, men's fashion, stitched clothing, unstitched fabric, online boutique, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
-        canonical="/shop"
+        canonical={location.pathname}
       />
       <Navbar />
       
@@ -161,7 +181,7 @@ const Shop = () => {
           <div className="md:w-3/4">
             <ProductGrid 
               viewMode="grid"
-              category={category} 
+              category="all" 
               sortOption={sortOption}
               minPrice={minPrice}
               maxPrice={maxPrice}

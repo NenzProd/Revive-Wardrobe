@@ -20,6 +20,7 @@ const Index = () => {
         canonical="/"
       />
       <Navbar />
+      <h1 className="sr-only">Abayas Online in Dubai</h1>
       <HeroSection />
       <FeaturedCategories />
       <SignatureCollection />

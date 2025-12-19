@@ -7,6 +7,7 @@ interface SEOProps {
   canonical?: string;
   ogImage?: string;
   ogType?: string;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const SEO = ({ 
@@ -15,7 +16,8 @@ const SEO = ({
   keywords,
   canonical,
   ogImage = '/logo.png',
-  ogType = 'website'
+  ogType = 'website',
+  jsonLd
 }: SEOProps) => {
   const baseDefaultKeywords = 'fashion, clothing, online shopping, revive wardrobe, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online';
   const extraKeywords = [
@@ -58,6 +60,66 @@ const SEO = ({
   const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
   const fullTitle = `${title} | Revive Wardrobe`;
 
+  const organizationId = `${siteUrl}/#organization`;
+  const websiteId = `${siteUrl}/#website`;
+
+  const organizationSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: 'Revive Wardrobe',
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
+    sameAs: [
+      'https://www.facebook.com/revivewardrobe/',
+      'https://www.instagram.com/revivewardrobe_uae/'
+    ],
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'info@revivewardrobe.com',
+        availableLanguage: ['en']
+      }
+    ],
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Ras Al Khaimah',
+      addressCountry: 'AE'
+    }
+  };
+
+  const websiteSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': websiteId,
+    url: siteUrl,
+    name: 'Revive Wardrobe',
+    publisher: { '@id': organizationId },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/shop/search/{search_term_string}`,
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
+  const webPageSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    url: fullCanonical,
+    name: fullTitle,
+    description,
+    isPartOf: { '@id': websiteId },
+    about: { '@id': organizationId }
+  };
+
+  const normalizeJsonLd = (value?: SEOProps['jsonLd']) => {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
+  };
+
+  const jsonLdScripts = [organizationSchema, websiteSchema, webPageSchema, ...normalizeJsonLd(jsonLd)];
+
   return (
     <Helmet>
       <title>{fullTitle}</title>
@@ -78,6 +140,15 @@ const SEO = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+
+      {jsonLdScripts.map((schema, idx) => (
+        <script
+          key={`jsonld-${idx}`}
+          type="application/ld+json"
+        >
+          {JSON.stringify(schema)}
+        </script>
+      ))}
     </Helmet>
   );
 };

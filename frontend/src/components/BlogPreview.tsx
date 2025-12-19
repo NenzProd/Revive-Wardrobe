@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getOptimizedImageUrl, getOptimizedSrcSet } from '../lib/image';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -24,15 +25,24 @@ interface BlogPostProps {
   author: string;
   link: string;
   category: string;
+  priority?: boolean;
 }
 
-const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, author, link, category }) => {
+const BlogPost: React.FC<BlogPostProps> = ({ title, excerpt, imageUrl, date, author, link, category, priority }) => {
+  const src = getOptimizedImageUrl(imageUrl, { width: 900, quality: 'auto:eco', crop: 'fill' });
+  const srcSet = getOptimizedSrcSet(imageUrl, [420, 720, 900, 1200], { quality: 'auto:eco', crop: 'fill' });
+
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
       <div className="h-56 overflow-hidden">
         <img 
-          src={imageUrl} 
+          src={src} 
+          srcSet={srcSet}
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
           alt={title}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
@@ -127,7 +137,7 @@ const BlogPreview = () => {
         {!loading && !error && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((post, index) => (
-              <BlogPost key={index} {...post} />
+              <BlogPost key={post.link} {...post} priority={index === 0} />
             ))}
           </div>
         )}

@@ -29,8 +29,8 @@ const Navbar = () => {
       { name: 'Contact', path: '/contact', icon: 'Phone' }
     ],
     collections: [
-      { name: 'Ethnic Elegance', path: '/shop?category=Ethnic+Elegance' },
-      { name: 'Graceful Abayas', path: '/shop?category=Graceful+Abayas' },
+      { name: 'Ethnic Elegance', path: '/shop/category/ethnic-elegance' },
+      { name: 'Graceful Abayas', path: '/shop/category/graceful-abayas' },
       // { name: 'Designer Jalabiya', path: '/shop' }
     ],
     actions: [
@@ -53,9 +53,18 @@ const Navbar = () => {
 
   const collections = navigationLinks.collections;
 
+  const toSlug = (value: string) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/["']/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
   const handleSearch = () => {
     if (searchInput.trim()) {
-      navigate(`/shop?search=${encodeURIComponent(searchInput.trim())}`);
+      const slug = toSlug(searchInput);
+      if (slug) navigate(`/shop/search/${slug}`);
       setSearchActive(false);
       setDesktopSearchActive(false);
       setSearchInput('');
@@ -69,7 +78,8 @@ const Navbar = () => {
   };
 
   const handleCategoryClick = (category: string) => {
-    navigate(`/shop?category=${category}`);
+    const slug = toSlug(category);
+    if (slug) navigate(`/shop/category/${slug}`);
     setCollectionsOpen(false);
     setMobileMenuOpen(false);
   };

@@ -122,7 +122,7 @@ const HeroSection = () => {
             {/* Text Content - Second on mobile */}
             <div className="w-full h-[20vh] bg-revive-black text-white flex items-center justify-center px-4 py-6">
               <div className="max-w-sm space-y-3 text-center">
-                <h1 className="text-lg font-serif leading-tight">{slide.title}</h1>
+                <h2 className="text-lg font-serif leading-tight">{slide.title}</h2>
                 <p className="text-sm opacity-90 hidden sm:block">{slide.description}</p>
                 <p className="text-revive-gold text-sm font-medium">{slide.offer}</p>
                 <Link to={slide.link}>
@@ -171,7 +171,7 @@ const HeroSection = () => {
               {/* Text Content */}
               <div className="w-full h-[50%] flex items-center justify-center bg-revive-black text-white p-8">
                 <div className="max-w-md space-y-4 text-center">
-                  <h1 className="text-xl lg:text-2xl xl:text-3xl font-serif leading-tight">{slide.title}</h1>
+                  <h2 className="text-xl lg:text-2xl xl:text-3xl font-serif leading-tight">{slide.title}</h2>
                   <p className="text-sm lg:text-base opacity-90">{slide.description}</p>
                   <p className="text-revive-gold text-sm lg:text-lg font-medium">{slide.offer}</p>
                   <Link to={slide.link}>

@@ -12,5 +12,7 @@ const blogSchema = new mongoose.Schema({
   readTime: { type: String, required: true }
 })
 
+blogSchema.index({ date: -1 })
+
 const blogModel = mongoose.models.blog || mongoose.model('blog', blogSchema)
 export default blogModel

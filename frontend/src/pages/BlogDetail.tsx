@@ -27,6 +27,7 @@ interface BlogPostContent {
   content: string
   imageUrl: string
   date: string
+  dateISO: string
   author: string
   readTime: string
   category: string
@@ -126,33 +127,43 @@ const BlogDetail = () => {
 
   useEffect(() => {
     async function fetchBlog() {
+      if (!slug) {
+        setError('Blog post not found')
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError('')
       try {
-        const res = await fetch(backendUrl +'/api/blog/list')
+        const res = await fetch(backendUrl + `/api/blog/slug/${encodeURIComponent(slug)}`)
         if (!res.ok) {
           setError('Failed to load blog (server error)')
           setLoading(false)
           return
         }
-        const data: { success: boolean; blogs: Blog[]; message?: string } = await res.json()
+        const data: { success: boolean; blog?: Blog; message?: string } = await res.json()
         if (data.success) {
-          const found = data.blogs.find(b => b.slug === slug)
-          if (found) {
-            setPost({
-              id: found._id,
-              title: found.title,
-              excerpt: found.excerpt,
-              content: linkify(decodeHtml(found.content)),
-              imageUrl: found.image,
-              date: new Date(found.date).toLocaleDateString(),
-              author: found.author,
-              readTime: found.readTime,
-              category: found.category
-            })
-          } else {
+          const found = data.blog
+          if (!found) {
             setError('Blog post not found')
+            setLoading(false)
+            return
           }
+
+          const publishedISO = new Date(found.date).toISOString();
+          setPost({
+            id: found._id,
+            title: found.title,
+            excerpt: found.excerpt,
+            content: linkify(decodeHtml(found.content || '')),
+            imageUrl: found.image,
+            date: new Date(found.date).toLocaleDateString(),
+            dateISO: publishedISO,
+            author: found.author,
+            readTime: found.readTime,
+            category: found.category
+          })
         } else {
           setError(data.message || 'Failed to load blog')
         }
@@ -208,6 +219,36 @@ const BlogDetail = () => {
         canonical={`/blog/${slug}`}
         ogImage={post?.imageUrl}
         ogType="article"
+        jsonLd={(() => {
+          const siteUrl = 'https://revivewardrobe.com';
+          const url = `${siteUrl}/blog/${slug}`;
+          const cleanTitle = post.title.replace(/<[^>]*>?/gm, '');
+          return {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: cleanTitle,
+            description: post.excerpt,
+            image: post.imageUrl ? [post.imageUrl] : undefined,
+            author: {
+              '@type': 'Person',
+              name: post.author
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Revive Wardrobe',
+              logo: {
+                '@type': 'ImageObject',
+                url: `${siteUrl}/logo.png`
+              }
+            },
+            datePublished: post.dateISO,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': url
+            },
+            url
+          };
+        })()}
       />
       <Navbar />
       <div className="pt-20 md:pt-28 pb-16 ">

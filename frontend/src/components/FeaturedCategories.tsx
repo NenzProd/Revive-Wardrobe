@@ -39,17 +39,17 @@ const FeaturedCategories = () => {
     {
       title: "Ethnic Elegance",
       imageUrl: EthnicElegance,
-      link: "/shop?category=Ethnic%20Elegance"
+      link: "/shop/category/ethnic-elegance"
     },
     {
       title: "Graceful Abayas Dubai",
       imageUrl: GracefulAbayas,
-      link: "/shop?category=Graceful%20Abayas"
+      link: "/shop/category/graceful-abayas"
     },
     {
       title: "Designer Jalabiya UAE",
       imageUrl: DesignerJalabiya,
-      link: "/shop?category=Designer%20Jalabiya"
+      link: "/shop/category/designer-jalabiya"
     },
   ];
 

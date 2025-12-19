@@ -179,6 +179,52 @@ const ProductDetail = () => {
         canonical={`/product/${product.slug}`}
         ogImage={product.image[0]}
         ogType="product"
+        jsonLd={(() => {
+          const siteUrl = 'https://revivewardrobe.com';
+          const url = `${siteUrl}/product/${product.slug}`;
+          const images = Array.isArray(product.image) ? product.image : [];
+          const firstVariant = product.variants?.[0];
+          const price = (displayPrice ?? firstVariant?.retail_price ?? null) as number | null;
+          const stock = (selectedVariant?.stock ?? firstVariant?.stock ?? null) as number | null;
+
+          const schema: Record<string, unknown> = {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            description: product.description,
+            image: images,
+            sku: selectedVariant?.sku || firstVariant?.sku || product._id,
+            brand: {
+              '@type': 'Brand',
+              name: 'Revive Wardrobe'
+            },
+            category: product.category,
+            url,
+            offers: {
+              '@type': 'Offer',
+              url,
+              priceCurrency: 'AED',
+              ...(price !== null ? { price } : {}),
+              availability:
+                stock === null
+                  ? 'https://schema.org/InStock'
+                  : stock > 0
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+              itemCondition: 'https://schema.org/NewCondition'
+            }
+          };
+
+          if (reviewSummary && reviewSummary.totalReviews > 0) {
+            schema.aggregateRating = {
+              '@type': 'AggregateRating',
+              ratingValue: reviewSummary.averageRating,
+              reviewCount: reviewSummary.totalReviews
+            };
+          }
+
+          return schema;
+        })()}
       />
       <Navbar />
 
