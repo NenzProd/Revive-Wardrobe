@@ -57,7 +57,7 @@ const FeaturedCategories = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-serif mb-6 text-gray-800">Featured Categories</h2>
+          <h2 className="text-4xl md:text-5xl font-serif mb-6 text-gray-800">Shop Modest Fashion Categories</h2>
           <div className="w-32 h-1 bg-revive-red mx-auto rounded-full"></div>
         </div>
         <div className="overflow-x-auto scrollbar-hide pb-4 md:overflow-x-visible">

@@ -140,7 +140,7 @@ const FeaturedProducts = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Products</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Abayas & New Arrivals</h2>
             <div className="w-24 h-1 bg-revive-red mx-auto"></div>
           </div>
           {[0, 1].map(rowIdx => (
@@ -175,7 +175,7 @@ const FeaturedProducts = () => {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Products</h2>
+          <h2 className="text-3xl md:text-4xl font-serif mb-4">Featured Abayas & New Arrivals</h2>
           <div className="w-24 h-1 bg-revive-red mx-auto"></div>
         </div>
         {rows.map((row, i) => (

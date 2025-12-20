@@ -19,31 +19,16 @@ const SEO = ({
   ogType = 'website',
   jsonLd
 }: SEOProps) => {
-  const baseDefaultKeywords = 'fashion, clothing, online shopping, revive wardrobe, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online';
+  const baseDefaultKeywords = 'buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, online clothes shopping uae, abaya online uae, order clothes online dubai, best abaya shops in Dubai';
   const extraKeywords = [
-    'Luxury modest wear Dubai',
-    'Premium abayas UAE',
-    'Designer jalebia dresses Middle East',
-    'Elegant modest wardrobe Dubai',
-    'Buy abayas online in Dubai',
-    'Custom stitched jalebias UAE',
-    'Luxury modest dresses for women Dubai',
-    'Tailored couple outfits Middle East',
-    'Affordable modest fashion GCC',
-    'buy abaya dubai',
-    'abaya shops in dubai online',
-    'dubai pardha online shopping',
-    'dubai designer abaya online shopping',
-    'latest jalabiya designs in dubai',
-    'jalabiya shops in dubai',
-    'jalabiya dubai online',
-    'abaya jalabiya dress dubai',
-    'jalabiya dubai',
-    'luxury embroidered jalabiya Dubai',
-    'designer casual jalabiya UAE online',
-    'Dubai evening jalabiya online shop',
-    'best jalabiya store UAE online',
-    'premium embroidered jalabiya dubai online'
+    'shein dubai uae online',
+    'zara uae online', 
+    'shein online shopping dubai',
+    'matalan uae online',
+    'Dubai abaya online worldwide shipping',
+    'abaya shop Dubai online',
+    'luxury abaya Dubai online',
+    'designer jalabiyas uae' // Keeping this relevant one
   ];
   const computeKeywords = (incoming?: string) => {
     const base = baseDefaultKeywords.split(',').map(s => s.trim()).filter(Boolean);

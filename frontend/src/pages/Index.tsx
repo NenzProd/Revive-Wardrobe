@@ -16,7 +16,7 @@ const Index = () => {
       <SEO 
         title="Abayas Online in Dubai | Modest Fashion"
         description="Discover prayer abayas, jalebia dresses & modest fashion at Revive Wardrobe. Shop abayas online in Dubai & Abu Dhabi from a trusted Muslim store."
-        keywords="revive wardrobe, fashion, clothing, online shopping, premium fashion, elegant attire, stitched clothing, unstitched fabric, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online"
+        keywords="buy clothes online dubai, online fashion store uae, modest fashion dubai, abaya online uae, best abaya shops in Dubai, luxury abaya Dubai online"
         canonical="/"
       />
       <Navbar />
