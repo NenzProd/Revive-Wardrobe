@@ -281,6 +281,7 @@ const Add = ({ token }) => {
                 className="w-full px-3 py-2 bg-white"
               >
                 <option value="Ethnic Elegance">Ethnic Elegance</option>
+                <option value="Jalabiya">Jalabiya</option>
                 <option value="Graceful Abayas">Graceful Abayas</option>
                 <option value="Intimate Collection">Intimate Collection</option>
                 <option value="Stitching Services">Stitching Services</option>
