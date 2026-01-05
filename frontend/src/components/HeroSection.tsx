@@ -3,85 +3,57 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { slide1, slide2, slide3, productImage1,productImage2,productImage3 } from "@/assets/assets";
+import { slide1, slide2, slide3 } from "@/assets/assets";
 
 interface CarouselSlide {
   id: number;
   title: string;
   description: string;
-  offer: string;
-  ctaText: string;
-  modelImage: string;
-  productImage: string;
-  link: string;
+  subtext: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  image: string;
+  linkPrimary: string;
+  linkSecondary: string;
 }
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // const slides: CarouselSlide[] = [
-  //   {
-  //     id: 1,
-  //     title: "\"I Licked It / So It's Mine\"",
-  //     description: "Playfully claim your partner — one cheeky message at a time. Because love tastes better with laughter.",
-  //     offer: "Get 10% OFF this wild set — Limited stock!",
-  //     ctaText: "Shop the Fun Set",
-  //     modelImage: slide1,
-  //     productImage: productImage1,
-  //     link: "/shop"
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "\"PINKPLAY\" Black & Lace Set",
-  //     description: "When sporty meets sexy — crafted for bold lovers. Elevate date nights with signature style.",
-  //     offer: "Flat ₹200 OFF — Only this week!",
-  //     ctaText: "Get the Luxe Look",
-  //     modelImage: slide2,
-  //     productImage: productImage2,
-  //     link: "/shop?category=luxury"
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "\"Hands Tearing Fabric\" Lace Set",
-  //     description: "Unleash the tease with our most playful design yet. Perfect for couples who flirt with fire.",
-  //     offer: "Save 15% on this flirty favorite!",
-  //     ctaText: "Flirt & Shop Now",
-  //     modelImage: slide3,
-  //     productImage: productImage3,
-  //     link: "/shop?category=flirty"
-  //   },
-  // ];
   const slides: CarouselSlide[] = [
     {
       id: 1,
-      title: "\"Elegance Redefined\" Premium Abaya",
-      description: "Step into timeless grace with our handcrafted Abaya collection in Dubai — a blend of modesty and modern sophistication. Perfect for every occasion, from casual outings to elegant evenings in the UAE.",
-      offer: "",
-      ctaText: "Shop Abaya Collection",
-      modelImage: slide1,
-      productImage: productImage1,
-      link: "/shop"
+      title: "Timeless Abayas for\nEffortless Elegance",
+      description: "Handcrafted details, designed\nfor modern modest wear.",
+      subtext: "",
+      ctaPrimary: "Shop This Elegance",
+      ctaSecondary: "Explore abayas",
+      image: slide1,
+      linkPrimary: "/shop",
+      linkSecondary: "/shop?category=abayas"
     },
     {
       id: 2,
-      title: "\"Royal Comfort\" Designer Jalabiya",
-      description: "Experience effortless charm with our flowy Jalabiya dresses — a fusion of tradition and comfort. Tailored for women who embrace modest fashion in Dubai with a touch of luxury.",
-      offer: "",
-      ctaText: "Launching Soon",
-      modelImage: slide2,
-      productImage: productImage2,
-      link: "/shop"
+      title: "Royal Comfort\nDesigner Jalabiya",
+      description: "Fusion of tradition and comfort.\nTailored for modern modesty.",
+      subtext: "",
+      ctaPrimary: "Shop This Elegance",
+      ctaSecondary: "Explore Jalabiyas",
+      image: slide2,
+      linkPrimary: "/shop",
+      linkSecondary: "/shop?category=jalabiyas"
     },
     // {
     //   id: 3,
-    //   title: "\"Heritage Chic\" Pakistani Dresses",
-    //   description: "Celebrate culture with our elegant Pakistani dresses, adorned with intricate embroidery and timeless patterns. Crafted for weddings, festivities, and everyday elegance.",
-    //   offer: "",
-    //   ctaText: "Launching Soon",
-    //   modelImage: slide3,
-    //   productImage: productImage3,
-    //   link: "/shop"
-    // },
+    //   title: "Heritage Chic\nPakistani Dresses",
+    //   description: "Intricate embroidery and timeless patterns.\nCrafted for elegance.",
+    //   subtext: "",
+    //   ctaPrimary: "Shop This Elegance",
+    //   ctaSecondary: "Explore Collection",
+    //   image: slide3,
+    //   linkPrimary: "/shop",
+    //   linkSecondary: "/shop?category=pakistani"
+    // }
   ];
   
   const nextSlide = () => {
@@ -100,123 +72,151 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-revive-black">
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            index === currentSlide ? "opacity-100 z-10" : "opacity-0 -z-10"
-          }`}
-        >
-          {/* Mobile Layout */}
-          <div className="flex flex-col h-full md:hidden">
-            {/* Model Image - First on mobile */}
-            <div className="w-full h-[40vh] relative">
-              <img 
-                src={slide.modelImage}
-                alt={`Model for ${slide.title}`}
-                className="w-full h-full object-cover object-top"
-              />
-            </div>
-            
-            {/* Text Content - Second on mobile */}
-            <div className="w-full h-[20vh] bg-revive-black text-white flex items-center justify-center px-4 py-6">
-              <div className="max-w-sm space-y-3 text-center">
-                <h2 className="text-lg font-serif leading-tight">{slide.title}</h2>
-                <p className="text-sm opacity-90 hidden sm:block">{slide.description}</p>
-                <p className="text-revive-gold text-sm font-medium">{slide.offer}</p>
-                <Link to={slide.link}>
-                  <Button 
-                    variant="default" 
-                    className="mt-3 bg-revive-red hover:bg-revive-red/90 text-sm px-4 py-2"
-                  >
-                    {slide.ctaText}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            {/* Product Image - Third on mobile */}
-            <div className="w-full h-[30vh] bg-white flex items-center justify-center p-6">
-              <img 
-                src={slide.productImage}
-                alt={slide.title}
-                className="max-w-full max-h-full object-contain"
-              />
-            </div>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden md:flex flex-col h-full">
-            {/* Model Image - Left half on desktop */}
-            <div className="w-1/2 h-full absolute left-0 top-0 relative">
-              <img 
-                src={slide.modelImage}
-                alt={`Model for ${slide.title}`}
-                className="w-full h-full object-cover object-center"
-              />
-            </div>
-            
-            {/* Content Section - Right half on desktop */}
-            <div className="w-1/2 h-full absolute right-0 top-0 flex flex-col bg-revive-black">
-              {/* Product Image */}
-              <div className="w-full h-[50%] bg-white flex items-center justify-center p-4">
-                <img 
-                  src={slide.productImage}
-                  alt={slide.title}
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
-              
-              {/* Text Content */}
-              <div className="w-full h-[50%] flex items-center justify-center bg-revive-black text-white p-8">
-                <div className="max-w-md space-y-4 text-center">
-                  <h2 className="text-xl lg:text-2xl xl:text-3xl font-serif leading-tight">{slide.title}</h2>
-                  <p className="text-sm lg:text-base opacity-90">{slide.description}</p>
-                  <p className="text-revive-gold text-sm lg:text-lg font-medium">{slide.offer}</p>
-                  <Link to={slide.link}>
-                    <Button 
-                      variant="default" 
-                      className="mt-4 bg-revive-red hover:bg-revive-red/90 text-sm lg:text-base px-6 py-3"
-                    >
-                      {slide.ctaText}
-                    </Button>
-                  </Link>
+    <div className="relative w-full overflow-hidden bg-gray-50 font-sans">
+      
+      {/* --- Mobile Layout (Image Top, Text Bottom) --- */}
+      <div className="md:hidden flex flex-col min-h-screen">
+         {/* Image Slider Section */}
+         <div className="relative w-full h-[45vh] bg-gray-200">
+            {slides.map((slide, index) => (
+                <div
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+                        index === currentSlide ? "opacity-100 z-10" : "opacity-0 -z-10"
+                    }`}
+                >
+                    <img 
+                        src={slide.image} 
+                        alt={slide.title} 
+                        className="w-full h-full object-cover"
+                    />
                 </div>
-              </div>
+            ))}
+            
+             {/* Mobile Navigation Arrows (Inside Image) */}
+             <button
+                onClick={prevSlide}
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white z-20"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white z-20"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+         </div>
+
+         {/* Content Section */}
+         <div className="flex-1 bg-white flex items-center justify-center py-12 px-6 text-center">
+            <div className="max-w-sm">
+                 <div key={slides[currentSlide].id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                     <h2 className="text-3xl font-serif text-gray-900 leading-tight mb-3">
+                        {slides[currentSlide].title}
+                     </h2>
+                     <p className="text-gray-600 text-sm mb-8 leading-relaxed">
+                        {slides[currentSlide].description}
+                     </p>
+                     
+                     <div className="flex flex-col gap-3">
+                        <Link to={slides[currentSlide].linkPrimary}>
+                            <Button className="w-full bg-black text-white px-8 py-6 rounded-none text-base">
+                                {slides[currentSlide].ctaPrimary}
+                            </Button>
+                        </Link>
+                        <Link to={slides[currentSlide].linkSecondary}>
+                            <Button variant="outline" className="w-full border-black text-black px-8 py-6 rounded-none text-base">
+                                {slides[currentSlide].ctaSecondary}
+                            </Button>
+                        </Link>
+                     </div>
+                 </div>
             </div>
-          </div>
-        </div>
-      ))}
+         </div>
+      </div>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-revive-red hover:bg-revive-red/80 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-revive-red hover:bg-revive-red/80 text-white p-1.5 sm:p-2 rounded-full z-20 h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex items-center justify-center"
-        aria-label="Next slide"
-      >
-        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
-      </button>
+      {/* --- Desktop Layout (Full Screen Overlay) --- */}
+      <div className="hidden md:block relative h-screen">
+          {slides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                index === currentSlide ? "opacity-100 z-10" : "opacity-0 -z-10"
+              }`}
+            >
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                    <img 
+                        src={slide.image} 
+                        alt={slide.title} 
+                        className="w-full h-full object-cover object-top opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
+                </div>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
-        {slides.map((_, index) => (
+                {/* Content Container */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-0 z-20 translate-y-8">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-gray-900 leading-tight mb-4 tracking-tight whitespace-pre-line">
+                        {slide.title}
+                    </h1>
+
+                    <p className="text-gray-700 text-lg md:text-xl font-light mb-8 max-w-2xl whitespace-pre-line">
+                        {slide.description}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Link to={slide.linkPrimary}>
+                            <Button 
+                                className="bg-black text-white hover:bg-gray-800 text-sm md:text-base px-8 py-6 rounded-none w-full sm:w-auto min-w-[160px]"
+                            >
+                                {slide.ctaPrimary}
+                            </Button>
+                        </Link>
+                        <Link to={slide.linkSecondary}>
+                            <Button 
+                                variant="outline"
+                                className="bg-white border-black text-black hover:bg-gray-100 text-sm md:text-base px-8 py-6 rounded-none w-full sm:w-auto min-w-[160px]"
+                            >
+                                {slide.ctaSecondary}
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+          ))}
+
+          {/* Navigation Arrows (Desktop) */}
           <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${
-              index === currentSlide ? "bg-white" : "bg-white/50"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-black transition-colors z-20"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="h-10 w-10 font-thin" strokeWidth={1} />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-600 hover:text-black transition-colors z-20"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="h-10 w-10 font-thin" strokeWidth={1} />
+          </button>
+
+          {/* Slide Indicators (Desktop) */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  index === currentSlide ? "bg-black scale-110" : "bg-gray-400/50 hover:bg-gray-600/50"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
       </div>
     </div>
   );

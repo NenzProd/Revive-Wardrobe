@@ -1,10 +1,11 @@
 
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
-import SignatureCollection from '../components/SignatureCollection';
+import SignatureAbayas from '../components/SignatureAbayas';
 import FeaturedCategories from '../components/FeaturedCategories';
-import FeaturedProducts from '../components/FeaturedProducts';
+import EthnicElegance from '../components/EthnicElegance';
 import StitchingPromo from '../components/StitchingPromo';
+import StyleJourney from '../components/StyleJourney';
 import BlogPreview from '../components/BlogPreview';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
@@ -23,11 +24,12 @@ const Index = () => {
       <h1 className="sr-only">Abayas Online in Dubai</h1>
       <HeroSection />
       <FeaturedCategories />
-      <SignatureCollection />
-      <FeaturedProducts />
+      <SignatureAbayas />
+      <EthnicElegance />
       <StitchingPromo />
+      <StyleJourney />
       {/* <BlogPreview /> */}
-      <Newsletter />
+      {/* <Newsletter /> */}
       <Footer />
     </div>
   );

@@ -25,6 +25,9 @@ export interface Product {
   variants: ProductVariant[]
   date?: string
   __v?: number
+  price?: number
+  salePrice?: number
+  isSale?: boolean
 }
 
 export interface CartItem extends Omit<Product, 'id'> {
