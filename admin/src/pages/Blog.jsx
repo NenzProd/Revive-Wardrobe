@@ -41,6 +41,13 @@ const Blog = ({ token }) => {
     fetchBlogs()
   }, [])
 
+  // Helper to strip HTML tags
+  const stripHtml = (html) => {
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  }
+
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-6">
@@ -58,7 +65,12 @@ const Blog = ({ token }) => {
         {blogs.map((blog) => (
           <div key={blog._id} className="bg-white rounded-lg shadow p-4 border border-gray-100">
             <div className="mb-2">
-              <div className="text-lg font-semibold text-gray-900">{blog.title}</div>
+              <div 
+                className="text-lg font-semibold text-gray-900 overflow-hidden whitespace-nowrap"
+                style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
+              >
+                {stripHtml(blog.title)}
+              </div>
               <div className="text-sm text-gray-500">{blog.author} • {blog.category}</div>
               <div className="text-xs text-gray-400">{new Date(blog.date).toLocaleDateString()}</div>
             </div>
@@ -99,8 +111,13 @@ const Blog = ({ token }) => {
           <tbody className="bg-white divide-y divide-gray-200">
             {blogs.map((blog) => (
               <tr key={blog._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{blog.title}</div>
+                <td className="px-6 py-4 whitespace-nowrap max-w-xs relative">
+                  <div 
+                    className="text-sm font-medium text-gray-900 overflow-hidden"
+                    style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
+                  >
+                    {stripHtml(blog.title)}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{blog.author}</div>
