@@ -1,125 +1,69 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { useProductList } from '../hooks/useProduct';
-import { priceSymbol } from '../config/constants';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useCartStore } from '../stores/useCartStore';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
+// Import images
+import img1 from "@/assets/img/carasoul images/jalaibas (1).jpeg";
+import img2 from "@/assets/img/carasoul images/jalaibas (2).jpeg";
+import img3 from "@/assets/img/carasoul images/jalaibas (3).jpeg";
+import img4 from "@/assets/img/carasoul images/jalaibas.jpg";
 
 const SignatureAbayas = () => {
-  const { toast } = useToast();
-  const { products, loading, error } = useProductList();
-  // Filter logic remains same, or updated if specific category needed. 
-  // Assuming 'bestseller' covers valid items for this section.
-  const gracefulAbayas = products.filter((p: any) => p.bestseller === true).slice(0, 4); // Limit to 4 if needed, or keeping existing logic
-
-  if (loading) {
-    return (
-        <div className="container mx-auto px-4 py-16">
-            <div className="flex flex-wrap justify-center -mx-4 gap-y-8">
-                {[...Array(4)].map((_, i) => (
-                    <div key={i} className="w-full md:w-1/2 lg:w-1/4 px-4">
-                        <Skeleton className="h-[500px] w-full rounded-3xl" />
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-  }
-
-  if (error) return null;
+  const images = [img1, img2, img3, img4];
 
   return (
-    <section className="py-24 bg-[#F8F8F8]"> {/* Light grey/off-white background */}
+    <section className="py-8 md:py-20 bg-white">
       <div className="container mx-auto px-4">
-        
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4 tracking-tight">
-            Our Signature Abayas
-          </h2>
-          <p className="text-gray-600 text-lg">
-            Thoughtfully crafted abayas<br className="md:hidden" /> for modern modest wear.
-          </p>
+        {/* Header - Minimalist */}
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 md:mb-12 border-b border-gray-100 pb-2 md:pb-4 text-center md:text-left">
+          <div>
+            <h2 className="text-xl md:text-4xl font-serif text-gray-900 mb-1 md:mb-2 tracking-tight">
+              Our Graceful Abayas
+            </h2>
+            <p className="text-gray-500 text-xs md:text-sm">
+              Timeless elegance for the modern woman.
+            </p>
+          </div>
+          <Link to="/shop/category/graceful-abayas" className="hidden md:block">
+            <Button className="bg-revive-red text-white hover:bg-revive-red/90 px-8 rounded-full">
+              View All Abayas &rarr;
+            </Button>
+          </Link>
         </div>
 
-        {/* Product Grid */}
-        <div className="flex flex-wrap justify-center -mx-3 md:-mx-4 mb-16">
-          {gracefulAbayas.map((product: any) => (
-            <div key={product._id} className="w-full sm:w-1/2 lg:w-1/4 px-3 md:px-4 mb-8">
-              <ProductCard product={product} />
-            </div>
+        {/* Grid Layout */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          {images.map((image, index) => (
+            <Link
+              key={index}
+              to="/shop/category/graceful-abayas"
+              className="block group cursor-pointer"
+            >
+              <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-50 mb-3">
+                <img
+                  src={image}
+                  alt={`Graceful Abaya ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+              <h3 className="text-sm md:text-base font-medium text-gray-900 group-hover:text-revive-red transition-colors">
+                Graceful Abaya {index + 1}
+              </h3>
+              <p className="text-xs md:text-sm text-gray-500">AED 299.00</p>
+            </Link>
           ))}
         </div>
 
-        {/* Explore Button */}
-        <div className="text-center">
-            <Link to="/shop/category/abayas">
-                <Button className="bg-[#8B0000] hover:bg-[#660000] text-white px-8 py-6 text-base rounded-md">
-                    Explore Abayas
-                </Button>
-            </Link>
+        {/* Mobile View All Button */}
+        <div className="mt-8 text-center md:hidden">
+          <Link to="/shop/category/graceful-abayas">
+            <Button className="w-full bg-revive-red text-white hover:bg-revive-red/90 rounded-full">
+              View All Abayas
+            </Button>
+          </Link>
         </div>
-
       </div>
     </section>
-  );
-};
-
-interface ProductCardProps {
-  product: any;
-}
-
-const ProductCard = ({ product }: ProductCardProps) => {
-  
-  const getProductImage = (product: any) => {
-    if (Array.isArray(product.image) && product.image.length > 0) return product.image[0]
-    if (typeof product.image === 'string') return product.image
-    return '/placeholder.png'
-  }
-
-  return (
-    <div className="group flex flex-col">
-      {/* Image Container with rounded top corners */}
-      <div className="relative aspect-[3/4] overflow-hidden rounded-t-[2.5rem] bg-gray-100">
-        <Link to={`/product/${product.slug}`}>
-            <img 
-              src={getProductImage(product)} 
-              alt={product.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-            />
-        </Link>
-      </div>
-      
-      {/* Content Container with rounded bottom corners */}
-      <div className="bg-white p-6 rounded-b-[2.5rem] shadow-sm flex flex-col justify-between flex-1 relative -mt-4 z-10">
-         <div>
-            <Link to={`/product/${product.slug}`}>
-                <h3 className="text-xl font-serif text-gray-900 mb-2 group-hover:text-[#8B0000] transition-colors leading-tight">
-                    {product.name}
-                </h3>
-            </Link>
-         </div>
-         
-         <div className="flex items-center justify-between mt-2">
-            <div>
-                 {product.isSale && product.salePrice ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#8B0000] font-bold text-lg">{priceSymbol} {product.salePrice}</span>
-                      <span className="text-gray-400 text-sm line-through">{priceSymbol} {product.price}</span>
-                    </div>
-                  ) : (
-                    <span className="text-[#8B0000] font-bold text-lg">{priceSymbol} {product.price}</span>
-                  )}
-            </div>
-            
-            <div className="text-gray-500 text-sm">
-                Size : L
-            </div>
-         </div>
-      </div>
-    </div>
   );
 };
 

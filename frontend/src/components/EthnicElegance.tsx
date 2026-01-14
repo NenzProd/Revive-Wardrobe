@@ -1,97 +1,94 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { priceSymbol } from '../config/constants'
-import { useProductList } from '../hooks/useProduct'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Product } from '../types/product'
+import React from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+// Import images
+import img1 from "@/assets/img/carasoul images/ethinci elegance (1).jpeg";
+import img2 from "@/assets/img/carasoul images/ethinci elegance (2).jpeg";
+import img3 from "@/assets/img/carasoul images/ethinci elegance (3).jpeg";
+import img4 from "@/assets/img/carasoul images/ethinci elegance (4).jpeg";
 
 const EthnicElegance = () => {
-  const { products, loading, error } = useProductList();
-  const ethnicProducts = products.filter((product) => product.category === 'Ethnic Elegance').slice(0, 2);
-
-  if (loading) return (
-      <div className="container mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Skeleton className="h-[600px] w-full rounded-xl" />
-              <Skeleton className="h-[600px] w-full rounded-xl" />
-          </div>
-      </div>
-  );
-  if (error) return null;
+  const images = [img1, img2, img3, img4];
 
   return (
-    <section className="py-24 bg-[#EAE5D9]">
+    <section className="py-8 md:py-20 bg-white">
       <div className="container mx-auto px-4">
-        
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 tracking-tight leading-tight">
-            Ethnic Elegance<br />
-            designed for you
-          </h2>
+        {/* Header - Minimalist */}
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 md:mb-12 border-b border-gray-100 pb-2 md:pb-4 text-center md:text-left">
+          <div>
+            <h2 className="text-xl md:text-4xl font-serif text-gray-900 mb-1 md:mb-2 tracking-tight">
+              Ethnic Elegance
+            </h2>
+            <p className="text-gray-500 text-xs md:text-sm">
+              Discover tradition tailored for you.
+            </p>
+          </div>
+          <Link to="/shop/category/ethnic-elegance" className="hidden md:block">
+            <Button
+              variant="link"
+              className="text-revive-red font-normal hover:text-revive-red hover:underline underline-offset-4 px-0"
+            >
+              View All Collection &rarr;
+            </Button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
-          {ethnicProducts.map((product: any) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
+        {/* Carousel */}
+        <div className="w-full px-4 md:px-12">
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {images.map((image, index) => (
+                <CarouselItem
+                  key={index}
+                  className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4"
+                >
+                  <Link
+                    to="/shop/category/ethnic-elegance"
+                    className="block group cursor-pointer"
+                  >
+                    <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-50">
+                      <img
+                        src={image}
+                        alt={`Ethnic Elegance ${index + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex -left-4 lg:-left-12" />
+            <CarouselNext className="hidden md:flex -right-4 lg:-right-12" />
+          </Carousel>
         </div>
 
-        <div className="text-center">
-            <Link to="/shop">
-                <Button className="bg-[#8B0000] hover:bg-[#660000] text-white px-8 py-6 text-base rounded-md font-medium">
-                    Explore the Elegance
-                </Button>
-            </Link>
+        {/* Mobile View All Button */}
+        <div className="mt-8 text-center md:hidden">
+          <Link to="/shop/category/ethnic-elegance">
+            <Button
+              variant="outline"
+              className="w-full border-revive-red text-revive-red hover:bg-revive-red hover:text-white"
+            >
+              View All Collection
+            </Button>
+          </Link>
         </div>
-
       </div>
     </section>
-  )
-}
+  );
+};
 
-const ProductCard = ({ product }: { product: Product }) => {
-  const { name, slug, image, variants } = product;
-  const price = variants?.[0]?.retail_price || product.price || 0;
-  
-  const getProductImage = (product: Product) => {
-    if (Array.isArray(product.image) && product.image.length > 0) return product.image[0]
-    if (typeof product.image === 'string') return product.image
-    return '/placeholder.png'
-  }
-
-  return (
-    <div className="group flex flex-col">
-       <div className="relative aspect-[3/4] overflow-hidden rounded-t-[2.5rem] bg-gray-200">
-         <Link to={`/product/${slug}`}>
-             <img 
-               src={getProductImage(product)} 
-               alt={name}
-               className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-             />
-         </Link>
-       </div>
-       
-       <div className="bg-white p-6 rounded-b-[2.5rem] shadow-sm flex flex-col justify-between relative -mt-4 z-10">
-          <div>
-            <Link to={`/product/${slug}`}>
-                <h3 className="text-2xl font-serif text-gray-900 mb-2 leading-tight group-hover:text-[#8B0000] transition-colors">
-                    {name}
-                </h3>
-            </Link>
-          </div>
-          
-          <div className="flex items-center justify-between mt-2">
-             <span className="text-[#8B0000] font-bold text-lg">
-                {priceSymbol} {price}
-             </span>
-             <span className="text-gray-500 text-sm">
-                Size : L
-             </span>
-          </div>
-       </div>
-    </div>
-  )
-}
-
-export default EthnicElegance
+export default EthnicElegance;

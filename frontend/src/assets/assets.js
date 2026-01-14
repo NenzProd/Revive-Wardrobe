@@ -21,7 +21,7 @@ const productImage1 = 'https://res.cloudinary.com/dia8x6y6u/image/upload/v175933
 const slide3 = 'https://res.cloudinary.com/dia8x6y6u/image/upload/v1759334688/slide3_hpkngx.png'
 const productImage2 = 'https://res.cloudinary.com/dia8x6y6u/image/upload/v1759334699/product-image2_sjckv8.png'
 const productImage3 = 'https://res.cloudinary.com/dia8x6y6u/image/upload/v1759334699/product-image3_tgnmpu.png'
-
+import CashbackImage from './img/1s.jpeg'
 
 
 // Export images
@@ -45,5 +45,6 @@ export {
   slide3,
   productImage1,
   productImage2,
-  productImage3
+  productImage3,
+  CashbackImage
 }

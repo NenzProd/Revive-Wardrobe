@@ -1,5 +1,6 @@
 
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
 	darkMode: ["class"],
@@ -106,15 +107,62 @@ export default {
 				'slide-down': {
 					'0%': { transform: 'translateY(-10px)', opacity: '0' },
 					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'flip-vertical': {
+					'0%, 35%': { transform: 'rotateX(0deg)' },
+					'50%, 85%': { transform: 'rotateX(180deg)' },
+					'100%': { transform: 'rotateX(360deg)' }
+				},
+				'slide-in-left': {
+					'0%': { transform: 'translateX(-100%)', opacity: '0' },
+					'100%': { transform: 'translateX(0)', opacity: '1' }
+				},
+				'zoom-pulse': {
+					'0%, 100%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.1)' }
+				},
+				'spin-slow': {
+					'from': { transform: 'rotate(0deg)' },
+					'to': { transform: 'rotate(360deg)' }
+				},
+				'clockwise-glow': {
+					'0%': { boxShadow: '0 -5px 15px -5px #ef4444' },     /* Top */
+					'25%': { boxShadow: '5px 0 15px -5px #ef4444' },      /* Right */
+					'50%': { boxShadow: '0 5px 15px -5px #ef4444' },      /* Bottom */
+					'75%': { boxShadow: '-5px 0 15px -5px #ef4444' },     /* Left */
+					'100%': { boxShadow: '0 -5px 15px -5px #ef4444' }     /* Top */
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out',
-				'slide-down': 'slide-down 0.5s ease-out'
+				'slide-down': 'slide-down 0.5s ease-out',
+				'flip-vertical': 'flip-vertical 8s infinite ease-in-out',
+				'slide-in-left': 'slide-in-left 1s ease-out forwards',
+				'zoom-pulse': 'zoom-pulse 2s infinite ease-in-out',
+				'spin-slow': 'spin-slow 4s linear infinite',
+				'clockwise-glow': 'clockwise-glow 3s linear infinite',
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		plugin(function ({ addUtilities }) {
+			addUtilities({
+				".perspective-1000": {
+					perspective: "1000px",
+				},
+				".transform-style-3d": {
+					transformStyle: "preserve-3d",
+				},
+				".backface-hidden": {
+					backfaceVisibility: "hidden",
+				},
+				".rotate-x-180": {
+					transform: "rotateX(180deg)",
+				},
+			});
+		}),
+	],
 } satisfies Config;

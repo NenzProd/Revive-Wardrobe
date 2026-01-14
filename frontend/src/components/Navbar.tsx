@@ -1,8 +1,30 @@
-import { ArrowLeft, Heart, Menu, Search, ShoppingCart, User, Home, Tag, Info, Phone, ChevronDown, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Heart,
+  Menu,
+  Search,
+  ShoppingCart,
+  User,
+  Home,
+  Tag,
+  Info,
+  Phone,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "../stores/useCartStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+
+interface NavLink {
+  name: string;
+  path: string | null;
+  icon?: string | null;
+  dropdown?: boolean;
+  action?: string;
+  badge?: boolean;
+}
 
 const Navbar = () => {
   const { itemCount } = useCartStore();
@@ -10,45 +32,55 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchActive, setSearchActive] = useState(false);
   const [desktopSearchActive, setDesktopSearchActive] = useState(false);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
   const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [promoVisible, setPromoVisible] = useState(true);
 
   // Navigation Links JSON Structure
-  const navigationLinks = {
+  const navigationLinks: {
+    main: NavLink[];
+    collections: { name: string; path: string }[];
+    actions: NavLink[];
+    mobile: { bottom: NavLink[] };
+  } = {
     main: [
-      // { name: 'Home', path: '/', icon: 'Home' },
-
-      { name: 'Shop', path: '/shop', icon: null },
-      { name: 'Collections', path: null, icon: null, dropdown: true },
-      { name: 'Services', path: '/stitching-service', icon: null },
-      // { name: 'About', path: '/about', icon: 'Info' },
-      { name: 'Blog', path: '/blog', icon: null },
-
-      { name: 'Contact', path: '/contact', icon: 'Phone' }
+      {
+        name: "Shop Abayas",
+        path: "/shop/category/graceful-abayas",
+        icon: null,
+      },
+      { name: "Custom Stitching", path: "/stitching-service", icon: null },
+      { name: "Revive Story", path: "/about", icon: null },
+      { name: "Blog", path: "/blog", icon: null },
+      { name: "Contact us", path: "/contact", icon: "Phone" },
     ],
     collections: [
-      { name: 'Ethnic Elegance', path: '/shop/category/ethnic-elegance' },
-      { name: 'Graceful Abayas', path: '/shop/category/graceful-abayas' },
+      { name: "Ethnic Elegance", path: "/shop/category/ethnic-elegance" },
+      { name: "Graceful Abayas", path: "/shop/category/graceful-abayas" },
       // { name: 'Designer Jalabiya', path: '/shop' }
     ],
     actions: [
-      { name: 'Search', path: null, icon: 'Search', action: 'search' },
-      { name: 'Account', path: '/account', icon: 'User' },
-      { name: 'Wishlist', path: '/wishlist', icon: 'Heart' },
-      { name: 'Cart', path: '/cart', icon: 'ShoppingCart', badge: true },
-      { name: 'Phone', path: 'tel:+971521919358', icon: 'Phone', action: 'call' }
+      { name: "Search", path: null, icon: "Search", action: "search" },
+      { name: "Account", path: "/account", icon: "User" },
+      { name: "Wishlist", path: "/wishlist", icon: "Heart" },
+      { name: "Cart", path: "/cart", icon: "ShoppingCart", badge: true },
+      {
+        name: "Phone",
+        path: "tel:+971521919358",
+        icon: "Phone",
+        action: "call",
+      },
     ],
     mobile: {
       bottom: [
-        { name: 'Home', path: '/', icon: 'Home' },
-        { name: 'Shop', path: '/shop', icon: 'Tag' },
-        { name: 'Wishlist', path: '/wishlist', icon: 'Heart' },
-        { name: 'Account', path: '/account', icon: 'User' },
-        { name: 'Cart', path: '/cart', icon: 'ShoppingCart' }
-      ]
-    }
+        { name: "Home", path: "/", icon: "Home" },
+        { name: "Shop", path: "/shop", icon: "Tag" },
+        { name: "Wishlist", path: "/wishlist", icon: "Heart" },
+        { name: "Account", path: "/account", icon: "User" },
+        { name: "Cart", path: "/cart", icon: "ShoppingCart" },
+      ],
+    },
   };
 
   const collections = navigationLinks.collections;
@@ -57,9 +89,9 @@ const Navbar = () => {
     value
       .trim()
       .toLowerCase()
-      .replace(/["']/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
+      .replace(/["']/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
 
   const handleSearch = () => {
     if (searchInput.trim()) {
@@ -67,12 +99,12 @@ const Navbar = () => {
       if (slug) navigate(`/shop/search/${slug}`);
       setSearchActive(false);
       setDesktopSearchActive(false);
-      setSearchInput('');
+      setSearchInput("");
     }
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -89,14 +121,14 @@ const Navbar = () => {
     const handleClickOutside = () => {
       setCollectionsOpen(false);
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
     <>
       {/* Luxury Promo Bar */}
-      {promoVisible && (
+      {/* {promoVisible && (
         <div className="bg-gradient-to-r from-amber-900 via-yellow-800 to-amber-900 text-white py-2 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
           <div className="relative z-10">
@@ -146,12 +178,16 @@ const Navbar = () => {
             <X size={16} />
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Main Navigation */}
-      <nav className={`sticky ${promoVisible ? 'top-0' : 'top-0'} left-0 w-full z-40 bg-white/95 backdrop-blur-md shadow-lg border-b border-amber-100`}>
+      <nav
+        className={`sticky ${
+          promoVisible ? "top-0" : "top-0"
+        } left-0 w-full z-40 bg-white/95 backdrop-blur-md shadow-lg border-b border-amber-100`}
+      >
         {/* Mobile Navigation */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-4">
+        <div className="lg:hidden flex items-center justify-between px-4 h-[8vh]">
           {searchActive ? (
             <div className="flex items-center w-full gap-3">
               <button
@@ -198,36 +234,37 @@ const Navbar = () => {
                             alt="REVIVE WARDROBE"
                             className="h-10"
                           />
-
                         </div>
                       </div>
 
                       {/* Mobile Nav Links */}
                       <div className="flex-1 space-y-2">
                         {navigationLinks.main.map((link) => {
-                          if (link.name === 'Collections') {
+                          if (link.name === "Collections") {
                             return (
                               <div key={link.name} className="space-y-1">
                                 <div className="flex items-center gap-3 py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
                                   <Tag size={18} className="text-amber-700" />
                                   {link.name}
                                 </div>
-                                {navigationLinks.collections.map((collection) => (
-                                  <Link
-                                    key={collection.path}
-                                    to={collection.path}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-3 py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
-                                  >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-                                    {collection.name}
-                                  </Link>
-                                ))}
+                                {navigationLinks.collections.map(
+                                  (collection) => (
+                                    <Link
+                                      key={collection.path}
+                                      to={collection.path}
+                                      onClick={() => setMobileMenuOpen(false)}
+                                      className="flex items-center gap-3 py-2 px-8 text-gray-700 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-playfair"
+                                    >
+                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                                      {collection.name}
+                                    </Link>
+                                  )
+                                )}
                               </div>
                             );
                           }
 
-                          if (link.name === 'Services') {
+                          if (link.name === "Services") {
                             return (
                               <div key={link.name} className="space-y-1">
                                 <div className="flex items-center gap-3 py-3 px-4 text-gray-800 font-medium border-b border-amber-100 font-playfair">
@@ -247,10 +284,15 @@ const Navbar = () => {
                           }
 
                           if (link.path) {
-                            const IconComponent = link.name === 'Shop' ? Tag : 
-                                                 link.name === 'Contact' ? Phone : 
-                                                 link.name === 'Home' ? Home : null;
-                            
+                            const IconComponent =
+                              link.name === "Shop"
+                                ? Tag
+                                : link.name === "Contact"
+                                ? Phone
+                                : link.name === "Home"
+                                ? Home
+                                : null;
+
                             return (
                               <Link
                                 key={link.name}
@@ -258,7 +300,12 @@ const Navbar = () => {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="flex items-center gap-3 py-3 px-4 text-gray-800 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all duration-300 font-medium font-playfair"
                               >
-                                {IconComponent && <IconComponent size={18} className="text-amber-700" />}
+                                {IconComponent && (
+                                  <IconComponent
+                                    size={18}
+                                    className="text-amber-700"
+                                  />
+                                )}
                                 {link.name}
                               </Link>
                             );
@@ -272,54 +319,27 @@ const Navbar = () => {
                 </Sheet>
 
                 <Link to="/" className="flex items-center gap-2">
-                  <img src="/logo_notag.png" alt="REVIVE WARDROBE" className="h-10" />
-
+                  <img
+                    src="/logo_notag.png"
+                    alt="REVIVE WARDROBE"
+                    className="h-10"
+                  />
                 </Link>
               </div>
 
               <div className="flex items-center gap-3">
-                {navigationLinks.actions.filter(action => ['Search', 'Account', 'Wishlist', 'Cart'].includes(action.name)).map((action) => {
-                  if (action.name === 'Search') {
-                    return (
-                      <button
-                        key={action.name}
-                        onClick={() => setSearchActive(true)}
-                        className="text-amber-700 hover:text-amber-900 transition-colors p-2 hover:bg-amber-50 rounded-full"
-                      >
-                        <Search size={20} />
-                      </button>
-                    );
-                  }
-
-                  if (action.name === 'Cart') {
-                    return (
-                      <Link
-                        key={action.name}
-                        to={action.path}
-                        className="text-amber-700 hover:text-amber-900 transition-colors relative p-2 hover:bg-amber-50 rounded-full"
-                      >
-                        <ShoppingCart size={20} />
-                        {itemCount > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-600 to-amber-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-lg">
-                            {itemCount}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  }
-
-                  // Default action buttons
-                  const IconComponent = action.icon === 'User' ? User : Heart;
-                  return (
-                    <Link
-                      key={action.name}
-                      to={action.path}
-                      className="text-amber-700 hover:text-amber-900 transition-colors p-2 hover:bg-amber-50 rounded-full"
-                    >
-                      <IconComponent size={20} />
-                    </Link>
-                  );
-                })}
+                <Link
+                  to="/shop/category/graceful-abayas"
+                  className="text-xs font-playfair font-medium text-revive-red uppercase tracking-widest border border-revive-red/50 px-3 py-1.5 rounded hover:bg-revive-red/10 transition-colors"
+                >
+                  Shop Abayas
+                </Link>
+                <button
+                  onClick={() => setSearchActive(true)}
+                  className="text-amber-700 hover:text-amber-900 transition-colors p-2 hover:bg-amber-50 rounded-full"
+                >
+                  <Search size={20} />
+                </button>
               </div>
             </>
           )}
@@ -329,13 +349,17 @@ const Navbar = () => {
         <div className="hidden lg:flex container mx-auto px-6 py-2 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo_pc.png" alt="REVIVE WARDROBE" className="w-40 transition-transform group-hover:scale-105" />
+            <img
+              src="/logo_pc.png"
+              alt="REVIVE WARDROBE"
+              className="w-[clamp(150px,15vw,200px)] transition-transform group-hover:scale-105"
+            />
           </Link>
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
             {navigationLinks.main.map((link) => {
-              if (link.name === 'Collections' && link.dropdown) {
+              if (link.name === "Collections" && link.dropdown) {
                 return (
                   <div
                     key={link.name}
@@ -349,7 +373,9 @@ const Navbar = () => {
                       {link.name}
                       <ChevronDown
                         size={16}
-                        className={`transition-transform duration-300 ${collectionsOpen ? 'rotate-180' : ''}`}
+                        className={`transition-transform duration-300 ${
+                          collectionsOpen ? "rotate-180" : ""
+                        }`}
                       />
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-amber-600 to-amber-800 group-hover:w-full transition-all duration-300"></span>
                     </button>
@@ -362,8 +388,11 @@ const Navbar = () => {
                               key={collection.path}
                               to={collection.path}
                               onClick={() => setCollectionsOpen(false)}
-                              className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group font-playfair ${index !== collections.length - 1 ? 'border-b border-amber-100/50' : ''
-                                }`}
+                              className={`block px-4 py-3 text-gray-800 hover:text-amber-800 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 rounded-lg transition-all duration-300 font-medium group font-playfair ${
+                                index !== collections.length - 1
+                                  ? "border-b border-amber-100/50"
+                                  : ""
+                              }`}
                               style={{ animationDelay: `${index * 50}ms` }}
                             >
                               <span className="block group-hover:translate-x-1 transition-transform duration-300">
@@ -435,14 +464,20 @@ const Navbar = () => {
 
             {/* Action Buttons */}
             {navigationLinks.actions.map((action) => {
-              if (action.name === 'Search') return null; // Search is handled separately above
+              if (action.name === "Search") return null; // Search is handled separately above
 
-              const IconComponent = action.name === 'Account' ? User :
-                action.name === 'Wishlist' ? Heart :
-                  action.name === 'Cart' ? ShoppingCart :
-                    action.name === 'Phone' ? Phone : User;
+              const IconComponent =
+                action.name === "Account"
+                  ? User
+                  : action.name === "Wishlist"
+                  ? Heart
+                  : action.name === "Cart"
+                  ? ShoppingCart
+                  : action.name === "Phone"
+                  ? Phone
+                  : User;
 
-              if (action.name === 'Cart') {
+              if (action.name === "Cart") {
                 return (
                   <Link
                     key={action.path}
@@ -459,7 +494,7 @@ const Navbar = () => {
                 );
               }
 
-              if (action.name === 'Phone') {
+              if (action.name === "Phone") {
                 return (
                   <a
                     key={action.name}
@@ -489,22 +524,35 @@ const Navbar = () => {
       <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-amber-100 z-40">
         <div className="flex justify-around py-2">
           {navigationLinks.mobile.bottom.map((item) => {
-            const IconComponent = item.name === 'Home' ? Home :
-              item.name === 'Shop' ? Tag :
-                item.name === 'Wishlist' ? Heart :
-                  item.name === 'About' ? Info :
-                    item.name === 'Account' ? User :
-                      item.name === 'Cart' ? ShoppingCart : Home;
+            const IconComponent =
+              item.name === "Home"
+                ? Home
+                : item.name === "Shop"
+                ? Tag
+                : item.name === "Wishlist"
+                ? Heart
+                : item.name === "About"
+                ? Info
+                : item.name === "Account"
+                ? User
+                : item.name === "Cart"
+                ? ShoppingCart
+                : Home;
 
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center p-2 transition-colors ${location.pathname === item.path ? "text-amber-800" : "text-amber-600"
-                  }`}
+                className={`flex flex-col items-center p-2 transition-colors ${
+                  location.pathname === item.path
+                    ? "text-amber-800"
+                    : "text-amber-600"
+                }`}
               >
                 <IconComponent size={20} />
-                <span className="text-xs mt-1 font-medium font-playfair">{item.name}</span>
+                <span className="text-xs mt-1 font-medium font-playfair">
+                  {item.name}
+                </span>
               </Link>
             );
           })}
