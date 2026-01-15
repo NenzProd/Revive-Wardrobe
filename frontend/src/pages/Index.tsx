@@ -2,6 +2,7 @@ import Navbar from "../components/Navbar";
 import HeroSection from "../components/HeroSection";
 import BentoCategories from "../components/BentoCategories";
 import AboutSection from "../components/AboutSection";
+import FeaturedProducts from "../components/FeaturedProducts";
 import StitchingPromo from "../components/StitchingPromo";
 import BlogPreview from "../components/BlogPreview";
 import Footer from "../components/Footer";
@@ -24,6 +25,7 @@ const Index = () => {
       <CashbackBanner />
       <BentoCategories />
       <AboutSection />
+      <FeaturedProducts />
       {/* <SignatureAbayas /> */}
       {/* <EthnicElegance /> */}
       <StitchingPromo />

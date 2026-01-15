@@ -11,11 +11,11 @@ const BentoCategories = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="pt-6 pb-8 md:py-20 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="pt-4 pb-6 md:py-20 bg-white">
+      <div className="container mx-auto px-3 md:px-4">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4 tracking-tight">
+        <div className="mb-6 md:mb-12 text-center">
+          <h2 className="text-2xl md:text-5xl font-serif text-gray-900 mb-2 md:mb-4 tracking-tight">
             Our Gracefull Abayas
           </h2>
         </div>
