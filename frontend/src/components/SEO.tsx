@@ -66,7 +66,7 @@ const SEO = ({
   };
   const siteUrl = "https://revivewardrobe.com";
   const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
-  const fullTitle = `${title} | Revive Wardrobe`;
+  const fullTitle = `${title} | Revive Wardrobe: Sustainable Style Fashion!`;
 
   const organizationId = `${siteUrl}/#organization`;
   const websiteId = `${siteUrl}/#website`;
