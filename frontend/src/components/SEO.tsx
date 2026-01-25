@@ -44,6 +44,27 @@ const SEO = ({
     "order clothes online dubai",
     "online fashion store uae",
     "dubai clothing store",
+    // Premium Abaya Fashion
+    "premium abaya fashion Dubai",
+    "luxury abaya UAE",
+    "luxury abaya Dubai",
+    "modern abaya designs UAE",
+    "Dubai modest fashion trends",
+    // Unstitched Fabric
+    "unstitched fabric UAE",
+    "unstitched abaya fabric Dubai",
+    "premium fabric Dubai",
+    "best fabrics for abaya UAE",
+    // Jalabiya Fashion
+    "jalabiya UAE dress",
+    "jalabiya Dubai fashion",
+    "embroidered jalabiya UAE",
+    "lace jalabiya Dubai",
+    // Long-tail Keywords
+    "premium abaya fashion in Dubai UAE",
+    "unstitched abaya fabric for UAE fashion",
+    "latest jalabiya fashion trends in Dubai",
+    "luxury Nida abaya Dubai style",
   ];
   const computeKeywords = (incoming?: string) => {
     const base = baseDefaultKeywords
