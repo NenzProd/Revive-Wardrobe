@@ -32,10 +32,9 @@ const SEO = ({
     "jalabiya kuwait",
     "mukhawar",
     "sara plaza oman",
-    // Collections
     "ramadan collection",
     "summer collection 2026",
-    // Original keywords
+
     "Dubai abaya online worldwide shipping",
     "abaya shop Dubai online",
     "luxury abaya Dubai online",
@@ -44,27 +43,39 @@ const SEO = ({
     "order clothes online dubai",
     "online fashion store uae",
     "dubai clothing store",
-    // Premium Abaya Fashion
+
     "premium abaya fashion Dubai",
     "luxury abaya UAE",
     "luxury abaya Dubai",
     "modern abaya designs UAE",
     "Dubai modest fashion trends",
-    // Unstitched Fabric
+
     "unstitched fabric UAE",
     "unstitched abaya fabric Dubai",
     "premium fabric Dubai",
     "best fabrics for abaya UAE",
-    // Jalabiya Fashion
+
     "jalabiya UAE dress",
     "jalabiya Dubai fashion",
     "embroidered jalabiya UAE",
     "lace jalabiya Dubai",
-    // Long-tail Keywords
+   
     "premium abaya fashion in Dubai UAE",
     "unstitched abaya fabric for UAE fashion",
     "latest jalabiya fashion trends in Dubai",
     "luxury Nida abaya Dubai style",
+    
+    "modern abaya designs",
+    "embroidered abaya styles",
+    "premium jalabiya dresses",
+    "occasion wear modest outfits",
+    "tailored jalabiya collections",
+    "what to wear with an abaya",
+    "best abaya styles for weddings",
+    "how to style modest fashion outfits",
+    "what is a jalabiya dress",
+    "modest fashion trends 2026",
+    "affordable modest clothing",
   ];
   const computeKeywords = (incoming?: string) => {
     const base = baseDefaultKeywords
