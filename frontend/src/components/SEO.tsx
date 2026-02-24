@@ -59,12 +59,12 @@ const SEO = ({
     "jalabiya Dubai fashion",
     "embroidered jalabiya UAE",
     "lace jalabiya Dubai",
-   
+
     "premium abaya fashion in Dubai UAE",
     "unstitched abaya fabric for UAE fashion",
     "latest jalabiya fashion trends in Dubai",
     "luxury Nida abaya Dubai style",
-    
+
     "modern abaya designs",
     "embroidered abaya styles",
     "premium jalabiya dresses",
@@ -112,7 +112,7 @@ const SEO = ({
     logo: `${siteUrl}/logo.png`,
     sameAs: [
       "https://www.facebook.com/revivewardrobe/",
-      "https://www.instagram.com/revivewardrobe_uae/",
+      "https://www.instagram.com/premium.abayas.uae/",
     ],
     contactPoint: [
       {
