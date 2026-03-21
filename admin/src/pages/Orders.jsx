@@ -86,9 +86,6 @@ const Orders = ({token}) => {
                   <div>
                     <p className="font-medium">Order #{order._id.slice(-6)}</p>
                     <p className="text-sm text-gray-500">{new Date(order.date).toLocaleDateString()}</p>
-                    {order.depoterOrderId && (
-                      <p className="text-xs text-gray-500">Depoter Order ID: <span className="font-mono">{order.depoterOrderId}</span></p>
-                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

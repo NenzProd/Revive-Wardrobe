@@ -23,7 +23,7 @@ connectCloudinary()
 //middleware
 app.use(express.json())
 app.use(cors({
-    origin: [process.env.FRONTEND_URL, process.env.ADMIN_URL, "http://localhost:5174", "http://localhost:5175"],
+    origin: [process.env.FRONTEND_URL, process.env.ADMIN_URL, "http://localhost:3000", "http://localhost:5174", "http://localhost:5175"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'token'],
     exposedHeaders: ['Content-Type', 'Authorization', 'token'],
