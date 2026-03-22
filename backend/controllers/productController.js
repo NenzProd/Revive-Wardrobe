@@ -28,6 +28,11 @@ const addProduct = async (req, res) => {
             parsedVariants = variants
           }
         }
+        // ✅ Enforce minimum stock of 1 — stock can never be saved as 0
+        parsedVariants = parsedVariants.map(v => ({
+          ...v,
+          stock: (v.stock === undefined || v.stock === null || v.stock < 1) ? 1 : v.stock
+        }))
 
         const productData = {
           name,
@@ -125,6 +130,11 @@ const editProduct = async (req, res) => {
         parsedVariants = variants
       }
     }
+    // ✅ Enforce minimum stock of 1 — stock can never be saved as 0
+    parsedVariants = parsedVariants.map(v => ({
+      ...v,
+      stock: (v.stock === undefined || v.stock === null || v.stock < 1) ? 1 : v.stock
+    }))
 
     // Update MongoDB
     const updateFields = {

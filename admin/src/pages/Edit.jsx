@@ -378,10 +378,10 @@ function Edit({ token }) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                     <input 
-                      type="number" 
+                      type="text" 
                       className="w-full px-3 py-2 bg-gray-50" 
-                      value={variant.stock || 0} 
-                      onChange={e => handleVariantChange(idx, 'stock', e.target.value)}
+                      value={String(variant.stock || 0).padStart(2, '0')} 
+                      onChange={e => handleVariantChange(idx, 'stock', parseInt(e.target.value) || 0)}
                       required
                     />
                   </div>
