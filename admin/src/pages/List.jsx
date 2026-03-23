@@ -251,7 +251,7 @@ const List = ({ token }) => {
                 {(item.variants || []).map((variant, vIdx) => (
                   <li key={vIdx} className="text-xs bg-gray-50 rounded px-2 py-1 flex justify-between">
                     <span>SKU: <span className="font-mono">{variant.sku}</span></span>
-                    <span>Stock: <span className="font-semibold">{String(variant.stock).padStart(2, '0')}</span></span>
+                    <span>Stock: <span className="font-semibold">{variant.stock}</span></span>
                   </li>
                 ))}
               </ul>
@@ -310,7 +310,7 @@ const List = ({ token }) => {
                     {(item.variants || []).map((variant, vIdx) => (
                       <li key={vIdx} className="text-xs bg-gray-50 rounded px-2 py-1 flex justify-between">
                         <span>SKU: <span className="font-mono">{variant.sku}</span></span>
-                        <span>Stock: <span className="font-semibold">{String(variant.stock).padStart(2, '0')}</span></span>
+                        <span>Stock: <span className="font-semibold">{variant.stock}</span></span>
                       </li>
                     ))}
                   </ul>

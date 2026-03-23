@@ -115,13 +115,6 @@ const ProductDetail = () => {
   } = product;
 
   const handleAddToCart = () => {
-    if (product.variants && product.variants.length > 0 && !selectedSize) {
-      toast({
-        title: "Please select a size",
-        variant: "destructive",
-      });
-      return;
-    }
     if (!selectedVariant || selectedVariant.stock === 0) {
       toast({
         title: "Out of stock",
@@ -285,13 +278,12 @@ const ProductDetail = () => {
 
 
 
-            {/* Size Selection */}
+            {/* === OLDER CODE COMMENTED OUT === 
             {product.variants && product.variants.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Size</h3>
                 <div className="flex gap-2 flex-wrap">
                   {product.variants.map((variant) => {
-                    // Map size to measurement (you can adjust these values based on your actual size chart)
                     const sizeMeasurements: Record<string, string> = {
                       'XS': '50',
                       'S': '52',
@@ -321,7 +313,36 @@ const ProductDetail = () => {
                     );
                   })}
                 </div>
-                <div className="mt-2 flex items-center gap-4">
+              </div>
+            )}
+            === END OLDER CODE === */}
+
+            {/* Display selected size statically with Maroon Box Design */}
+            {selectedVariant && selectedVariant.filter_value && (
+              <div className="mb-6">
+                <div className="flex items-center gap-4 mb-3">
+                  <h3 className="font-medium">Size</h3>
+                </div>
+                <div className="flex gap-2 flex-wrap items-center">
+                  <div className="px-6 py-2 border border-revive-red bg-revive-red text-white rounded-md flex items-center justify-center cursor-default shadow-sm hover:bg-revive-red/90 transition-colors">
+                    <span className="font-semibold text-base tracking-wide">
+                      {selectedVariant.filter_value}
+                      {(() => {
+                        const sizeMeasurements: Record<string, string> = {
+                          'XS': ' (50)',
+                          'S': ' (52)',
+                          'M': ' (54)',
+                          'L': ' (56)',
+                          'XL': ' (58)',
+                          'XXL': ' (60)'
+                        };
+                        return sizeMeasurements[selectedVariant.filter_value] || '';
+                      })()}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="mt-3 flex items-center gap-4">
                   <button
                     className="text-sm text-revive-gold hover:underline flex items-center"
                     onClick={() =>
