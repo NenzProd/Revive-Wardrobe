@@ -8,7 +8,7 @@ import { assets } from '../assets/assets'
 import Select from 'react-select'
 import Swal from 'sweetalert2'
 
-function Edit ({ token }) {
+function Edit({ token }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
@@ -45,12 +45,12 @@ function Edit ({ token }) {
     { value: 'XL', label: 'XL' }
   ]
 
-  function generateSku (slug, filterValue) {
+  function generateSku(slug, filterValue) {
     if (!slug || !filterValue) return ''
     return `${slug.toUpperCase()}-${filterValue}`
   }
 
-  function getUsedFilterValues (excludeIdx) {
+  function getUsedFilterValues(excludeIdx) {
     // Collect all filter_value from variants except the current one
     return variants
       .filter((_, i) => i !== excludeIdx)
@@ -59,7 +59,7 @@ function Edit ({ token }) {
   }
 
   useEffect(() => {
-    async function fetchProduct () {
+    async function fetchProduct() {
       try {
         const res = await axios.post(backendUrl + '/api/product/single', { productId: id })
         if (res.data.success && res.data.product) {
@@ -102,26 +102,26 @@ function Edit ({ token }) {
 
   // Removed auto-slug generation on edit - slug should not change
 
-  function handleImageChange (idx, file) {
+  function handleImageChange(idx, file) {
     if (idx === 0) setImage1(file)
     if (idx === 1) setImage2(file)
     if (idx === 2) setImage3(file)
     if (idx === 3) setImage4(file)
   }
 
-  function handleVariantChange (idx, field, value) {
+  function handleVariantChange(idx, field, value) {
     const v = [...variants]
     v[idx][field] = value
     setVariants(v)
   }
 
-  function handleVariantSizeChange (idx, selected) {
+  function handleVariantSizeChange(idx, selected) {
     const v = [...variants]
     v[idx].filter_value = selected ? selected.value : ''
     setVariants(v)
   }
 
-  async function handleRemoveVariant (idx) {
+  async function handleRemoveVariant(idx) {
     if (variants.length <= 1) {
       Swal.fire({
         title: 'Cannot Remove',
@@ -134,7 +134,7 @@ function Edit ({ token }) {
 
     const variant = variants[idx]
     const variantInfo = variant.filter_value ? `Size: ${variant.filter_value}` : `Variant ${idx + 1}`
-    
+
     const result = await Swal.fire({
       title: 'Remove Variant?',
       html: `
@@ -161,7 +161,7 @@ function Edit ({ token }) {
     }
   }
 
-  function handleAddVariant () {
+  function handleAddVariant() {
     setVariants([...variants, {
       sku: '',
       purchase_price: '',
@@ -174,11 +174,11 @@ function Edit ({ token }) {
     }])
   }
 
-  async function handleSubmit (e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    
+
     if (updating) return // Prevent double submission
-    
+
     try {
       setUpdating(true)
       const formData = new FormData()
@@ -224,8 +224,8 @@ function Edit ({ token }) {
           <h3 className="font-medium text-gray-700 mb-3">Product Images</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[0, 1, 2, 3].map(idx => (
-              <label 
-                htmlFor={`image${idx + 1}`} 
+              <label
+                htmlFor={`image${idx + 1}`}
                 key={idx}
                 className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
               >
@@ -256,14 +256,14 @@ function Edit ({ token }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-              <input 
-                id="name" 
-                onChange={e => setName(e.target.value)} 
-                value={name} 
-                className="w-full px-3 py-2 bg-white" 
-                type="text" 
-                placeholder="Enter product name" 
-                required 
+              <input
+                id="name"
+                onChange={e => setName(e.target.value)}
+                value={name}
+                className="w-full px-3 py-2 bg-white"
+                type="text"
+                placeholder="Enter product name"
+                required
               />
             </div>
             <div>
@@ -378,21 +378,33 @@ function Edit ({ token }) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                     <input 
-                      type="number" 
-                      className="w-full px-3 py-2 bg-gray-100 cursor-not-allowed" 
-                      value={variant.stock || 0} 
-                      readOnly 
-                      disabled
-                      title="Stock is managed by Depoter"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      className="w-full px-3 py-2 bg-gray-50" 
+                      value={variant.stock ?? ''} 
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        handleVariantChange(idx, 'stock', val)
+                      }}
+                      placeholder="0"
+                      required
                     />
                   </div>
                   <div className="flex items-end">
-                    <button 
-                      type="button" 
-                      className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium" 
-                      onClick={() => handleRemoveVariant(idx)}
+                    <button
+                      type="submit"
+                      disabled={updating}
+                      className={`w-full px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded hover:shadow-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Remove Variant
+                      {updating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                          <span>Updating...</span>
+                        </>
+                      ) : (
+                        'Update Product'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -415,19 +427,12 @@ function Edit ({ token }) {
             </label>
           </div>
         </div>
-        <button 
-          type="submit" 
-          disabled={updating}
-          className={`mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start flex items-center justify-center gap-2 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+        <button
+          type="button"
+          className="mt-2 px-6 py-3 bg-red-500 text-white font-medium rounded-md hover:bg-red-600 transition-all w-full sm:w-auto self-start"
+          onClick={() => handleRemoveVariant(variants.length - 1)}
         >
-          {updating ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Updating...</span>
-            </>
-          ) : (
-            'Update Product'
-          )}
+          Remove Variant
         </button>
       </form>
     </div>

@@ -123,7 +123,7 @@ const Contact = () => {
       icon: MapPin,
       title: "Warehouse Address",
       content:
-        "Depoter\nWarehouse 14, street 24, Al Quoz 4 , Dubai, United Arab Emirates",
+        "Warehouse 14, street 24, Al Quoz 4 , Dubai, United Arab Emirates",
       description: "For any queries or assistance, please contact us.",
     },
   ];

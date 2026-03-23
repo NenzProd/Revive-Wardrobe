@@ -44,13 +44,13 @@ const Add = ({ token }) => {
   ];
 
   // Helper to generate unique SKU per product and size
-  function generateSku (slug, filterValue) {
+  function generateSku(slug, filterValue) {
     if (!slug || !filterValue) return ''
     return `${slug.toUpperCase()}-${filterValue}`
   }
 
   // Helper to get used filter values except for the current variant
-  function getUsedFilterValues (excludeIdx) {
+  function getUsedFilterValues(excludeIdx) {
     return variants
       .filter((_, i) => i !== excludeIdx)
       .map(v => v.filter_value)
@@ -144,7 +144,7 @@ const Add = ({ token }) => {
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
       <h2 className="text-xl md:text-2xl font-semibold mb-6 text-gray-800">Add New Product</h2>
-      
+
       <form
         onSubmit={onSubmitHandler}
         className="flex flex-col w-full gap-6"
@@ -153,7 +153,7 @@ const Add = ({ token }) => {
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-medium text-gray-700 mb-3">Product Images</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <label 
+            <label
               htmlFor="image1"
               className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
             >
@@ -170,7 +170,7 @@ const Add = ({ token }) => {
               />
             </label>
 
-            <label 
+            <label
               htmlFor="image2"
               className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
             >
@@ -187,7 +187,7 @@ const Add = ({ token }) => {
               />
             </label>
 
-            <label 
+            <label
               htmlFor="image3"
               className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
             >
@@ -204,7 +204,7 @@ const Add = ({ token }) => {
               />
             </label>
 
-            <label 
+            <label
               htmlFor="image4"
               className="cursor-pointer flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white aspect-square overflow-hidden"
             >
@@ -226,7 +226,7 @@ const Add = ({ token }) => {
         {/* Basic Information */}
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-medium text-gray-700 mb-3">Basic Information</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
@@ -240,7 +240,7 @@ const Add = ({ token }) => {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
               <input
@@ -254,7 +254,7 @@ const Add = ({ token }) => {
               />
             </div>
           </div>
-          
+
           <div className="mt-4">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Product Description</label>
             <textarea
@@ -271,7 +271,7 @@ const Add = ({ token }) => {
         {/* Product Details */}
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-medium text-gray-700 mb-3">Product Details</h3>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -301,11 +301,11 @@ const Add = ({ token }) => {
             </div>
 
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {/* Price removed as per requirements */}
           </div>
-          
+
           {/* Variants Section */}
           <div className="mt-6">
             <h4 className="font-semibold mb-2">Variants</h4>
@@ -382,6 +382,24 @@ const Add = ({ token }) => {
                       placeholder="Select filter value..."
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      className="w-full px-3 py-2 bg-gray-50"
+                      value={variant.stock}
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        const v = [...variants]
+                        v[idx].stock = val
+                        setVariants(v)
+                      }}
+                      placeholder="0"
+                      required
+                    />
+                  </div>
                   <div className="flex items-end">
                     {variants.length > 1 && (
                       <button type="button" className="text-red-600 font-medium ml-2" onClick={() => {
@@ -405,7 +423,7 @@ const Add = ({ token }) => {
               + Add Variant
             </button>
           </div>
-          
+
           <div className="mt-4 flex items-center">
             <input
               id="bestseller"
@@ -420,8 +438,8 @@ const Add = ({ token }) => {
           </div>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={submitting}
           className={`mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start flex items-center justify-center gap-2 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >

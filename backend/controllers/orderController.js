@@ -23,24 +23,24 @@ const testEmail = async (req, res) => {
     console.log('SENDER_EMAIL:', process.env.SENDER_EMAIL ? 'Set' : 'NOT SET');
     console.log('SMTP_USER:', process.env.SMTP_USER ? 'Set' : 'NOT SET');
     console.log('SMTP_PASS:', process.env.SMTP_PASS ? 'Set' : 'NOT SET');
-    
+
     const testEmailHtml = `
       <h2>Test Email</h2>
       <p>This is a test email to verify email configuration.</p>
       <p>If you receive this, your email setup is working correctly.</p>
     `;
-    
+
     const { email } = req.body;
     if (!email) {
       return res.json({ success: false, message: 'Email address required' });
     }
-    
+
     await sendMail({
       to: email,
       subject: 'Test Email - Revive Wardrobe',
       html: testEmailHtml
     });
-    
+
     res.json({ success: true, message: 'Test email sent successfully' });
   } catch (error) {
     console.error('Test email failed:', error);
@@ -68,13 +68,13 @@ const createPaymenntOrder = async (req, res) => {
       price: parseFloat(item.price) || 0,
       linetotal: parseFloat(item.price) * parseInt(item.quantity) || 0,
     })) || [
-      {
-        name: "Order",
-        quantity: 1,
-        price: amount,
-        linetotal: amount,
-      },
-    ];
+        {
+          name: "Order",
+          quantity: 1,
+          price: amount,
+          linetotal: amount,
+        },
+      ];
 
     const payload = {
       requestId: "REQ-" + Date.now(),
@@ -218,7 +218,7 @@ const verifyPaymennt = async (req, res) => {
     // Get user details for order confirmation email
     const user = await userModel.findById(userId);
     console.log('User found for email:', user ? { id: user._id, email: user.email, name: user.name } : 'No user found');
-    
+
     // Send order confirmation email
     if (user && user.email) {
       console.log('Attempting to send order confirmation email to:', user.email);
@@ -233,14 +233,14 @@ const verifyPaymennt = async (req, res) => {
         // Build order items HTML
         let orderItemsHtml = '';
         let calculatedSubtotal = 0;
-        
+
         for (const item of line_items) {
           const product = await productModel.findById(item.product_id);
           const productName = product ? product.name : 'Product';
           const variantInfo = item.sku_id ? ` (${item.sku_id})` : '';
           const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
           calculatedSubtotal += itemTotal;
-          
+
           orderItemsHtml += `
             <div class="order-item">
               <div class="item-details">
@@ -308,42 +308,9 @@ const verifyPaymennt = async (req, res) => {
       console.log('User has email:', user ? !!user.email : 'N/A');
     }
 
-    // Send order to Depoter
-    const depoterPayload = {
-      order_id: newOrder._id.toString(),
-      billing: { ...address },
-      shipping: { ...address },
-      price: { ...price },
-      line_items: line_items.map((item) => ({
-        sku_id: item.sku_id,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    };
-
-    let depoterOrder = null;
-    try {
-      const depoterRes = await axios.post(
-        "https://fms.depoter.com/WMS/API/create_order/",
-        depoterPayload,
-        { headers: { key: "974e7b1d1ce1aadee33e" } }
-      );
-      depoterOrder = depoterRes.data?.order;
-      if (depoterOrder && depoterOrder.id && depoterOrder.depoter_order_id) {
-        await orderModel.findByIdAndUpdate(newOrder._id, {
-          depoterId: depoterOrder.id,
-          depoterOrderId: depoterOrder.depoter_order_id,
-        });
-      }
-    } catch (err) {
-      console.log("Depoter API error:", err?.response?.data || err.message);
-    }
-
     res.json({
       success: true,
-      message: "Payment Successful, Order Placed",
-      depoterId: depoterOrder?.id,
-      depoterOrderId: depoterOrder?.depoter_order_id,
+      message: "Payment Successful, Order Placed"
     });
   } catch (error) {
     console.log(
@@ -437,7 +404,7 @@ const depoterWebhook = async (req, res) => {
 
     // Get user details for email
     const user = await userModel.findById(updatedOrder.userId);
-    
+
     if (user && user.email) {
       try {
         // Prepare email content
@@ -455,9 +422,9 @@ const depoterWebhook = async (req, res) => {
         emailHtml = emailHtml.replace('{{awbInfo}}', awbInfo);
 
         // Add tracking section if tracking URL is available
-        const trackingSection = tracking_url ? 
+        const trackingSection = tracking_url ?
           `<p>You can track your order using the link below:</p>
-           <a href="${tracking_url}" class="tracking-link">Track Your Order</a>` : 
+           <a href="${tracking_url}" class="tracking-link">Track Your Order</a>` :
           '<p>We will notify you when tracking information becomes available.</p>';
         emailHtml = emailHtml.replace('{{trackingSection}}', trackingSection);
 

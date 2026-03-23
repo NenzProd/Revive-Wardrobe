@@ -7,152 +7,146 @@ import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 
-const List = ({token}) => {
-    const [list, setList] = useState([])
-    const [filteredList, setFilteredList] = useState([])
-    const [searchTerm, setSearchTerm] = useState('')
-    const [categoryFilter, setCategoryFilter] = useState('All')
-    const [typeFilter, setTypeFilter] = useState('All')
-    const [stockFilter, setStockFilter] = useState('All')
-    const navigate = useNavigate()
+const List = ({ token }) => {
+  const [list, setList] = useState([])
+  const [filteredList, setFilteredList] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('All')
+  const [typeFilter, setTypeFilter] = useState('All')
+  const [stockFilter, setStockFilter] = useState('All')
+  const navigate = useNavigate()
 
-    const fetchList = async () =>{
-        try {
-            const response = await axios.get(backendUrl + '/api/product/list')
-            if (response.data.products) {
-                setList(response.data.products)
-                setFilteredList(response.data.products)
-            }
-            else{
-                toast.error(response.data.message)
-            }
-        } catch (error) {
-            console.log(error)
-            toast.error(error.message)
-        }
+  const fetchList = async () => {
+    try {
+      const response = await axios.get(backendUrl + '/api/product/list')
+      if (response.data.products) {
+        setList(response.data.products)
+        setFilteredList(response.data.products)
+      }
+      else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
     }
+  }
 
-    const removeProduct = async (id, productName) => {
-        // Show SweetAlert2 confirmation dialog
-        const result = await Swal.fire({
-            title: 'Delete Product?',
-            html: `
+  const removeProduct = async (id, productName) => {
+    // Show SweetAlert2 confirmation dialog
+    const result = await Swal.fire({
+      title: 'Delete Product?',
+      html: `
                 <p class="text-gray-700 mb-3">Are you sure you want to delete <strong>"${productName}"</strong>?</p>
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-left">
-                    <p class="text-sm text-yellow-800">
-                        <strong>⚠️ Important:</strong> This will only remove the product from your admin panel. 
-                        The product will <strong>NOT</strong> be deleted from Depoter inventory system.
-                    </p>
-                </div>
             `,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-lg',
-                confirmButton: 'px-4 py-2 rounded-md',
-                cancelButton: 'px-4 py-2 rounded-md'
-            }
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-lg',
+        confirmButton: 'px-4 py-2 rounded-md',
+        cancelButton: 'px-4 py-2 rounded-md'
+      }
+    })
+
+    if (!result.isConfirmed) return
+
+    try {
+      const response = await axios.post(backendUrl + '/api/product/remove', { id }, { headers: { token } })
+      if (response.data.success) {
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Product has been deleted from admin panel.',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
         })
-        
-        if (!result.isConfirmed) return
-        
-        try {
-            const response = await axios.post(backendUrl + '/api/product/remove', {id}, {headers:{token}})
-            if (response.data.success) {
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'Product has been deleted from admin panel.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                })
-                await fetchList();
-            }
-            else{
-                toast.error(response.data.message)
-            }
-        } catch (error) {
-            console.log(error)
-            Swal.fire({
-                title: 'Error!',
-                text: error.message || 'Failed to delete product',
-                icon: 'error',
-                confirmButtonColor: '#ef4444'
-            })
-        }
+        await fetchList();
+      }
+      else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      Swal.fire({
+        title: 'Error!',
+        text: error.message || 'Failed to delete product',
+        icon: 'error',
+        confirmButtonColor: '#ef4444'
+      })
+    }
+  }
+
+  const updateStocks = async () => {
+    try {
+      toast.info('Updating stocks...')
+      const response = await axios.post(backendUrl + '/api/product/update-stocks', {}, { headers: { token } })
+      if (response.data.success) {
+        toast.success(`Stocks updated! ${response.data.updatedProducts} products updated`)
+        await fetchList();
+      }
+      else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    fetchList()
+  }, [])
+
+  useEffect(() => {
+    let filtered = [...list]
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.variants || []).some(v => v.sku?.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
     }
 
-    const updateStocks = async () => {
-        try {
-            toast.info('Updating stocks...')
-            const response = await axios.post(backendUrl + '/api/product/update-stocks', {}, {headers:{token}})
-            if (response.data.success) {
-                toast.success(`Stocks updated! ${response.data.updatedProducts} products updated`)
-                await fetchList();
-            }
-            else{
-                toast.error(response.data.message)
-            }
-        } catch (error) {
-            console.log(error)
-            toast.error(error.message)
-        }
+    // Category filter
+    if (categoryFilter !== 'All') {
+      filtered = filtered.filter(item => item.category === categoryFilter)
     }
 
-    useEffect(()=>{
-        fetchList()
-    }, [])
+    // Type filter
+    if (typeFilter !== 'All') {
+      filtered = filtered.filter(item => item.type === typeFilter)
+    }
 
-    useEffect(() => {
-        let filtered = [...list]
+    // Stock filter
+    if (stockFilter === 'In Stock') {
+      filtered = filtered.filter(item =>
+        (item.variants || []).some(v => v.stock > 0)
+      )
+    } else if (stockFilter === 'Out of Stock') {
+      filtered = filtered.filter(item =>
+        (item.variants || []).every(v => v.stock === 0)
+      )
+    } else if (stockFilter === 'Low Stock') {
+      filtered = filtered.filter(item =>
+        (item.variants || []).some(v => v.stock > 0 && v.stock <= 5)
+      )
+    }
 
-        // Search filter
-        if (searchTerm) {
-            filtered = filtered.filter(item => 
-                item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (item.variants || []).some(v => v.sku?.toLowerCase().includes(searchTerm.toLowerCase()))
-            )
-        }
-
-        // Category filter
-        if (categoryFilter !== 'All') {
-            filtered = filtered.filter(item => item.category === categoryFilter)
-        }
-
-        // Type filter
-        if (typeFilter !== 'All') {
-            filtered = filtered.filter(item => item.type === typeFilter)
-        }
-
-        // Stock filter
-        if (stockFilter === 'In Stock') {
-            filtered = filtered.filter(item => 
-                (item.variants || []).some(v => v.stock > 0)
-            )
-        } else if (stockFilter === 'Out of Stock') {
-            filtered = filtered.filter(item => 
-                (item.variants || []).every(v => v.stock === 0)
-            )
-        } else if (stockFilter === 'Low Stock') {
-            filtered = filtered.filter(item => 
-                (item.variants || []).some(v => v.stock > 0 && v.stock <= 5)
-            )
-        }
-
-        setFilteredList(filtered)
-    }, [searchTerm, categoryFilter, typeFilter, stockFilter, list])
+    setFilteredList(filtered)
+  }, [searchTerm, categoryFilter, typeFilter, stockFilter, list])
 
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <h2 className='text-xl md:text-2xl font-semibold text-gray-800'>Products List</h2>
-        <button 
+        <button
           onClick={updateStocks}
           className='px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors'
         >
@@ -237,7 +231,7 @@ const List = ({token}) => {
           Showing {filteredList.length} of {list.length} products
         </div>
       </div>
-      
+
       {/* Mobile view - card layout */}
       <div className="md:hidden space-y-4">
         {filteredList.map((item, index) => (
@@ -261,16 +255,16 @@ const List = ({token}) => {
                 ))}
               </ul>
             </div>
-          
+
             <div className="flex justify-end gap-2 mt-2">
-              <button 
-                onClick={() => navigate(`/edit/${item._id}`)} 
+              <button
+                onClick={() => navigate(`/edit/${item._id}`)}
                 className='px-3 py-1.5 bg-amber-500 text-white rounded-md text-sm hover:bg-amber-600 transition-colors'
               >
                 Edit
               </button>
-              <button 
-                onClick={() => removeProduct(item._id, item.name)} 
+              <button
+                onClick={() => removeProduct(item._id, item.name)}
                 className='px-3 py-1.5 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors'
               >
                 Delete
@@ -306,7 +300,7 @@ const List = ({token}) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{item.category}</div>
                 </td>
-                
+
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{currency}{item.price}</div>
                 </td>
@@ -322,14 +316,14 @@ const List = ({token}) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">
-                    <button 
-                      onClick={() => navigate(`/edit/${item._id}`)} 
+                    <button
+                      onClick={() => navigate(`/edit/${item._id}`)}
                       className='px-3 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 transition-colors'
                     >
                       Edit
                     </button>
-                    <button 
-                      onClick={() => removeProduct(item._id, item.name)} 
+                    <button
+                      onClick={() => removeProduct(item._id, item.name)}
                       className='px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors'
                     >
                       Delete
@@ -341,7 +335,7 @@ const List = ({token}) => {
           </tbody>
         </table>
       </div>
-      
+
       {filteredList.length === 0 && (
         <div className="text-center py-10">
           <p className="text-gray-500">
