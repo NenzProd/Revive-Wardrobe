@@ -39,11 +39,12 @@ function Edit({ token }) {
   ])
 
   const sizeOptions = [
-    { value: 'XS', label: 'XS' },
-    { value: 'S', label: 'S' },
-    { value: 'M', label: 'M' },
-    { value: 'L', label: 'L' },
-    { value: 'XL', label: 'XL' }
+    { value: 'XS', label: 'XS (50)' },
+    { value: 'S', label: 'S (52)' },
+    { value: 'M', label: 'M (54)' },
+    { value: 'L', label: 'L (56)' },
+    { value: 'XL', label: 'XL (58)' },
+    { value: 'XXL', label: 'XXL (60)' }
   ]
 
   function generateSku(slug, filterValue) {
@@ -100,6 +101,19 @@ function Edit({ token }) {
     }
     fetchProduct()
   }, [id, navigate])
+
+  useEffect(() => {
+    if (name && variants.length > 0) {
+      const targetSize = name.toLowerCase().includes('eternal noir') ? 'M' : 'L';
+      if (variants[0].filter_value !== targetSize) {
+        setVariants(prev => {
+          const newV = [...prev];
+          newV[0].filter_value = targetSize;
+          return newV;
+        });
+      }
+    }
+  }, [name]);
 
   // Removed auto-slug generation on edit - slug should not change
 
@@ -362,7 +376,7 @@ function Edit({ token }) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Size(eg. XS)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
                     <Select
                       isMulti={false}
                       options={sizeOptions.map(opt => ({
@@ -379,15 +393,11 @@ function Edit({ token }) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                     <input 
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
+                      type="number"
                       className="w-full px-3 py-2 bg-gray-50" 
                       value={variant.stock ?? ''} 
-                      onChange={e => {
-                        const val = e.target.value.replace(/[^0-9]/g, '')
-                        handleVariantChange(idx, 'stock', val)
-                      }}
+                      onChange={e => handleVariantChange(idx, 'stock', e.target.value)}
+                      min="0"
                       placeholder="0"
                       required
                     />
@@ -411,9 +421,7 @@ function Edit({ token }) {
                 </div>
               </div>
             ))}
-            <button type="button" className="mt-2 px-4 py-2 bg-gray-200 rounded" onClick={handleAddVariant}>
-              + Add Variant
-            </button>
+            {/* Add Variant button removed to enforce single size only */}
           </div>
           <div className="mt-4 flex items-center">
             <input
