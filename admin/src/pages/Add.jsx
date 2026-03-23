@@ -384,11 +384,21 @@ const Add = ({ token }) => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.stock} onChange={e => {
-                      const v = [...variants]
-                      v[idx].stock = e.target.value
-                      setVariants(v)
-                    }} required />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      className="w-full px-3 py-2 bg-gray-50"
+                      value={variant.stock}
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        const v = [...variants]
+                        v[idx].stock = val
+                        setVariants(v)
+                      }}
+                      placeholder="0"
+                      required
+                    />
                   </div>
                   <div className="flex items-end">
                     {variants.length > 1 && (

@@ -378,20 +378,33 @@ function Edit({ token }) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                     <input 
-                      type="text" 
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       className="w-full px-3 py-2 bg-gray-50" 
-                      value={String(variant.stock || 0).padStart(2, '0')} 
-                      onChange={e => handleVariantChange(idx, 'stock', parseInt(e.target.value) || 0)}
+                      value={variant.stock ?? ''} 
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        handleVariantChange(idx, 'stock', val)
+                      }}
+                      placeholder="0"
                       required
                     />
                   </div>
                   <div className="flex items-end">
                     <button
-                      type="button"
-                      className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm font-medium"
-                      onClick={() => handleRemoveVariant(idx)}
+                      type="submit"
+                      disabled={updating}
+                      className={`w-full px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded hover:shadow-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Remove Variant
+                      {updating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                          <span>Updating...</span>
+                        </>
+                      ) : (
+                        'Update Product'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -415,18 +428,11 @@ function Edit({ token }) {
           </div>
         </div>
         <button
-          type="submit"
-          disabled={updating}
-          className={`mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start flex items-center justify-center gap-2 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+          type="button"
+          className="mt-2 px-6 py-3 bg-red-500 text-white font-medium rounded-md hover:bg-red-600 transition-all w-full sm:w-auto self-start"
+          onClick={() => handleRemoveVariant(variants.length - 1)}
         >
-          {updating ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Updating...</span>
-            </>
-          ) : (
-            'Update Product'
-          )}
+          Remove Variant
         </button>
       </form>
     </div>
