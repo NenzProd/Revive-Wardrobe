@@ -1,3 +1,4 @@
+// updated
 import { v2 as cloudinary } from "cloudinary"
 import productModel from "../models/productModel.js"
 
