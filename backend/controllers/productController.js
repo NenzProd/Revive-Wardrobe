@@ -194,4 +194,60 @@ const updateAllProductStocks = async (req, res) => {
   }
 }
 
-export { addProduct, listProduct, removeProduct, singleProduct, editProduct, updateAllProductStocks }
+const bulkUpdateProducts = async (req, res) => {
+  try {
+    const { productIds, field, value } = req.body
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+      return res.json({ success: false, message: 'No products selected' })
+    }
+    if (!field) {
+      return res.json({ success: false, message: 'No field specified' })
+    }
+
+    const allowedFields = ['category', 'stock', 'purchase_price', 'retail_price', 'discount', 'filter_value']
+    if (!allowedFields.includes(field)) {
+      return res.json({ success: false, message: `Invalid field: ${field}` })
+    }
+
+    const productLevelFields = ['category']
+    const variantLevelFields = ['stock', 'purchase_price', 'retail_price', 'discount', 'filter_value']
+
+    let updatedCount = 0
+
+    if (productLevelFields.includes(field)) {
+      const result = await productModel.updateMany(
+        { _id: { $in: productIds } },
+        { $set: { [field]: value } }
+      )
+      updatedCount = result.modifiedCount
+    } else if (variantLevelFields.includes(field)) {
+      const products = await productModel.find({ _id: { $in: productIds } })
+      for (const product of products) {
+        let changed = false
+        for (const variant of product.variants) {
+          let newValue = value
+          if (['stock', 'purchase_price', 'retail_price', 'discount'].includes(field)) {
+            newValue = Number(value)
+          }
+          if (field === 'stock' && newValue < 0) newValue = 0
+          if (field === 'discount' && newValue < 0) newValue = 0
+          if (field === 'discount' && newValue > 100) newValue = 100
+          variant[field] = newValue
+          changed = true
+        }
+        if (changed) {
+          product.markModified('variants')
+          await product.save()
+          updatedCount++
+        }
+      }
+    }
+
+    res.json({ success: true, message: `${updatedCount} products updated`, updatedCount })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+export { addProduct, listProduct, removeProduct, singleProduct, editProduct, updateAllProductStocks, bulkUpdateProducts }

@@ -1,10 +1,10 @@
-// updated
 import { useEffect } from 'react';
 import { useState } from 'react'
 import axios from 'axios'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
 import { assets } from '../assets/assets';
+import Swal from 'sweetalert2'
 
 const Orders = ({token}) => {
   const [orders, setOrders] = useState([]);
@@ -28,6 +28,32 @@ const Orders = ({token}) => {
       toast.error(error.message)
     } finally {
       setLoading(false);
+    }
+  }
+
+  const deleteOrder = async (orderId) => {
+    const result = await Swal.fire({
+      title: 'Delete Order?',
+      html: `<p class="text-gray-700">Are you sure you want to delete order <strong>#${orderId.slice(-6)}</strong>?</p><p class="text-sm text-red-500 mt-2">This action cannot be undone.</p>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    })
+    if (!result.isConfirmed) return
+    try {
+      const response = await axios.post(backendUrl + '/api/order/delete', { orderId }, { headers: { token } })
+      if (response.data.success) {
+        Swal.fire({ title: 'Deleted!', text: 'Order has been deleted.', icon: 'success', timer: 2000, showConfirmButton: false })
+        await fetchAllOrders()
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
     }
   }
 
@@ -93,6 +119,12 @@ const Orders = ({token}) => {
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
+                  <button
+                    onClick={() => deleteOrder(order._id)}
+                    className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
               <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">

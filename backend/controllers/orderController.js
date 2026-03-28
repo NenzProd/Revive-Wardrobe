@@ -451,6 +451,21 @@ const depoterWebhook = async (req, res) => {
   }
 };
 
+const deleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) return res.json({ success: false, message: 'Order ID required' });
+
+    const order = await orderModel.findByIdAndDelete(orderId);
+    if (!order) return res.json({ success: false, message: 'Order not found' });
+
+    res.json({ success: true, message: 'Order deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export {
   createPaymenntOrder,
   verifyPaymennt,
@@ -459,4 +474,5 @@ export {
   updateStatus,
   depoterWebhook,
   testEmail,
+  deleteOrder,
 };

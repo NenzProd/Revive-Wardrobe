@@ -32,7 +32,6 @@ const ProductDetail = () => {
   const { toast } = useToast();
   const { addToCart, wishlist, addToWishlist } = useCartStore();
 
-  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
@@ -53,27 +52,13 @@ const ProductDetail = () => {
   React.useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
       setSelectedVariant(product.variants[0]);
-      setSelectedSize(product.variants[0].filter_value || null);
       setDisplayPrice(product.variants[0].retail_price);
       setMaxStock(product.variants[0].stock);
       setQuantity(1);
     }
   }, [product]);
 
-  // Update price when selectedSize changes
-  React.useEffect(() => {
-    if (product && product.variants && selectedSize) {
-      const variant = product.variants.find(
-        (v) => v.filter_value === selectedSize
-      );
-      if (variant) {
-        setDisplayPrice(variant.retail_price);
-        setSelectedVariant(variant);
-        setMaxStock(variant.stock);
-        setQuantity(1);
-      }
-    }
-  }, [selectedSize, product]);
+
 
   if (loading) {
     return (
@@ -123,7 +108,7 @@ const ProductDetail = () => {
       });
       return;
     }
-    addToCart({ ...product }, quantity, selectedSize || undefined);
+    addToCart({ ...product }, quantity, selectedVariant?.filter_value || undefined);
     navigate("/cart");
     toast({
       title: "Added to cart",
@@ -276,57 +261,16 @@ const ProductDetail = () => {
               {displayPrice !== null ? displayPrice.toLocaleString() : ""}
             </div>
 
-
-
-            {/* === OLDER CODE COMMENTED OUT === 
-            {product.variants && product.variants.length > 0 && (
-              <div className="mb-6">
-                <h3 className="font-medium mb-2">Size</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {product.variants.map((variant) => {
-                    const sizeMeasurements: Record<string, string> = {
-                      'XS': '50',
-                      'S': '52',
-                      'M': '54',
-                      'L': '56',
-                      'XL': '58',
-                      'XXL': '60'
-                    };
-                    const measurement = sizeMeasurements[variant.filter_value] || '';
-
-                    return (
-                      <button
-                        key={variant.filter_value}
-                        className={`px-4 py-2 border ${selectedSize === variant.filter_value
-                            ? "border-revive-red bg-revive-red text-white"
-                            : "border-gray-300 hover:border-revive-red"
-                          } rounded-md transition-colors flex flex-col items-center ${variant.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                        onClick={() => setSelectedSize(variant.filter_value)}
-                        disabled={variant.stock === 0}
-                      >
-                        <span className="font-medium">{variant.filter_value}</span>
-                        {measurement && (
-                          <span className="text-xs mt-0.5">{measurement}</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            === END OLDER CODE === */}
-
-            {/* Display selected size statically with Maroon Box Design */}
-            {selectedVariant && selectedVariant.filter_value && (
+            {/* Display size statically with Maroon Box Design */}
+            {selectedVariant && (
               <div className="mb-6">
                 <div className="flex items-center gap-4 mb-3">
                   <h3 className="font-medium">Size</h3>
                 </div>
                 <div className="flex gap-2 flex-wrap items-center">
-                  <div className="px-6 py-2 border border-revive-red bg-revive-red text-white rounded-md flex items-center justify-center cursor-default shadow-sm hover:bg-revive-red/90 transition-colors">
+                  <div className="px-6 py-2 border border-revive-red bg-revive-red text-white rounded-md flex items-center justify-center cursor-default shadow-sm transition-colors">
                     <span className="font-semibold text-base tracking-wide">
-                      {selectedVariant.filter_value}
+                      {selectedVariant.filter_value || 'One Size'}
                       {(() => {
                         const sizeMeasurements: Record<string, string> = {
                           'XS': ' (50)',
