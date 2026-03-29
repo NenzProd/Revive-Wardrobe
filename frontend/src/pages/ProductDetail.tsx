@@ -9,7 +9,7 @@ import ImageModal from "../components/ImageModal";
 import SizeGuide from "../components/SizeGuide";
 import RelatedProducts from "../components/RelatedProducts";
 import Newsletter from "../components/Newsletter";
-import { Heart, Share2, Truck, Calendar, Scissors } from "lucide-react";
+import { Heart, Share2, Truck, Calendar, Scissors, Sliders } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const ProductDetail = () => {
   const { toast } = useToast();
   const { addToCart, wishlist, addToWishlist } = useCartStore();
 
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
@@ -41,6 +42,7 @@ const ProductDetail = () => {
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
+  console.log("DEBUG: Product Detail Data:", product);
 
   // Show global loader while product is loading
   usePageLoader(loading);
@@ -51,9 +53,17 @@ const ProductDetail = () => {
   // Set default size and price when product loads
   React.useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
-      setSelectedVariant(product.variants[0]);
-      setDisplayPrice(product.variants[0].retail_price);
-      setMaxStock(product.variants[0].stock);
+      // 🔍 AUTO-SELECTION LOGIC:
+      // If name contains 'eternal noir', look for 'M'. Otherwise, look for 'L'.
+      const targetSize = product.name.toLowerCase().includes('eternal noir') ? 'M' : 'L';
+      
+      // Try to find the target size variant, fallback to the first available if not found
+      const defaultVariant = product.variants.find(v => v.filter_value === targetSize) || product.variants[0];
+      
+      setSelectedVariant(defaultVariant);
+      setSelectedSize(defaultVariant.filter_value || null);
+      setDisplayPrice(defaultVariant.retail_price);
+      setMaxStock(defaultVariant.stock);
       setQuantity(1);
     }
   }, [product]);
@@ -151,7 +161,7 @@ const ProductDetail = () => {
   return (
 
     <div className="min-h-screen bg-white flex flex-col pb-[70px] md:pb-0">
-      <SEO 
+      <SEO
         title={`${product.name} - ${product.category}`}
         description={product.description || `Shop ${product.name} at Revive Wardrobe. ${product.type} clothing with premium quality and elegant design.`}
         keywords={`${product.name}, ${product.category}, ${product.type}, buy ${product.name}, fashion, clothing, buy clothes online dubai, online fashion store uae, dubai clothing store, modest fashion dubai, shein dubai uae online, online clothes shopping uae, abaya online uae, zara uae online, shein online shopping dubai, matalan uae online, order clothes online dubai, best abaya shops in Dubai, Dubai abaya online worldwide shipping, abaya shop Dubai online, luxury abaya Dubai online`}
@@ -261,65 +271,115 @@ const ProductDetail = () => {
               {displayPrice !== null ? displayPrice.toLocaleString() : ""}
             </div>
 
-            {/* Display size statically with Maroon Box Design */}
-            {selectedVariant && (
+
+
+            {/* === OLDER CODE COMMENTED OUT === 
+            {product.variants && product.variants.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-medium mb-2">Size</h3>
+                <div className="flex gap-2 flex-wrap">
+                  {product.variants.map((variant) => {
+                    const sizeMeasurements: Record<string, string> = {
+                      'XS': '50',
+                      'S': '52',
+                      'M': '54',
+                      'L': '56',
+                      'XL': '58',
+                      'XXL': '60'
+                    };
+                    const measurement = sizeMeasurements[variant.filter_value] || '';
+
+                    return (
+                      <button
+                        key={variant.filter_value}
+                        className={`px-4 py-2 border ${selectedSize === variant.filter_value
+                            ? "border-revive-red bg-revive-red text-white"
+                            : "border-gray-300 hover:border-revive-red"
+                          } rounded-md transition-colors flex flex-col items-center ${variant.stock === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                        onClick={() => setSelectedSize(variant.filter_value)}
+                        disabled={variant.stock === 0}
+                      >
+                        <span className="font-medium">{variant.filter_value}</span>
+                        {measurement && (
+                          <span className="text-xs mt-0.5">{measurement}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            === END OLDER CODE === */}
+
+            {/* Display multiple selectable sizes with Maroon Box Design */}
+            {product.variants && product.variants.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-4 mb-3">
-                  <h3 className="font-medium">Size</h3>
+                  <h3 className="font-medium text-revive-black">Size</h3>
                 </div>
-                <div className="flex gap-2 flex-wrap items-center">
-                  <div className="px-6 py-2 border border-revive-red bg-revive-red text-white rounded-md flex items-center justify-center cursor-default shadow-sm transition-colors">
-                    <span className="font-semibold text-base tracking-wide">
-                      {selectedVariant.filter_value || 'One Size'}
-                      {(() => {
-                        const sizeMeasurements: Record<string, string> = {
-                          'XS': ' (50)',
-                          'S': ' (52)',
-                          'M': ' (54)',
-                          'L': ' (56)',
-                          'XL': ' (58)',
-                          'XXL': ' (60)'
-                        };
-                        return sizeMeasurements[selectedVariant.filter_value] || '';
-                      })()}
-                    </span>
-                  </div>
+                <div className="flex gap-3 flex-wrap items-center">
+                  {product.variants.map((variant) => {
+                    const isSelected = selectedSize === variant.filter_value;
+                    const sizeMeasurements: Record<string, string> = {
+                      'XS': ' (50)',
+                      'S': ' (52)',
+                      'M': ' (54)',
+                      'L': ' (56)',
+                      'XL': ' (58)',
+                      'XXL': ' (60)'
+                    };
+                    const measurement = sizeMeasurements[variant.filter_value] || '';
+
+                    return (
+                      <button
+                        key={variant.filter_value}
+                        className={`px-5 py-2.5 min-w-[3.5rem] border ${isSelected
+                          ? "border-revive-red bg-revive-red text-white shadow-md transform scale-105"
+                          : "border-gray-200 bg-white text-revive-black hover:border-revive-red/50 hover:bg-revive-red/5"
+                          } rounded-md transition-all duration-300 flex flex-col items-center justify-center ${variant.stock === 0 ? 'opacity-40 cursor-not-allowed grayscale' : 'cursor-pointer'
+                          }`}
+                        onClick={() => {
+                          setSelectedSize(variant.filter_value);
+                          setSelectedVariant(variant);
+                          setDisplayPrice(variant.retail_price);
+                          setMaxStock(variant.stock);
+                          setQuantity(1);
+                        }}
+                        disabled={variant.stock === 0}
+                      >
+                        <span className="font-semibold text-sm tracking-wide">
+                          {variant.filter_value}{measurement}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
-                
-                <div className="mt-3 flex items-center gap-4">
+
+                <div className="mt-4 flex items-center gap-5">
                   <button
-                    className="text-sm text-revive-gold hover:underline flex items-center"
+                    className="text-sm text-revive-gold hover:text-revive-red font-medium transition-colors flex items-center gap-1.5"
                     onClick={() =>
                       document
                         .getElementById("sizeGuideModal")
                         ?.classList.remove("hidden")
                     }
                   >
-                    <Calendar size={16} className="mr-1" />
+                    <Calendar size={15} />
                     Size Guide
                   </button>
-                  <span className="text-xs font-medium">
+                  <span className="text-xs">
                     {selectedVariant?.stock !== undefined ? (
-                      selectedVariant.stock > 20 ? (
-                        <span className="text-green-600"></span>
-                      ) : selectedVariant.stock > 10 ? (
-                        <span className="text-yellow-600">
-                          Only {selectedVariant.stock} left in stock
-                        </span>
+                      selectedVariant.stock > 15 ? (
+                        <span className="text-green-600 font-medium">In Stock</span>
                       ) : selectedVariant.stock > 0 ? (
-                        <span className="text-red-600 font-semibold">
-                          🔥 Hurry! Only {selectedVariant.stock} left
+                        <span className="text-orange-600 font-semibold italic animate-pulse">
+                          🔥 {selectedVariant.stock === 1 ? "Hurry up only one left" : `${selectedVariant.stock} units remaining!`}
                         </span>
                       ) : (
-                        <span className="text-gray-500 line-through">
-                          Out of stock
-                        </span>
+                        <span className="text-gray-400 font-medium line-through">Out of stock</span>
                       )
-                    ) : (
-                      <span className="text-gray-500">
-                        Stock info unavailable
-                      </span>
-                    )}
+                    ) : null}
                   </span>
                 </div>
               </div>
@@ -458,3 +518,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+
