@@ -32,7 +32,7 @@ const ProductDetail = () => {
   const { toast } = useToast();
   const { addToCart, wishlist, addToWishlist } = useCartStore();
 
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
@@ -68,20 +68,7 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  // Update price when selectedSize changes
-  React.useEffect(() => {
-    if (product && product.variants && selectedSize) {
-      const variant = product.variants.find(
-        (v) => v.filter_value === selectedSize
-      );
-      if (variant) {
-        setDisplayPrice(variant.retail_price);
-        setSelectedVariant(variant);
-        setMaxStock(variant.stock);
-        setQuantity(1);
-      }
-    }
-  }, [selectedSize, product]);
+
 
   if (loading) {
     return (
@@ -131,7 +118,7 @@ const ProductDetail = () => {
       });
       return;
     }
-    addToCart({ ...product }, quantity, selectedSize || undefined);
+    addToCart({ ...product }, quantity, selectedVariant?.filter_value || undefined);
     navigate("/cart");
     toast({
       title: "Added to cart",
@@ -352,7 +339,13 @@ const ProductDetail = () => {
                           : "border-gray-200 bg-white text-revive-black hover:border-revive-red/50 hover:bg-revive-red/5"
                           } rounded-md transition-all duration-300 flex flex-col items-center justify-center ${variant.stock === 0 ? 'opacity-40 cursor-not-allowed grayscale' : 'cursor-pointer'
                           }`}
-                        onClick={() => setSelectedSize(variant.filter_value)}
+                        onClick={() => {
+                          setSelectedSize(variant.filter_value);
+                          setSelectedVariant(variant);
+                          setDisplayPrice(variant.retail_price);
+                          setMaxStock(variant.stock);
+                          setQuantity(1);
+                        }}
                         disabled={variant.stock === 0}
                       >
                         <span className="font-semibold text-sm tracking-wide">

@@ -52,7 +52,6 @@ const getDashboardSummary = async (req, res) => {
     })
 
     // All time orders
-    const allTimeOrders = await orderModel.find({})
 
     // Calculate totals
     const calculateTotal = (orders) => {
@@ -65,7 +64,6 @@ const getDashboardSummary = async (req, res) => {
     const yesterdayTotal = calculateTotal(yesterdayOrders)
     const thisMonthTotal = calculateTotal(thisMonthOrders)
     const lastMonthTotal = calculateTotal(lastMonthOrders)
-    const allTimeTotal = calculateTotal(allTimeOrders)
 
     const summary = [
       { 
@@ -91,12 +89,6 @@ const getDashboardSummary = async (req, res) => {
         value: `AED ${lastMonthTotal.toFixed(2)}`, 
         sub: `${lastMonthOrders.length} orders`, 
         color: 'bg-sky-100 border-sky-400' 
-      },
-      { 
-        label: 'All-Time Sales', 
-        value: `AED ${allTimeTotal.toFixed(2)}`, 
-        sub: `${allTimeOrders.length} orders`, 
-        color: 'bg-green-100 border-green-400' 
       }
     ]
 
@@ -112,13 +104,8 @@ const getOrderStats = async (req, res) => {
   try {
     const totalOrders = await orderModel.countDocuments()
     
-    const pendingOrders = await orderModel.find({ status: 'Order Placed' })
     const processingOrders = await orderModel.find({ status: 'Processing' })
     const deliveredOrders = await orderModel.find({ status: 'Delivered' })
-
-    const pendingTotal = pendingOrders.reduce((total, order) => {
-      return total + calculateOrderTotal(order)
-    }, 0)
 
     const stats = [
       { 
@@ -126,13 +113,6 @@ const getOrderStats = async (req, res) => {
         value: totalOrders, 
         icon: '🛒', 
         color: 'bg-orange-100' 
-      },
-      { 
-        label: 'Orders Pending', 
-        value: pendingOrders.length, 
-        sub: `(AED ${pendingTotal.toFixed(2)})`, 
-        icon: '⏳', 
-        color: 'bg-red-100' 
       },
       { 
         label: 'Orders Processing', 
@@ -324,7 +304,6 @@ const getDashboardSummaryData = async () => {
     }
   })
 
-  const allTimeOrders = await orderModel.find({})
 
   const calculateTotal = (orders) => {
     return orders.reduce((total, order) => {
@@ -356,12 +335,6 @@ const getDashboardSummaryData = async () => {
       value: `AED ${calculateTotal(lastMonthOrders).toFixed(2)}`, 
       sub: `${lastMonthOrders.length} orders`, 
       color: 'bg-sky-100 border-sky-400' 
-    },
-    { 
-      label: 'All-Time Sales', 
-      value: `AED ${calculateTotal(allTimeOrders).toFixed(2)}`, 
-      sub: `${allTimeOrders.length} orders`, 
-      color: 'bg-green-100 border-green-400' 
     }
   ]
 }
@@ -369,13 +342,8 @@ const getDashboardSummaryData = async () => {
 const getOrderStatsData = async () => {
   const totalOrders = await orderModel.countDocuments()
   
-  const pendingOrders = await orderModel.find({ status: 'Order Placed' })
   const processingOrders = await orderModel.find({ status: 'Processing' })
   const deliveredOrders = await orderModel.find({ status: 'Delivered' })
-
-  const pendingTotal = pendingOrders.reduce((total, order) => {
-    return total + calculateOrderTotal(order)
-  }, 0)
 
   return [
     { 
@@ -383,13 +351,6 @@ const getOrderStatsData = async () => {
       value: totalOrders, 
       icon: '🛒', 
       color: 'bg-orange-100' 
-    },
-    { 
-      label: 'Orders Pending', 
-      value: pendingOrders.length, 
-      sub: `(AED ${pendingTotal.toFixed(2)})`, 
-      icon: '⏳', 
-      color: 'bg-red-100' 
     },
     { 
       label: 'Orders Processing', 
