@@ -36,10 +36,23 @@ const queryClient = new QueryClient();
 const AppRoutes = () => {
   const [searchParams] = useSearchParams();
 
-  const maintenanceEnabled = import.meta.env.VITE_MAINTENANCE === "true";
+  // More robust environment variable checking
+  const maintenanceEnabled = import.meta.env.VITE_MAINTENANCE === "true" || import.meta.env.VITE_MAINTENANCE === true;
   const maintenanceKey = import.meta.env.VITE_MAINTENANCE_KEY || "revive-test";
   const previewKey = searchParams.get("preview");
   const hasBypass = previewKey === maintenanceKey;
+
+  // Debug logging
+  console.log('Maintenance Debug:', {
+    maintenanceEnabled,
+    maintenanceKey,
+    previewKey,
+    hasBypass,
+    currentPath: window.location.pathname,
+    fullUrl: window.location.href,
+    envMaintenance: import.meta.env.VITE_MAINTENANCE,
+    envKey: import.meta.env.VITE_MAINTENANCE_KEY
+  });
 
   if (maintenanceEnabled && !hasBypass) {
     return (
