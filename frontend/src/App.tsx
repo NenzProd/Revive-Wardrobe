@@ -40,13 +40,24 @@ const AppRoutes = () => {
   const maintenanceEnabled = import.meta.env.VITE_MAINTENANCE === "true" || import.meta.env.VITE_MAINTENANCE === true;
   const maintenanceKey = import.meta.env.VITE_MAINTENANCE_KEY || "revive-test";
   const previewKey = searchParams.get("preview");
-  const hasBypass = previewKey === maintenanceKey;
+
+  // Check if user has bypass permission (from URL param or session storage)
+  const hasBypassFromUrl = previewKey === maintenanceKey;
+  const hasBypassFromStorage = sessionStorage.getItem('maintenance_bypass') === 'true';
+  const hasBypass = hasBypassFromUrl || hasBypassFromStorage;
+
+  // Store bypass in session storage if URL param is valid
+  if (hasBypassFromUrl && !hasBypassFromStorage) {
+    sessionStorage.setItem('maintenance_bypass', 'true');
+  }
 
   // Debug logging
   console.log('Maintenance Debug:', {
     maintenanceEnabled,
     maintenanceKey,
     previewKey,
+    hasBypassFromUrl,
+    hasBypassFromStorage,
     hasBypass,
     currentPath: window.location.pathname,
     fullUrl: window.location.href,
