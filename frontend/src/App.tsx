@@ -36,8 +36,9 @@ const queryClient = new QueryClient();
 const AppRoutes = () => {
   const [searchParams] = useSearchParams();
 
-  // More robust environment variable checking
-  const maintenanceEnabled = import.meta.env.VITE_MAINTENANCE === "true" || import.meta.env.VITE_MAINTENANCE === true;
+  // More robust environment variable checking with explicit string conversion
+  const maintenanceEnabledRaw = import.meta.env.VITE_MAINTENANCE;
+  const maintenanceEnabled = maintenanceEnabledRaw === "true" || maintenanceEnabledRaw === true;
   const maintenanceKey = import.meta.env.VITE_MAINTENANCE_KEY || "revive-test";
   const previewKey = searchParams.get("preview");
 
@@ -51,9 +52,10 @@ const AppRoutes = () => {
     sessionStorage.setItem('maintenance_bypass', 'true');
   }
 
-  // Debug logging
-  console.log('Maintenance Debug:', {
+  // Debug logging - more detailed
+  console.log('🔧 Maintenance Debug:', {
     maintenanceEnabled,
+    maintenanceEnabledRaw,
     maintenanceKey,
     previewKey,
     hasBypassFromUrl,
@@ -61,11 +63,15 @@ const AppRoutes = () => {
     hasBypass,
     currentPath: window.location.pathname,
     fullUrl: window.location.href,
-    envMaintenance: import.meta.env.VITE_MAINTENANCE,
-    envKey: import.meta.env.VITE_MAINTENANCE_KEY
+    allEnvVars: {
+      VITE_MAINTENANCE: import.meta.env.VITE_MAINTENANCE,
+      VITE_MAINTENANCE_KEY: import.meta.env.VITE_MAINTENANCE_KEY,
+      VITE_BACKEND_URL: import.meta.env.VITE_BACKEND_URL
+    }
   });
 
   if (maintenanceEnabled && !hasBypass) {
+    console.log('🚧 Maintenance mode ACTIVE - redirecting to maintenance page');
     return (
       <Routes>
         <Route path="/maintenance" element={<Maintenance />} />
@@ -74,6 +80,7 @@ const AppRoutes = () => {
     );
   }
 
+  console.log('✅ Maintenance mode INACTIVE or BYPASSED - showing normal site');
   return (
     <Routes>
       <Route path="/" element={<Index />} />
