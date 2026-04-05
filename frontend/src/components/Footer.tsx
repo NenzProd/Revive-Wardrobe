@@ -142,6 +142,16 @@ const Footer = () => {
                   info@revivewardrobe.com
                 </a>
               </p>
+              <p>
+                <a
+                  href="https://wa.me/971582447684"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-revive-gold transition-colors"
+                >
+                  WhatsApp: +971 58 244 7684
+                </a>
+              </p>
             </address>
             <div className="mt-6">
               <p className="text-gray-400 mb-2">Pay easily with:</p>

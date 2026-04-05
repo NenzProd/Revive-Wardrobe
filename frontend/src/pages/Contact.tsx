@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Newsletter from "../components/Newsletter";
-import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Send, MessageSquare, Clock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "../components/SEO";
@@ -114,6 +114,13 @@ const Contact = () => {
       description: "Sun-Thu, 9AM-6PM UAE Time",
     },
     {
+      icon: MessageCircle,
+      title: "WhatsApp Us",
+      content: "+971 58 244 7684",
+      description: "Get instant support via WhatsApp",
+      link: "https://wa.me/971582447684",
+    },
+    {
       icon: MapPin,
       title: "Office Address",
       content:
@@ -156,15 +163,26 @@ const Contact = () => {
             {contactInfo.map((info, index) => (
               <div
                 key={index}
-                className="bg-gray-50 p-6 rounded-lg shadow-sm text-center"
+                className="bg-gray-50 p-6 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow duration-300"
               >
                 <div className="bg-revive-red rounded-full p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <info.icon className="text-white" size={24} />
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{info.title}</h3>
-                <p className="text-revive-red font-medium mb-1">
-                  {info.content}
-                </p>
+                {info.link ? (
+                  <a
+                    href={info.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-revive-red font-medium mb-1 hover:underline block"
+                  >
+                    {info.content}
+                  </a>
+                ) : (
+                  <p className="text-revive-red font-medium mb-1">
+                    {info.content}
+                  </p>
+                )}
                 <p className="text-gray-500 text-sm">{info.description}</p>
               </div>
             ))}
