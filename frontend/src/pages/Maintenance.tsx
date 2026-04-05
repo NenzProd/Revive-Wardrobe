@@ -6,7 +6,7 @@ const Maintenance = () => {
       {/* Logo */}
       <div className="mb-8 animate-fade-in">
         <img
-          src="/logo_pc.png"
+          src="logo_pc.png"
           alt="Revive Wardrobe"
           className="h-20 w-auto"
         />

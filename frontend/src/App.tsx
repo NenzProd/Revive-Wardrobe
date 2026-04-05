@@ -29,6 +29,7 @@ const Shipping = lazy(() => import("./pages/Shipping"));
 const Returns = lazy(() => import("./pages/Returns"));
 const StichingService = lazy(() => import("./pages/StichingService"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient();
 
@@ -45,7 +46,7 @@ const App = () => {
           <ScrollToTop />
           <Suspense fallback={null}>
             <Routes>
-              <Route path="/" element={<NotFound />} />
+              <Route path="/" element={<Maintenance />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/shop/category/:categorySlug" element={<Shop />} />
               <Route path="/shop/search/:searchSlug" element={<Shop />} />
