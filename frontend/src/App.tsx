@@ -45,7 +45,7 @@ const App = () => {
           <ScrollToTop />
           <Suspense fallback={null}>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<NotFound />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/shop/category/:categorySlug" element={<Shop />} />
               <Route path="/shop/search/:searchSlug" element={<Shop />} />
