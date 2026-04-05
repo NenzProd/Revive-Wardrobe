@@ -53,7 +53,17 @@ const HeroSection = () => {
       )
       .slice(0, 6);
 
-    return abayaProducts.map((product, index) => {
+    // Fallback: if no abaya products, show first 6 products
+    const displayProducts = abayaProducts.length > 0 ? abayaProducts : products.slice(0, 6);
+
+    console.log("🎠 Carousel Debug:", { 
+      totalProducts: products.length, 
+      abayaProducts: abayaProducts.length,
+      displayProducts: displayProducts.length,
+      firstProduct: displayProducts[0]?.name 
+    });
+
+    return displayProducts.map((product, index) => {
       // Use local image if available, otherwise fallback to product image
       const localImage = getLocalImage(product.name);
 
