@@ -14,7 +14,7 @@ import Blog from "./pages/Blog";
 import AddBlog from "./pages/AddBlog";
 import EditBlog from "./pages/EditBlog";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 export const currency = "AED ";
 
 const App = () => {

@@ -51,6 +51,15 @@ const Account = () => {
   const [orderSortBy, setOrderSortBy] = useState('newest'); // newest, oldest, status, amount
   const [filteredOrders, setFilteredOrders] = useState([]);
 
+  const getOrderAmount = (order) =>
+    order.line_items
+      ? order.line_items.reduce(
+          (sum, item) =>
+            sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1),
+          0
+        )
+      : 0;
+
   // Sort orders based on selected criteria
   const sortOrders = (ordersList, sortBy) => {
     const sorted = [...ordersList].sort((a, b) => {
@@ -62,13 +71,9 @@ const Account = () => {
         case 'status':
           return a.status.localeCompare(b.status);
         case 'amount-high':
-          const amountA = a.line_items ? a.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
-          const amountB = b.line_items ? b.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
-          return amountB - amountA;
+          return getOrderAmount(b) - getOrderAmount(a);
         case 'amount-low':
-          const amountA2 = a.line_items ? a.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
-          const amountB2 = b.line_items ? b.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : 0;
-          return amountA2 - amountB2;
+          return getOrderAmount(a) - getOrderAmount(b);
         default:
           return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
@@ -479,7 +484,7 @@ const Account = () => {
                         {/* Order Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4">
                           <div className="space-y-1">
-                            <div className="text-gray-600 text-sm">Amount: <span className="font-semibold text-revive-red">{order.price && order.line_items ? order.price.currency_code + ' ' + order.line_items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0) : ''}</span></div>
+                            <div className="text-gray-600 text-sm">Amount: <span className="font-semibold text-revive-red">{order.price && order.line_items ? order.price.currency_code + ' ' + getOrderAmount(order) : ''}</span></div>
                             <div className="text-gray-600 text-sm">Payment: <span className="font-medium">{order.price?.payment_mode === 'cod' ? 'Pending' : 'Done'}</span></div>
                             <div className="text-gray-600 text-sm">Method: <span className="font-medium">{order.price?.payment_mode || '-'}</span></div>
                           </div>

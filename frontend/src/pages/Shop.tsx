@@ -8,9 +8,6 @@ import Newsletter from '../components/Newsletter';
 import { Sliders } from 'lucide-react';
 import { useProductList } from '../hooks/useProduct'
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCartStore } from '../stores/useCartStore';
-import { useToast } from '@/hooks/use-toast';
-import { Product } from '../types/product';
 import { usePageLoader } from '@/hooks/usePageLoader';
 import SEO from '../components/SEO';
 
@@ -19,9 +16,6 @@ const Shop = () => {
   const location = useLocation();
   const { categorySlug, searchSlug } = useParams<{ categorySlug?: string; searchSlug?: string }>();
   const [filterOpen, setFilterOpen] = useState(false);
-  const { toast } = useToast();
-  const wishlist = useCartStore(state => state.wishlist);
-  const addToWishlist = useCartStore(state => state.addToWishlist);
 
   const toSlug = (value: string) =>
     value
@@ -77,10 +71,6 @@ const Shop = () => {
     const matchesType = typesParam.length > 0 ? typesParam.includes(p.type) : true
     return matchesSearch && matchesCategory && matchesFabric && matchesType
   });
-
-  const handleAddToWishlist = (product: Product) => {
-    addToWishlist(product);
-  }
 
   if (loading) {
     return (
@@ -188,7 +178,6 @@ const Shop = () => {
               colors={colors}
               types={typesParam}
               products={filteredProducts}
-              onAddToWishlist={handleAddToWishlist}
             />
           </div>
         </div>

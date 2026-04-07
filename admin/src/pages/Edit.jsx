@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 import { assets } from '../assets/assets'
 import Select from 'react-select'
 import Swal from 'sweetalert2'
+import { deriveGeneralCategory } from '../utils/productCategory'
 
 function Edit({ token }) {
   const { id } = useParams()
@@ -46,6 +47,7 @@ function Edit({ token }) {
     { value: 'XL', label: 'XL (58)' },
     { value: 'XXL', label: 'XXL (60)' }
   ]
+  const generalCategory = deriveGeneralCategory(category)
 
   function generateSku(slug, filterValue) {
     if (!slug || !filterValue) return ''
@@ -201,6 +203,7 @@ function Edit({ token }) {
       formData.append('name', name)
       formData.append('description', description)
       formData.append('category', category)
+      formData.append('sub_category', generalCategory)
       formData.append('type', type)
       formData.append('bestseller', bestseller)
       formData.append('slug', slug)
@@ -320,6 +323,7 @@ function Edit({ token }) {
                 className="w-full px-3 py-2 bg-white"
               >
                 <option value="Ethnic Elegance">Ethnic Elegance</option>
+                <option value="Jalabiya">Jalabiya</option>
                 <option value="Graceful Abayas">Graceful Abayas</option>
                 <option value="Intimate Collection">Intimate Collection</option>
                 <option value="Stitching Services">Stitching Services</option>
@@ -336,6 +340,16 @@ function Edit({ token }) {
                 <option value="Stitched">Stitched</option>
                 <option value="Unstitched">Unstitched</option>
               </select>
+            </div>
+            <div>
+              <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 mb-1">General Category</label>
+              <input
+                id="subCategory"
+                value={generalCategory}
+                className="w-full px-3 py-2 bg-gray-100 text-gray-600"
+                type="text"
+                readOnly
+              />
             </div>
           </div>
           {/* Variants Section */}

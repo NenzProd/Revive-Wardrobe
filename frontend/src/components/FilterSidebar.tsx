@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 
@@ -10,22 +10,39 @@ interface FilterSidebarProps {
 }
 
 const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
+  const navigate = useNavigate();
+  const { categorySlug } = useParams<{ categorySlug?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const toSlug = (value: string) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/["']/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
   // Get current filters from URL parameters
-  const currentCategory = searchParams.get('category') || 'all';
+  const categoryFromSlug = categorySlug
+    ? [
+        { id: 'Ethnic Elegance', slug: 'ethnic-elegance' },
+        { id: 'Graceful Abayas', slug: 'graceful-abayas' },
+      ].find((category) => category.slug === categorySlug)?.id
+    : undefined;
+  const currentCategory = categoryFromSlug || searchParams.get('category') || 'all';
   const currentPriceMin = parseInt(searchParams.get('minPrice') || '100');
   const currentPriceMax = parseInt(searchParams.get('maxPrice') || '2000');
   const currentColors = searchParams.getAll('color');
   const currentType = searchParams.getAll('type');
 
   const [priceRange, setPriceRange] = useState([currentPriceMin, currentPriceMax]);
+  const [selectedCategory, setSelectedCategory] = useState(currentCategory);
   // const [selectedFabrics, setSelectedFabrics] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>(currentColors);
 
 
   const categories = [
-    // { id: 'Ethnic Elegance', name: 'Ethnic Elegance' },
+    { id: 'Ethnic Elegance', name: 'Ethnic Elegance (Pakistani Wear)' },
     { id: 'Graceful Abayas', name: 'Graceful Abayas' },
     // { id: 'Intimate Collection', name: 'Intimate Collection' },
   ];
@@ -74,6 +91,18 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     e.preventDefault();
     setIsDragging({ min: isMin, max: !isMin });
   };
+
+  useEffect(() => {
+    setSelectedCategory(currentCategory);
+  }, [currentCategory]);
+
+  useEffect(() => {
+    setPriceRange([currentPriceMin, currentPriceMax]);
+  }, [currentPriceMin, currentPriceMax]);
+
+  useEffect(() => {
+    setSelectedColors(currentColors);
+  }, [currentColors]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -132,8 +161,9 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     params.delete('fabric');
 
     // Keep the current category if it exists
-    if (currentCategory && currentCategory !== 'all') {
-      params.set('category', currentCategory);
+    params.delete('category');
+    if (selectedCategory && selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
     }
 
     // Set price range only if different from default
@@ -150,7 +180,8 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
       params.append('color', color);
     });
 
-    setSearchParams(params);
+    const nextSearch = params.toString();
+    navigate(nextSearch ? `/shop?${nextSearch}` : '/shop');
 
     // On mobile, close the filter sidebar after applying
     if (window.innerWidth < 1024) {
@@ -165,6 +196,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
 
   const resetFilters = () => {
     setPriceRange([100, 2000]);
+    setSelectedCategory('all');
     // setSelectedFabrics([]);
     setSelectedColors([]);
 
@@ -172,7 +204,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     // Clear all filter parameters and reset to show all products
     // Don't set category to 'all' - just remove all filters
 
-    setSearchParams(params);
+    navigate('/shop');
 
     toast({
       title: "Filters reset",
@@ -257,8 +289,10 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
             <div key={category.id} className="flex items-center">
               <Checkbox
                 id={category.id}
-                checked={currentCategory === category.id}
-                onCheckedChange={() => setSearchParams(prev => { const p = new URLSearchParams(prev); p.set('category', category.id); return p; })}
+                checked={selectedCategory === category.id}
+                onCheckedChange={(checked) => {
+                  setSelectedCategory(checked ? category.id : 'all');
+                }}
                 className="h-4 w-4 rounded border-gray-300 text-revive-red focus:ring-revive-red"
               />
               <Label htmlFor={category.id} className="ml-2 text-gray-600">

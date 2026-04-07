@@ -9,13 +9,10 @@ import SEO from '../components/SEO'
 
 const Wishlist = () => {
   const wishlist = useCartStore(state => state.wishlist)
-  const setWishlist = useCartStore.setState
+  const removeFromWishlist = useCartStore(state => state.removeFromWishlist)
 
   const handleRemove = (productId: string) => {
-    setWishlist(state => ({
-      ...state,
-      wishlist: state.wishlist.filter(item => item._id !== productId)
-    }))
+    removeFromWishlist(productId)
   }
 
   return (

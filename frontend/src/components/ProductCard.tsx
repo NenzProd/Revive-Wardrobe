@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, Heart } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { Product } from '../types/product';
 import { useCartStore } from '../stores/useCartStore';
 import { priceSymbol } from '../config/constants';
+import ProductCategoryBadges from './ProductCategoryBadges';
+import {
+  getPreferredVariant,
+  getProductDisplayPrice,
+  getProductFinalPrice,
+  getVariantDiscount,
+  isProductSoldOut,
+} from '../lib/product';
 
 interface ProductCardProps {
   product: Product;
   layout?: 'grid' | 'list';
-  onAddToWishlist?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onAddToWishlist }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
   
   const {
@@ -26,23 +31,32 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
   } = product;
   
   // Derive price information from variants
-  const price = variants?.[0]?.retail_price || 0;
-  const discount = variants?.[0]?.discount || 0;
-  const salePrice = discount > 0 ? price - (price * discount / 100) : null;
+  const primaryVariant = getPreferredVariant(product);
+  const price = getProductDisplayPrice(product);
+  const salePrice = getProductFinalPrice(product);
+  const discount = getVariantDiscount(primaryVariant);
   const isSale = discount > 0;
   const isNew = false; // This would need to be determined by date or a separate field
   
   const wishlist = useCartStore(state => state.wishlist);
+  const addToWishlist = useCartStore(state => state.addToWishlist);
+  const removeFromWishlist = useCartStore(state => state.removeFromWishlist);
   const isInWishlist = wishlist.some(item => item._id === _id);
+  const isSoldOut = isProductSoldOut(product);
 
-  const handleAddToWishlist = (e: React.MouseEvent) => {
+  const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    toast({
-      title: "Added to wishlist",
-      description: `${name} has been added to your wishlist`,
-    });
+
+    if (!_id) {
+      return;
+    }
+
+    if (isInWishlist) {
+      await removeFromWishlist(_id);
+    } else {
+      await addToWishlist(product);
+    }
   };
 
   const handleView = (e: React.MouseEvent) => {
@@ -78,11 +92,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
             </span>
           )}
           
+          {isSoldOut && (
+            <span className="absolute bottom-2 left-2 bg-revive-black/85 text-white text-xs px-2 py-1 rounded z-10">
+              SOLD OUT
+            </span>
+          )}
+
           <Link to={`/product/${slug}`}>
             <img 
               src={getProductImage(product)} 
               alt={name}
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+              className={`w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 ${isSoldOut ? 'blur-[1px] grayscale' : ''}`}
             />
           </Link>
         </div>
@@ -98,12 +118,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
           <Link to={`/product/${slug}`}>
             <h3 className="font-medium text-revive-black text-lg mb-3 group-hover:text-revive-red transition-colors text-center">{name}</h3>
           </Link>
+
+          <ProductCategoryBadges product={product} align="center" className="mb-3" />
           
           <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
           
           <div className="mt-auto flex items-center justify-between">
             <div>
-              {isSale && salePrice ? (
+              {isSale && salePrice < price ? (
                 <div className="flex items-center gap-2">
                   <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
                   <p className="text-sm text-gray-500 line-through">{priceSymbol} {price.toLocaleString()}</p>
@@ -113,20 +135,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
               )}
             </div>
             
-            {onAddToWishlist && (
-              <button
-                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-gray-100 transition-colors z-10"
-                aria-label={isInWishlist ? 'In wishlist' : 'Add to wishlist'}
-                onClick={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  if (!isInWishlist) onAddToWishlist(product)
-                }}
-                disabled={isInWishlist}
-              >
-                <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
-              </button>
-            )}
+            <button
+              className="absolute top-2 right-2 p-2 bg-white rounded-full shadow hover:bg-gray-100 transition-colors z-10"
+              aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+              onClick={toggleWishlist}
+            >
+              <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
+            </button>
           </div>
         </div>
       </div>
@@ -151,6 +166,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
             Sale
           </span>
         )}
+        {isSoldOut && (
+          <span className="absolute bottom-2 left-2 bg-revive-black/85 text-white text-xs px-2 py-1 rounded z-10">
+            SOLD OUT
+          </span>
+        )}
+        <button
+          className="absolute top-2 right-2 z-20 rounded-full bg-white p-2 text-revive-black shadow hover:bg-gray-100 transition-colors"
+          aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          onClick={toggleWishlist}
+        >
+          <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
+        </button>
         
         {/* Product image */}
         <div className="h-80 overflow-hidden">
@@ -158,7 +185,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
             <img 
               src={getProductImage(product)} 
               alt={name}
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+              className={`w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 ${isSoldOut ? 'blur-[1px] grayscale' : ''}`}
             />
           </Link>
         </div>
@@ -166,20 +193,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
         {/* Quick actions - Only keep the wishlist heart */}
         <div className={`absolute inset-0 bg-black bg-opacity-20 transition-opacity duration-300 flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
           <div className="flex space-x-2 pointer-events-auto">
-            {onAddToWishlist && (
-              <button
-                className="bg-white text-revive-black p-2 rounded-full hover:bg-revive-gold hover:text-white transition-all"
-                aria-label={isInWishlist ? 'In wishlist' : 'Add to wishlist'}
-                onClick={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  if (!isInWishlist) onAddToWishlist(product)
-                }}
-                disabled={isInWishlist}
-              >
-                <Heart size={18} fill={isInWishlist ? '#ef4444' : 'none'} className={isInWishlist ? 'text-red-500' : ''} />
-              </button>
-            )}
             <button 
               onClick={handleView}
               aria-label="Quick view"
@@ -202,9 +215,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid', onA
         <Link to={`/product/${slug}`}>
           <h3 className="font-medium text-revive-black mb-2 group-hover:text-revive-red transition-colors line-clamp-2">{name}</h3>
         </Link>
+
+        <ProductCategoryBadges product={product} align="center" className="mb-3" />
         
         <div className="flex justify-center items-center">
-          {isSale && salePrice ? (
+          {isSale && salePrice < price ? (
             <div className="flex items-center gap-2">
               <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
               <p className="text-sm text-gray-500 line-through">{priceSymbol} {price.toLocaleString()}</p>

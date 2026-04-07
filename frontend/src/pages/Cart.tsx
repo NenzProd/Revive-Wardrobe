@@ -4,12 +4,58 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Newsletter from '../components/Newsletter';
 import { useCartStore } from '../stores/useCartStore';
-import { Minus, Plus, X, Heart, Trash2 } from 'lucide-react';
+import { Minus, Plus, X, Heart, Trash2, Sparkles } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { priceSymbol } from '../config/constants';
 import SEO from '../components/SEO';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  getCartItemDisplayPrice,
+  getCartItemFinalPrice,
+  getCartItemLineTotal,
+  getCartItemVariant,
+  isVariantSoldOut,
+} from '../lib/product';
+
+type CartDialogAction =
+  | {
+      type: 'remove-last-piece';
+      productId: string;
+      size?: string;
+      color?: string;
+      title: string;
+      description: string;
+      confirmLabel: string;
+      cancelLabel: string;
+    }
+  | {
+      type: 'remove-item';
+      productId: string;
+      size?: string;
+      color?: string;
+      title: string;
+      description: string;
+      confirmLabel: string;
+      cancelLabel: string;
+    }
+  | null;
 
 const Cart = () => {
   const { 
@@ -19,11 +65,13 @@ const Cart = () => {
     moveToWishlist,
     subtotal,
     shippingCost,
-    total
+    total,
+    backendUrl,
   } = useCartStore();
   
   const [couponCode, setCouponCode] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [pendingDialogAction, setPendingDialogAction] = useState<CartDialogAction>(null);
   const navigate = useNavigate();
   
   // Fetch latest product data for stock validation
@@ -31,19 +79,21 @@ const Cart = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch('/api/product/list');
+        const res = await fetch(`${backendUrl}/api/product/list`);
         const data = await res.json();
         if (data.success) setProductsData(data.products);
       } catch {}
     }
     fetchProducts();
-  }, []);
+  }, [backendUrl]);
 
   // Helper to get variant stock for a cart item
   function getVariantStock(item) {
     const product = productsData.find(p => p._id === item._id);
-    if (!product || !item.selectedSize) return 9999;
-    const variant = product.variants?.find(v => v.filter_value === item.selectedSize);
+    if (!product) return 9999;
+    const variant = item.selectedSize
+      ? product.variants?.find(v => v.filter_value === item.selectedSize)
+      : product.variants?.[0];
     return variant ? variant.stock : 9999;
   }
 
@@ -95,8 +145,64 @@ const Cart = () => {
     navigate('/checkout');
   };
 
+  const requestRemoveLastPiece = (item: typeof cart[number]) => {
+    setPendingDialogAction({
+      type: 'remove-last-piece',
+      productId: item._id,
+      size: item.selectedSize,
+      color: item.selectedColor,
+      title: 'Only one piece is waiting for you',
+      description:
+        'This is the final piece from our premium collection. If you remove it now, someone else may place the order before you do.',
+      confirmLabel: 'Remove It Anyway',
+      cancelLabel: 'Keep It In My Cart',
+    });
+  };
+
+  const requestRemoveItem = (item: typeof cart[number]) => {
+    setPendingDialogAction({
+      type: 'remove-item',
+      productId: item._id,
+      size: item.selectedSize,
+      color: item.selectedColor,
+      title: 'Remove this item from your cart?',
+      description:
+        'The sale is live and this piece is already yours for now. Are you sure you want to let it go before checkout?',
+      confirmLabel: 'Yes, Remove It',
+      cancelLabel: 'Keep Shopping Bag Ready',
+    });
+  };
+
+  const handleMinusClick = (item: typeof cart[number], stock: number) => {
+    if (item.quantity > 1) {
+      updateQuantity(item._id, item.quantity - 1, item.selectedSize, item.selectedColor);
+      return;
+    }
+
+    if (stock === 1) {
+      requestRemoveLastPiece(item);
+      return;
+    }
+
+    removeFromCart(item._id, item.selectedSize, item.selectedColor);
+  };
+
+  const handleDialogConfirm = () => {
+    if (!pendingDialogAction) {
+      return;
+    }
+
+    removeFromCart(
+      pendingDialogAction.productId,
+      pendingDialogAction.size,
+      pendingDialogAction.color
+    );
+    setPendingDialogAction(null);
+  };
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <TooltipProvider delayDuration={120}>
+      <div className="min-h-screen bg-white flex flex-col">
       <SEO 
         title="Shopping Cart - Review Your Items"
         description="Review your shopping cart at Revive Wardrobe. Check your selected items, update quantities, and proceed to secure checkout."
@@ -146,9 +252,11 @@ const Cart = () => {
                 {/* Cart Items */}
                 <div className="divide-y divide-gray-200">
                   {cart.map((item) => {
-                    const itemPrice = (item as any).salePrice || item.price;
-                    const itemTotal = itemPrice * item.quantity;
+                    const itemDisplayPrice = getCartItemDisplayPrice(item);
+                    const itemPrice = getCartItemFinalPrice(item);
+                    const itemTotal = getCartItemLineTotal(item);
                     const stock = getVariantStock(item);
+                    const isSoldOut = isVariantSoldOut(getCartItemVariant(item));
                     
                     return (
                       <div key={`${item._id}-${item.selectedSize}-${item.selectedColor}`} className="p-4">
@@ -159,11 +267,16 @@ const Cart = () => {
                               <img 
                                 src={item.image[0]} 
                                 alt={item.name} 
-                                className="w-20 h-20 object-cover rounded-md"
+                                className={`w-20 h-20 object-cover rounded-md ${isSoldOut ? 'grayscale opacity-70' : ''}`}
                               />
+                              {isSoldOut && (
+                                <span className="absolute left-2 bottom-2 rounded bg-revive-black/85 px-2 py-1 text-[10px] font-medium text-white">
+                                  SOLD OUT
+                                </span>
+                              )}
                               <button
-                                onClick={() => removeFromCart(item._id)}
-                                className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow hover:bg-gray-100"
+                                onClick={() => requestRemoveItem(item)}
+                                className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-md hover:bg-rose-50 hover:text-revive-red transition-colors"
                                 aria-label="Remove item"
                               >
                                 <X size={16} className="text-gray-600" />
@@ -183,7 +296,7 @@ const Cart = () => {
                               )}
                               <div className="flex space-x-2 mt-2">
                                 <button
-                                  onClick={() => moveToWishlist(item._id)}
+                                  onClick={() => moveToWishlist(item._id, item.selectedSize, item.selectedColor)}
                                   className="text-xs flex items-center text-gray-600 hover:text-revive-red"
                                 >
                                   <Heart size={14} className="mr-1" />
@@ -191,7 +304,7 @@ const Cart = () => {
                                   <span className="sm:hidden">Wishlist</span>
                                 </button>
                                 <button
-                                  onClick={() => removeFromCart(item._id)}
+                                  onClick={() => requestRemoveItem(item)}
                                   className="text-xs flex items-center text-gray-600 hover:text-revive-red"
                                 >
                                   <Trash2 size={14} className="mr-1" />
@@ -204,40 +317,64 @@ const Cart = () => {
                           {/* Price */}
                           <div className="md:col-span-2 text-center">
                             <p className="font-medium">
-                              {item.salePrice ? (
+                              {itemPrice < itemDisplayPrice ? (
                                 <>
-                                  <span className="text-revive-red">{priceSymbol} {item.salePrice.toLocaleString()}</span>
+                                  <span className="text-revive-red">{priceSymbol} {itemPrice.toLocaleString()}</span>
                                   <span className="line-through text-gray-500 text-xs ml-2">
-                                    {priceSymbol} {item.price.toLocaleString()}
+                                    {priceSymbol} {itemDisplayPrice.toLocaleString()}
                                   </span>
                                 </>
                               ) : (
-                                <span>{priceSymbol} {item.price.toLocaleString()}</span>
+                                <span>{priceSymbol} {itemDisplayPrice.toLocaleString()}</span>
                               )}
                             </p>
                           </div>
                           
                           {/* Quantity */}
                           <div className="md:col-span-2">
-                            <div className="flex items-center justify-center border rounded-md max-w-[120px] mx-auto">
+                            <div className="flex items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm max-w-[132px] mx-auto overflow-hidden">
                               <button
-                                onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                disabled={item.quantity <= 1}
+                                onClick={() => handleMinusClick(item, stock)}
+                                className="px-3 py-2 text-gray-600 hover:bg-rose-50 hover:text-revive-red transition-colors"
                               >
                                 <Minus size={16} />
                               </button>
-                              <span className="px-3 py-1 text-center min-w-[40px]">
+                              <span className="px-3 py-2 text-center min-w-[40px] font-medium">
                                 {item.quantity}
                               </span>
-                              <button
-                                onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                disabled={item.quantity >= stock}
-                              >
-                                <Plus size={16} />
-                              </button>
+                              {stock === 1 ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span tabIndex={0} className="inline-flex">
+                                      <button
+                                        onClick={() => undefined}
+                                        className="px-3 py-2 text-amber-700 bg-amber-50 cursor-not-allowed"
+                                        disabled
+                                        aria-label="Only one piece available"
+                                      >
+                                        <Plus size={16} />
+                                      </button>
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-[240px] bg-revive-black text-white">
+                                    Only one piece is available. Place your order soon to make it yours.
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <button
+                                  onClick={() => updateQuantity(item._id, item.quantity + 1, item.selectedSize, item.selectedColor)}
+                                  className="px-3 py-2 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300"
+                                  disabled={item.quantity >= stock}
+                                >
+                                  <Plus size={16} />
+                                </button>
+                              )}
                             </div>
+                            {stock === 1 && (
+                              <p className="mt-2 text-center text-[11px] font-medium text-amber-700">
+                                Last piece available
+                              </p>
+                            )}
                           </div>
                           
                           {/* Total */}
@@ -265,7 +402,7 @@ const Cart = () => {
             
             {/* Cart Summary */}
             <div className="lg:w-1/3">
-              <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+              <div className="rounded-2xl border border-revive-red/15 bg-gradient-to-br from-white via-rose-50/60 to-red-50 p-6 shadow-[0_18px_45px_rgba(165,28,48,0.08)]">
                 <h2 className="text-xl font-serif mb-4">Order Summary</h2>
                 
                 {/* Coupon Code */}
@@ -312,11 +449,18 @@ const Cart = () => {
                 
                 {/* Checkout Button */}
                 <Button 
-                  className="w-full bg-revive-gold hover:bg-revive-gold/90" 
+                  className="group relative w-full overflow-hidden rounded-xl bg-revive-red py-6 text-base font-semibold text-white shadow-[0_16px_35px_rgba(165,28,48,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-revive-red/95 hover:shadow-[0_20px_45px_rgba(165,28,48,0.34)] animate-pulse" 
                   onClick={handleCheckout}
                 >
-                  Proceed to Checkout
+                  <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent_20%,rgba(255,255,255,0.28)_45%,transparent_70%)] translate-x-[-140%] group-hover:translate-x-[140%] transition-transform duration-1000" />
+                  <span className="relative flex items-center justify-center gap-2">
+                    <Sparkles size={16} />
+                    Secure Your Order Now
+                  </span>
                 </Button>
+                <p className="mt-3 text-center text-sm text-revive-red/90">
+                  Your favorites are reserved in cart for the moment. Checkout now before they are gone.
+                </p>
                 
                 {/* Additional Information */}
                 {/* <div className="mt-4 text-xs text-gray-500">
@@ -331,7 +475,34 @@ const Cart = () => {
       
       <Newsletter />
       <Footer />
+      <AlertDialog open={Boolean(pendingDialogAction)} onOpenChange={(open) => !open && setPendingDialogAction(null)}>
+        <AlertDialogContent className="border border-revive-red/10 bg-white shadow-[0_22px_60px_rgba(0,0,0,0.16)]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-serif text-revive-black">
+              {pendingDialogAction?.title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base leading-7 text-gray-600">
+              {pendingDialogAction?.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Sale prices are active right now. Once removed, this style may be claimed by another customer.
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-gray-200">
+              {pendingDialogAction?.cancelLabel || 'Keep This Item'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDialogConfirm}
+              className="bg-revive-red text-white hover:bg-revive-red/90"
+            >
+              {pendingDialogAction?.confirmLabel || 'Remove Item'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+    </TooltipProvider>
   );
 };
 

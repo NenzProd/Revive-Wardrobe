@@ -69,7 +69,7 @@ const BentoCategories = () => {
 
           {/* Right Bottom Left - Ethnic Elegance */}
           <div
-            onClick={() => navigate("/shop?category=Graceful+Abayas")}
+            onClick={() => navigate("/shop?category=Ethnic+Elegance")}
             className="min-w-[60vw] md:min-w-0 snap-start h-[26vh] md:h-full col-span-1 row-span-1 md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl cursor-pointer"
           >
             <img

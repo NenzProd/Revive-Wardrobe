@@ -7,6 +7,7 @@ import StitchingPromo from "../components/StitchingPromo";
 import BlogPreview from "../components/BlogPreview";
 import Footer from "../components/Footer";
 import SEO from "../components/SEO";
+import EthnicElegance from "../components/EthnicElegance";
 
 import CashbackBanner from "../components/CashbackBanner";
 
@@ -27,7 +28,7 @@ const Index = () => {
       <AboutSection />
       <FeaturedProducts />
       {/* <SignatureAbayas /> */}
-      {/* <EthnicElegance /> */}
+      <EthnicElegance />
       <StitchingPromo />
       <BlogPreview />
       {/* <Newsletter /> */}

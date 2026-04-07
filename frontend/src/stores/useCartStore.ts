@@ -2,12 +2,58 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
-import { Product, CartItem } from "../types/product";
-import { priceSymbol } from "../config/constants";
+import { CartItem, Product } from "../types/product";
+import {
+  getCartItemDisplayPrice,
+  getCartItemFinalPrice,
+  getCartItemLineTotal,
+  getCartItemVariant,
+  getProductFinalPrice,
+  isVariantSoldOut,
+  mapProductForUi,
+} from "../lib/product";
 
-const currency = "AED"; // Default currency
+const currency = "AED";
 const deliveryFee = 10;
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+const normalizeProducts = (products: Product[] = []) =>
+  products.map((product) => mapProductForUi(product));
+
+const recalculateCartState = (cart: CartItem[]) => {
+  const subtotal = cart.reduce((sum, item) => sum + getCartItemLineTotal(item), 0);
+  const shippingCost = 0;
+  const total = subtotal + shippingCost;
+  const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+  return { subtotal, shippingCost, total, itemCount };
+};
+
+const buildWishlistProducts = (products: Product[], productIds: string[], fallback: Product[] = []) => {
+  const productMap = new Map<string, Product>();
+
+  normalizeProducts(products).forEach((product) => {
+    if (product._id) {
+      productMap.set(product._id, product);
+    }
+  });
+
+  fallback.forEach((product) => {
+    if (product?._id && !productMap.has(product._id)) {
+      productMap.set(product._id, mapProductForUi(product));
+    }
+  });
+
+  return productIds
+    .map((productId) => productMap.get(productId))
+    .filter(Boolean);
+};
+
+const getWishlistIds = (wishlist: Product[] = []) =>
+  Array.from(new Set(wishlist.map((product) => product?._id).filter(Boolean)));
+
+const arraysEqual = (left: string[], right: string[]) =>
+  left.length === right.length && left.every((value, index) => value === right[index]);
 
 interface CartState {
   cart: CartItem[];
@@ -25,29 +71,30 @@ interface CartState {
   deliveryFee: number;
   backendUrl: string;
   user: any;
-  
-  // Actions
+
   setSearch: (search: string) => void;
   setShowSearch: (show: boolean) => void;
   setToken: (token: string) => void;
   setUser: (user: any) => void;
-  
-  getProductsData: () => Promise<void>;
+
+  getProductsData: () => Promise<Product[]>;
   getUserCart: (token: string) => Promise<void>;
   getCartCount: () => number;
   getCartAmount: () => number;
   getCartItems: () => Array<any>;
-  
+
   recalculateTotals: () => void;
+  syncWishlistFromIds: (productIds: string[], fallbackProducts?: Product[]) => Promise<void>;
+  syncWishlistToBackend: (productIds: string[]) => Promise<void>;
   addToCart: (product: Product, quantity: number, size?: string, color?: string) => void;
   addToCartById: (itemId: string, quantity?: number) => Promise<void>;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string, size?: string, color?: string) => void;
+  updateQuantity: (productId: string, quantity: number, size?: string, color?: string) => void;
   updateQuantityById: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
-  addToWishlist: (product: Product) => void;
-  removeFromWishlist: (productId: string) => void;
-  moveToWishlist: (productId: string) => void;
+  addToWishlist: (product: Product) => Promise<void>;
+  removeFromWishlist: (productId: string) => Promise<void>;
+  moveToWishlist: (productId: string, size?: string, color?: string) => Promise<void>;
   fetchUser: (token: string) => Promise<void>;
   logout: () => void;
 }
@@ -63,38 +110,43 @@ export const useCartStore = create<CartState>()(
       shippingCost: 0,
       total: 0,
       products: [],
-      search: '',
+      search: "",
       showSearch: false,
-      token: '',
+      token: "",
       currency,
       deliveryFee,
       backendUrl,
       user: null,
-      
-      setSearch: search => set({ search }),
-      setShowSearch: showSearch => set({ showSearch }),
-      setToken: token => set({ token }),
-      setUser: user => set({ user }),
-      
-      // Fetch products
+
+      setSearch: (search) => set({ search }),
+      setShowSearch: (showSearch) => set({ showSearch }),
+      setToken: (token) => set({ token }),
+      setUser: (user) => set({ user }),
+
       getProductsData: async () => {
         try {
-          const res = await axios.get(get().backendUrl + '/api/product/list');
+          const res = await axios.get(get().backendUrl + "/api/product/list");
           if (res.data.success) {
-            set({ products: res.data.products });
-          } else {
-            toast({ title: 'Error', description: res.data.message });
+            const products = normalizeProducts(res.data.products);
+            set((state) => ({
+              products,
+              wishlist: buildWishlistProducts(products, getWishlistIds(state.wishlist), state.wishlist),
+            }));
+            return products;
           }
+
+          toast({ title: "Error", description: res.data.message });
         } catch (err) {
-          toast({ title: 'Error', description: err.message });
+          toast({ title: "Error", description: err.message });
         }
+
+        return get().products;
       },
-      
-      // Fetch user cart from backend
-      getUserCart: async token => {
+
+      getUserCart: async (token) => {
         try {
           const res = await axios.post(
-            get().backendUrl + '/api/cart/get',
+            get().backendUrl + "/api/cart/get",
             {},
             { headers: { token } }
           );
@@ -102,368 +154,387 @@ export const useCartStore = create<CartState>()(
             const normalizedCart = {};
             Object.entries(res.data.cartData).forEach(([key, value]) => {
               normalizedCart[key] =
-                typeof value === 'number'
+                typeof value === "number"
                   ? value
-                  : typeof value === 'object'
-                  ? Object.values(value)[0] || 0
-                  : 0;
+                  : typeof value === "object"
+                    ? Object.values(value)[0] || 0
+                    : 0;
             });
             set({ cartItems: normalizedCart });
           }
         } catch (err) {
-          toast({ title: 'Error', description: err.message });
+          toast({ title: "Error", description: err.message });
         }
       },
-      
-      // Get cart count (ID-based)
-      getCartCount: () => {
-        return Object.values(get().cartItems).reduce(
+
+      getCartCount: () =>
+        Object.values(get().cartItems).reduce(
           (acc, qty) => (qty > 0 ? acc + qty : acc),
           0
-        );
-      },
-      
-      // Get cart amount (ID-based)
+        ),
+
       getCartAmount: () => {
-        let total = 0;
+        let totalAmount = 0;
         const { cartItems, products } = get();
         for (const itemId in cartItems) {
-          const product = products.find(p => p._id === itemId);
+          const product = products.find((entry) => entry._id === itemId);
           if (product && cartItems[itemId] > 0) {
-            total += (product.price || 0) * cartItems[itemId];
+            totalAmount += getProductFinalPrice(product) * cartItems[itemId];
           }
         }
-        return total;
+        return totalAmount;
       },
-      
-      // Get cart items (ID-based, detailed)
+
       getCartItems: () => {
         const { cartItems, products } = get();
         return Object.entries(cartItems)
           .filter(([, qty]) => qty > 0)
           .map(([itemId, qty]) => {
-            const product = products.find(p => p._id === itemId);
+            const product = products.find((entry) => entry._id === itemId);
             return product
               ? {
                   _id: itemId,
                   name: product.name,
                   price: product.price || 0,
+                  salePrice: product.salePrice,
                   image: product.image?.[0],
-                  quantity: qty
+                  quantity: qty,
                 }
               : null;
           })
           .filter(Boolean);
       },
-      
-      // Calculate derived values based on cart
+
       recalculateTotals: () => {
         const cart = get().cart;
-        const subtotal = cart.reduce((sum, item) => {
-          const itemPrice = item.price || 0;
-          return sum + itemPrice * item.quantity;
-        }, 0);
-        // shipping cost is now always 0
-        const shippingCost = 0;
-        const total = subtotal + shippingCost;
-        const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
-        
-        set({ subtotal, shippingCost, total, itemCount });
+        set(recalculateCartState(cart));
       },
-      
-      // Add item to cart
-      addToCart: (product, quantity, size, color) => {
-        set((state) => {
-          // Find the correct variant for stock check
-          let variant = null
-          if (product.variants && size) {
-            variant = product.variants.find(v => v.filter_value === size)
-          }
-          const maxStock = variant ? variant.stock : 9999
-          if (quantity > maxStock) {
-            toast({
-              title: 'Stock limit reached',
-              description: `Only ${maxStock} in stock for selected size`,
-              variant: 'destructive'
-            })
-            return state
-          }
-          // Check if the product is already in the cart
-          const existingItemIndex = state.cart.findIndex(
-            item => item._id === product._id && 
-                  item.selectedSize === size && 
-                  item.selectedColor === color
-          );
-          let updatedCart;
-          if (existingItemIndex >= 0) {
-            // Update quantity if the product is already in the cart
-            const newQty = Math.min(state.cart[existingItemIndex].quantity + quantity, maxStock)
-            if (newQty > maxStock) {
-              toast({
-                title: 'Stock limit reached',
-                description: `Only ${maxStock} in stock for selected size`,
-                variant: 'destructive'
-              })
-              return state
-            }
-            updatedCart = [...state.cart];
-            updatedCart[existingItemIndex] = {
-              ...updatedCart[existingItemIndex],
-              quantity: newQty
-            };
-            toast({
-              title: "Cart updated",
-              description: `${product.name} quantity increased to ${updatedCart[existingItemIndex].quantity}.`,
-            });
-          } else {
-            // Add the product to the cart if it's not already there
-            const newItem = {
-              ...product,
-              quantity,
-              selectedSize: size,
-              selectedColor: color
-            };
-            updatedCart = [...state.cart, newItem];
-            toast({
-              title: "Added to cart",
-              description: `${product.name} added to your cart.`,
-            });
-          }
-          const newState = { ...state, cart: updatedCart };
-          // Recalculate totals
-          const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.price || 0;
-            return sum + itemPrice * item.quantity;
-          }, 0);
-          // shipping cost is now always 0
-          const shippingCost = 0;
-          const total = subtotal + shippingCost;
-          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          return { ...newState, subtotal, shippingCost, total, itemCount };
+
+      syncWishlistFromIds: async (productIds, fallbackProducts = []) => {
+        if (productIds.length === 0) {
+          set({ wishlist: [] });
+          return;
+        }
+
+        let products = get().products;
+        if (products.length === 0) {
+          products = await get().getProductsData();
+        }
+
+        set({
+          wishlist: buildWishlistProducts(products, productIds, fallbackProducts),
         });
       },
-      
-      // Add to cart by ID (object-based)
+
+      syncWishlistToBackend: async (productIds) => {
+        if (!get().token) {
+          return;
+        }
+
+        try {
+          await axios.post(
+            get().backendUrl + "/api/user/wishlist",
+            { productIds },
+            { headers: { token: get().token } }
+          );
+        } catch (err) {
+          toast({
+            title: "Wishlist sync failed",
+            description: err.message,
+            variant: "destructive",
+          });
+        }
+      },
+
+      addToCart: (product, quantity, size, color) => {
+        set((state) => {
+          const normalizedProduct = mapProductForUi(product);
+          const variant = size
+            ? normalizedProduct.variants?.find((entry) => entry.filter_value === size)
+            : getCartItemVariant({ ...normalizedProduct, quantity, selectedSize: size, selectedColor: color } as CartItem);
+          const maxStock = variant ? variant.stock : 9999;
+
+          if (quantity > maxStock) {
+            toast({
+              title: "Stock limit reached",
+              description: `Only ${maxStock} in stock for selected size`,
+              variant: "destructive",
+            });
+            return state;
+          }
+
+          const existingItemIndex = state.cart.findIndex(
+            (item) =>
+              item._id === normalizedProduct._id &&
+              item.selectedSize === size &&
+              item.selectedColor === color
+          );
+
+          let updatedCart: CartItem[];
+          if (existingItemIndex >= 0) {
+            const currentItem = state.cart[existingItemIndex];
+            const newQty = Math.min(currentItem.quantity + quantity, maxStock);
+
+            updatedCart = [...state.cart];
+            updatedCart[existingItemIndex] = {
+              ...currentItem,
+              quantity: newQty,
+            };
+
+            toast({
+              title: "Cart updated",
+              description: `${normalizedProduct.name} quantity increased to ${newQty}.`,
+            });
+          } else {
+            updatedCart = [
+              ...state.cart,
+              {
+                ...normalizedProduct,
+                quantity,
+                selectedSize: size,
+                selectedColor: color,
+              },
+            ];
+
+            toast({
+              title: "Added to cart",
+              description: `${normalizedProduct.name} added to your cart.`,
+            });
+          }
+
+          return {
+            ...state,
+            cart: updatedCart,
+            ...recalculateCartState(updatedCart),
+          };
+        });
+      },
+
       addToCartById: async (itemId, quantity = 1) => {
         const cartData = { ...get().cartItems };
         cartData[itemId] = (cartData[itemId] || 0) + quantity;
         set({ cartItems: cartData });
-        toast({ title: 'Success', description: 'Item Added to Cart' });
+        toast({ title: "Success", description: "Item Added to Cart" });
         if (get().token) {
           try {
             await axios.post(
-              get().backendUrl + '/api/cart/add',
+              get().backendUrl + "/api/cart/add",
               { itemId, quantity },
               { headers: { token: get().token } }
             );
           } catch (err) {
-            toast({ title: 'Error', description: err.message });
+            toast({ title: "Error", description: err.message });
           }
         }
       },
-      
-      // Remove item from cart
-      removeFromCart: (productId) => {
+
+      removeFromCart: (productId, size, color) => {
         set((state) => {
-          const removedItem = state.cart.find(item => item._id === productId);
-          const updatedCart = state.cart.filter(item => item._id !== productId);
-          
+          const removedItem = state.cart.find(
+            (item) =>
+              item._id === productId &&
+              (size === undefined || item.selectedSize === size) &&
+              (color === undefined || item.selectedColor === color)
+          );
+
+          const updatedCart = state.cart.filter(
+            (item) =>
+              !(
+                item._id === productId &&
+                (size === undefined || item.selectedSize === size) &&
+                (color === undefined || item.selectedColor === color)
+              )
+          );
+
           if (removedItem) {
             toast({
               title: "Item removed",
               description: `${removedItem.name} has been removed from your cart.`,
             });
           }
-          
-          const newState = { ...state, cart: updatedCart };
-          // Recalculate totals
-          const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.price || 0;
-            return sum + itemPrice * item.quantity;
-          }, 0);
-          // shipping cost is now always 0
-          const shippingCost = 0;
-          const total = subtotal + shippingCost;
-          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          
-          return { ...newState, subtotal, shippingCost, total, itemCount };
+
+          return {
+            ...state,
+            cart: updatedCart,
+            ...recalculateCartState(updatedCart),
+          };
         });
       },
-      
-      // Update quantity
-      updateQuantity: (productId, quantity) => {
+
+      updateQuantity: (productId, quantity, size, color) => {
         set((state) => {
-          const item = state.cart.find(i => i._id === productId)
-          if (!item) return state
-          let variant = null
-          if (item.variants && item.selectedSize) {
-            variant = item.variants.find(v => v.filter_value === item.selectedSize)
+          const item = state.cart.find(
+            (entry) =>
+              entry._id === productId &&
+              (size === undefined || entry.selectedSize === size) &&
+              (color === undefined || entry.selectedColor === color)
+          );
+
+          if (!item) {
+            return state;
           }
-          const maxStock = variant ? variant.stock : 9999
+
+          const variant = getCartItemVariant(item);
+          const maxStock = variant ? variant.stock : 9999;
+
           if (quantity > maxStock) {
             toast({
-              title: 'Stock limit reached',
+              title: "Stock limit reached",
               description: `Only ${maxStock} in stock for selected size`,
-              variant: 'destructive'
-            })
-            return state
+              variant: "destructive",
+            });
+            return state;
           }
-          const updatedCart = state.cart.map(i =>
-            i._id === productId ? { ...i, quantity: Math.max(1, Math.min(quantity, maxStock)) } : i
-          )
-          
-          // Recalculate totals
-          const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.price || 0;
-            return sum + itemPrice * item.quantity;
-          }, 0);
-          // shipping cost is now always 0
-          const shippingCost = 0;
-          const total = subtotal + shippingCost;
-          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          
-          return { ...state, cart: updatedCart, subtotal, shippingCost, total, itemCount }
-        })
+
+          const updatedCart = state.cart.map((entry) =>
+            entry._id === productId &&
+            (size === undefined || entry.selectedSize === size) &&
+            (color === undefined || entry.selectedColor === color)
+              ? {
+                  ...entry,
+                  quantity: Math.max(1, Math.min(quantity, maxStock)),
+                }
+              : entry
+          );
+
+          return {
+            ...state,
+            cart: updatedCart,
+            ...recalculateCartState(updatedCart),
+          };
+        });
       },
-      
-      // Update quantity by ID (object-based)
+
       updateQuantityById: async (itemId, quantity) => {
         const cartData = { ...get().cartItems, [itemId]: quantity };
         set({ cartItems: cartData });
         if (get().token) {
           try {
             await axios.post(
-              get().backendUrl + '/api/cart/update',
+              get().backendUrl + "/api/cart/update",
               { itemId, quantity },
               { headers: { token: get().token } }
             );
           } catch (err) {
-            toast({ title: 'Error', description: err.message });
+            toast({ title: "Error", description: err.message });
           }
         }
       },
-      
-      // Clear the cart
+
       clearCart: () => {
-        set((state) => ({ 
-          ...state, 
+        set((state) => ({
+          ...state,
           cart: [],
           cartItems: {},
           subtotal: 0,
           shippingCost: 0,
           total: 0,
-          itemCount: 0
+          itemCount: 0,
         }));
-        
+
         toast({
           title: "Cart cleared",
           description: "All items have been removed from your cart.",
         });
       },
-      
-      // Add item to wishlist
-      addToWishlist: (product) => {
-        set((state) => {
-          // Check if item is already in wishlist
-          const isInWishlist = state.wishlist.some(item => item._id === product._id);
-          
-          if (isInWishlist) {
-            toast({
-              title: "Already in wishlist",
-              description: `${product.name} is already in your wishlist.`,
-            });
-            return state;
-          }
-          
-          // Add to wishlist
-          const updatedWishlist = [...state.wishlist, product];
-          
+
+      addToWishlist: async (product) => {
+        const normalizedProduct = mapProductForUi(product);
+        const currentWishlist = get().wishlist;
+        const isInWishlist = currentWishlist.some(
+          (item) => item._id === normalizedProduct._id
+        );
+
+        if (isInWishlist) {
           toast({
-            title: "Added to wishlist",
-            description: `${product.name} has been added to your wishlist.`,
+            title: "Already in wishlist",
+            description: `${normalizedProduct.name} is already in your wishlist.`,
           });
-          
-          return { ...state, wishlist: updatedWishlist };
+          return;
+        }
+
+        const updatedWishlist = [...currentWishlist, normalizedProduct];
+        set({ wishlist: updatedWishlist });
+        await get().syncWishlistToBackend(getWishlistIds(updatedWishlist));
+
+        toast({
+          title: "Added to wishlist",
+          description: `${normalizedProduct.name} has been added to your wishlist.`,
         });
       },
-      
-      // Remove item from wishlist
-      removeFromWishlist: (productId) => {
-        set((state) => {
-          const itemToRemove = state.wishlist.find(item => item._id === productId);
-          const updatedWishlist = state.wishlist.filter(item => item._id !== productId);
-          
-          if (itemToRemove) {
-            toast({
-              title: "Removed from wishlist",
-              description: `${itemToRemove.name} has been removed from your wishlist.`,
-            });
-          }
-          
-          return { ...state, wishlist: updatedWishlist };
-        });
+
+      removeFromWishlist: async (productId) => {
+        const currentWishlist = get().wishlist;
+        const itemToRemove = currentWishlist.find((item) => item._id === productId);
+        const updatedWishlist = currentWishlist.filter((item) => item._id !== productId);
+
+        set({ wishlist: updatedWishlist });
+        await get().syncWishlistToBackend(getWishlistIds(updatedWishlist));
+
+        if (itemToRemove) {
+          toast({
+            title: "Removed from wishlist",
+            description: `${itemToRemove.name} has been removed from your wishlist.`,
+          });
+        }
       },
-      
-      // Move item to wishlist
-      moveToWishlist: (productId) => {
-        set((state) => {
-          const itemToMove = state.cart.find(item => item._id === productId);
-          
-          if (!itemToMove) {
-            return state;
-          }
-          
-          // Add to wishlist if not already there
-          const isInWishlist = state.wishlist.some(item => item._id === productId);
-          let updatedWishlist = state.wishlist;
-          
-          if (!isInWishlist) {
-            const { quantity, selectedSize, selectedColor, ...productWithoutCartProps } = itemToMove;
-            updatedWishlist = [...state.wishlist, productWithoutCartProps];
-            
-            toast({
-              title: "Moved to wishlist",
-              description: `${itemToMove.name} has been moved to your wishlist.`,
-            });
-          }
-          
-          // Remove from cart
-          const updatedCart = state.cart.filter(item => item._id !== productId);
-          
-          const newState = { 
-            ...state, 
-            cart: updatedCart,
-            wishlist: updatedWishlist
-          };
-          
-          // Recalculate totals
-          const subtotal = updatedCart.reduce((sum, item) => {
-            const itemPrice = item.price || 0;
-            return sum + itemPrice * item.quantity;
-          }, 0);
-          // shipping cost is now always 0
-          const shippingCost = 0;
-          const total = subtotal + shippingCost;
-          const itemCount = updatedCart.reduce((count, item) => count + item.quantity, 0);
-          
-          return { ...newState, subtotal, shippingCost, total, itemCount };
-        });
+
+      moveToWishlist: async (productId, size, color) => {
+        const state = get();
+        const itemToMove = state.cart.find(
+          (item) =>
+            item._id === productId &&
+            (size === undefined || item.selectedSize === size) &&
+            (color === undefined || item.selectedColor === color)
+        );
+
+        if (!itemToMove) {
+          return;
+        }
+
+        const { quantity, selectedSize, selectedColor, ...productWithoutCartProps } = itemToMove;
+        await get().addToWishlist(productWithoutCartProps);
+        get().removeFromCart(productId, size, color);
       },
-      
+
       fetchUser: async (token) => {
         try {
-          const res = await axios.get(get().backendUrl + '/api/user/profile', { headers: { token } })
-          if (res.data.success) set({ user: res.data.user })
+          const res = await axios.get(get().backendUrl + "/api/user/profile", {
+            headers: { token },
+          });
+
+          if (!res.data.success) {
+            return;
+          }
+
+          const user = res.data.user;
+          const localWishlist = get().wishlist;
+          const localIds = getWishlistIds(localWishlist);
+          const remoteIds = Array.isArray(user?.wishlistData)
+            ? Array.from(new Set(user.wishlistData.filter(Boolean)))
+            : [];
+          const mergedIds = Array.from(new Set([...remoteIds, ...localIds])).sort();
+          const remoteSorted = [...remoteIds].sort();
+
+          set({ user });
+          await get().syncWishlistFromIds(mergedIds, localWishlist);
+
+          if (!arraysEqual(mergedIds, remoteSorted)) {
+            await get().syncWishlistToBackend(mergedIds);
+          }
         } catch (err) {}
       },
-      
+
       logout: () => {
-        set({ token: '', user: null })
-        localStorage.removeItem('token')
-      }
+        set({ token: "", user: null });
+        localStorage.removeItem("token");
+      },
     }),
     {
       name: "rw-cart-storage",
+      onRehydrateStorage: () => (state) => {
+        state?.recalculateTotals();
+      },
     }
   )
 );

@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/carousel";
 
 // Import images
-import img1 from "@/assets/img/carasoul images/ethinci elegance (1).jpeg";
-import img2 from "@/assets/img/carasoul images/ethinci elegance (2).jpeg";
-import img3 from "@/assets/img/carasoul images/ethinci elegance (3).jpeg";
-import img4 from "@/assets/img/carasoul images/ethinci elegance (4).jpeg";
+import img1 from "@/assets/img/carasoul images/aurora blossom.png";
+import img2 from "@/assets/img/carasoul images/lunar glow.png";
+import img3 from "@/assets/img/carasoul images/regal.png";
+import img4 from "@/assets/img/carasoul images/twilight grace.png";
 
 const EthnicElegance = () => {
   const images = [img1, img2, img3, img4];

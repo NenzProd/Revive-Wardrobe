@@ -10,6 +10,12 @@ import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { CartItem } from '../types/product'
 import SEO from "../components/SEO";
+import {
+  getCartItemDisplayPrice,
+  getCartItemFinalPrice,
+  getCartItemLineTotal,
+  getCartItemVariant,
+} from "../lib/product";
 type CartItemWithPrice = CartItem & { price?: number, sku_id?: string }
 
 // Add Razorpay type declaration for TypeScript
@@ -418,10 +424,10 @@ function Checkout() {
         const variant = item.variants?.find(v => typeof v.filter_value === 'string' && typeof selectedSize === 'string' && v.filter_value === selectedSize)
         return {
           product_id: item._id || '',
-          sku_id: variant?.sku || '',
-          image: item.image || '',
+          sku_id: variant?.sku || getCartItemVariant(item)?.sku || '',
+          image: item.image?.[0] || '',
           quantity: item.quantity?.toString() || '1',
-          price: (item.price || 0).toString()
+          price: getCartItemFinalPrice(item).toString()
         }
       })
     }
@@ -977,7 +983,7 @@ function Checkout() {
                         </div>
                       </div>
                       <div className="font-semibold text-revive-red text-sm">
-                        {priceSymbol} {((item.price || 0) * item.quantity).toLocaleString()}
+                        {priceSymbol} {getCartItemLineTotal(item).toLocaleString()}
                       </div>
                     </div>
                   ))}

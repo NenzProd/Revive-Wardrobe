@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import { Product } from '../types/product';
+import { getProductFinalPrice } from '../lib/product';
 
 interface ProductGridProps {
   viewMode: 'grid' | 'list';
@@ -11,7 +12,6 @@ interface ProductGridProps {
   colors?: string[];
   types?: string[];
   products?: Product[];
-  onAddToWishlist?: (product: Product) => void;
 }
 
 const ProductGrid = ({ 
@@ -22,8 +22,7 @@ const ProductGrid = ({
   maxPrice = 100000,
   colors = [],
   types = [],
-  products: externalProducts = [],
-  onAddToWishlist
+  products: externalProducts = []
 }: ProductGridProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   
@@ -37,7 +36,7 @@ const ProductGrid = ({
     }
     // Apply price range filter
     filteredProducts = filteredProducts.filter(product => {
-      const price = product.salePrice || product.price;
+      const price = getProductFinalPrice(product);
       return price >= minPrice && price <= maxPrice;
     });
     // Apply colors filter
@@ -54,15 +53,15 @@ const ProductGrid = ({
     switch (sortOption) {
       case 'price_low':
         filteredProducts.sort((a, b) => {
-          const priceA = a.salePrice || a.price;
-          const priceB = b.salePrice || b.price;
+          const priceA = getProductFinalPrice(a);
+          const priceB = getProductFinalPrice(b);
           return priceA - priceB;
         });
         break;
       case 'price_high':
         filteredProducts.sort((a, b) => {
-          const priceA = a.salePrice || a.price;
-          const priceB = b.salePrice || b.price;
+          const priceA = getProductFinalPrice(a);
+          const priceB = getProductFinalPrice(b);
           return priceB - priceA;
         });
         break;
@@ -88,13 +87,13 @@ const ProductGrid = ({
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map(product => (
-            <ProductCard key={product.id} product={product} onAddToWishlist={onAddToWishlist} />
+            <ProductCard key={product._id || product.slug} product={product} />
           ))}
         </div>
       ) : (
         <div className="space-y-6">
           {products.map(product => (
-            <ProductCard key={product.id} product={product} layout="list" onAddToWishlist={onAddToWishlist} />
+            <ProductCard key={product._id || product.slug} product={product} layout="list" />
           ))}
         </div>
       )}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import type { Product } from '../types/product'
+import { mapProductForUi } from '../lib/product'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -15,16 +16,7 @@ export function useProductList () {
       try {
         const res = await axios.get(backendUrl + '/api/product/list')
         if (res.data.success) {
-          // Map products to add price/salePrice from first variant for UI compatibility
-          const mapped = res.data.products.map((p: Product) => {
-            const firstVariant = p.variants && p.variants[0]
-            return {
-              ...p,
-              price: firstVariant ? firstVariant.retail_price : undefined,
-              salePrice: firstVariant && firstVariant.discount > 0 ? firstVariant.retail_price - firstVariant.discount : undefined,
-              sizes: p.variants ? Array.from(new Set(p.variants.flatMap(v => v.filter_value))) : []
-            }
-          })
+          const mapped = res.data.products.map((p: Product) => mapProductForUi(p))
           setProducts(mapped)
         } else {
           setError(res.data.message)
@@ -54,13 +46,7 @@ export function useProductBySlug (slug: string) {
         if (res.data.success) {
           const found: Product | undefined = res.data.products.find((p: Product) => p.slug === slug)
           if (found) {
-            const firstVariant = found.variants && found.variants[0]
-            setProduct({
-              ...found,
-              price: firstVariant ? firstVariant.retail_price : undefined,
-              salePrice: firstVariant && firstVariant.discount > 0 ? firstVariant.retail_price - firstVariant.discount : undefined,
-              sizes: found.variants ? Array.from(new Set(found.variants.flatMap(v => v.filter_value))) : []
-            })
+            setProduct(mapProductForUi(found))
           } else {
             setProduct(null)
           }

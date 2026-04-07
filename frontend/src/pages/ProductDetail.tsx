@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { priceSymbol } from "../config/constants";
 import ProductReviews from "../components/ProductReviews";
+import ProductCategoryBadges from "../components/ProductCategoryBadges";
 
 import { useCartStore } from "../stores/useCartStore";
 import { useProductBySlug } from "../hooks/useProduct";
@@ -25,12 +26,19 @@ import StarRating from "@/components/StarRating";
 import { useReviewSummary } from "../hooks/useReviewSummary";
 import { usePageLoader } from "@/hooks/usePageLoader";
 import SEO from "../components/SEO";
+import {
+  getPreferredVariant,
+  getVariantDiscount,
+  getVariantFinalPrice,
+  getVariantRetailPrice,
+  isVariantSoldOut,
+} from "../lib/product";
 
 const ProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { addToCart, wishlist, addToWishlist } = useCartStore();
+  const { addToCart, wishlist, addToWishlist, removeFromWishlist } = useCartStore();
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -58,7 +66,7 @@ const ProductDetail = () => {
       const targetSize = product.name.toLowerCase().includes('eternal noir') ? 'M' : 'L';
       
       // Try to find the target size variant, fallback to the first available if not found
-      const defaultVariant = product.variants.find(v => v.filter_value === targetSize) || product.variants[0];
+      const defaultVariant = getPreferredVariant(product, targetSize) || product.variants[0];
       
       setSelectedVariant(defaultVariant);
       setSelectedSize(defaultVariant.filter_value || null);
@@ -106,11 +114,17 @@ const ProductDetail = () => {
     sizes,
     bestseller,
     category,
+    sub_category,
     variants,
   } = product;
+  const selectedVariantPrice = getVariantRetailPrice(selectedVariant);
+  const selectedVariantDiscount = getVariantDiscount(selectedVariant);
+  const selectedVariantFinalPrice = getVariantFinalPrice(selectedVariant);
+  const isSelectedVariantSoldOut = isVariantSoldOut(selectedVariant);
+  const isWishlisted = wishlist.some((item) => item._id === product._id);
 
   const handleAddToCart = () => {
-    if (!selectedVariant || selectedVariant.stock === 0) {
+    if (!selectedVariant || isSelectedVariantSoldOut) {
       toast({
         title: "Out of stock",
         description: "Selected size is out of stock",
@@ -127,14 +141,23 @@ const ProductDetail = () => {
   };
 
   const handleAddToWishlist = () => {
-    if (!selectedVariant || selectedVariant.stock === 0) {
+    if (isWishlisted) {
+      removeFromWishlist(product._id);
+      return;
+    }
+
+    addToWishlist(product);
+  };
+
+  const handleNotifyMe = () => {
+    if (isWishlisted) {
       toast({
-        title: "Out of stock",
-        description: "Selected size is out of stock",
-        variant: "destructive",
+        title: "Already saved",
+        description: `${name} is already in your wishlist.`,
       });
       return;
     }
+
     addToWishlist(product);
   };
 
@@ -173,7 +196,11 @@ const ProductDetail = () => {
           const url = `${siteUrl}/product/${product.slug}`;
           const images = Array.isArray(product.image) ? product.image : [];
           const firstVariant = product.variants?.[0];
-          const price = (displayPrice ?? firstVariant?.retail_price ?? null) as number | null;
+          const price = (
+            selectedVariantDiscount > 0
+              ? selectedVariantFinalPrice
+              : (displayPrice ?? firstVariant?.retail_price ?? null)
+          ) as number | null;
           const stock = (selectedVariant?.stock ?? firstVariant?.stock ?? null) as number | null;
 
           const schema: Record<string, unknown> = {
@@ -246,6 +273,10 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="lg:w-1/2">
             <h1 className="text-3xl font-serif mb-4">{name}</h1>
+            <ProductCategoryBadges
+              product={{ category, sub_category }}
+              className="mb-4"
+            />
             <div className="mb-6">
               {/* Reviews rating and count */}
               <div className="flex items-center gap-2">
@@ -267,8 +298,21 @@ const ProductDetail = () => {
             </div>
 
             <div className="text-2xl font-bold text-revive-red mb-6">
-              {priceSymbol}{" "}
-              {displayPrice !== null ? displayPrice.toLocaleString() : ""}
+              {selectedVariantDiscount > 0 ? (
+                <div className="flex items-center gap-3">
+                  <span>
+                    {priceSymbol} {selectedVariantFinalPrice.toLocaleString()}
+                  </span>
+                  <span className="text-lg font-medium text-gray-400 line-through">
+                    {priceSymbol} {selectedVariantPrice.toLocaleString()}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  {priceSymbol}{" "}
+                  {displayPrice !== null ? displayPrice.toLocaleString() : ""}
+                </>
+              )}
             </div>
 
 
@@ -337,7 +381,7 @@ const ProductDetail = () => {
                         className={`px-5 py-2.5 min-w-[3.5rem] border ${isSelected
                           ? "border-revive-red bg-revive-red text-white shadow-md transform scale-105"
                           : "border-gray-200 bg-white text-revive-black hover:border-revive-red/50 hover:bg-revive-red/5"
-                          } rounded-md transition-all duration-300 flex flex-col items-center justify-center ${variant.stock === 0 ? 'opacity-40 cursor-not-allowed grayscale' : 'cursor-pointer'
+                          } rounded-md transition-all duration-300 flex flex-col items-center justify-center ${variant.stock === 0 ? 'opacity-40 grayscale' : 'cursor-pointer'
                           }`}
                         onClick={() => {
                           setSelectedSize(variant.filter_value);
@@ -346,7 +390,6 @@ const ProductDetail = () => {
                           setMaxStock(variant.stock);
                           setQuantity(1);
                         }}
-                        disabled={variant.stock === 0}
                       >
                         <span className="font-semibold text-sm tracking-wide">
                           {variant.filter_value}{measurement}
@@ -392,7 +435,7 @@ const ProductDetail = () => {
                 <button
                   className="px-3 py-2 hover:bg-gray-100 transition-colors"
                   onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                  disabled={selectedVariant?.stock === 0 || quantity <= 1}
+                  disabled={isSelectedVariantSoldOut || quantity <= 1}
                 >
                   -
                 </button>
@@ -408,43 +451,47 @@ const ProductDetail = () => {
                     setQuantity((prev) => Math.min(maxStock, prev + 1))
                   }
                   disabled={
-                    selectedVariant?.stock === 0 || quantity >= maxStock
+                    isSelectedVariantSoldOut || quantity >= maxStock
                   }
                 >
                   +
                 </button>
               </div>
-              {selectedVariant?.stock > 0 && (
+              {!isSelectedVariantSoldOut && selectedVariant?.stock > 0 && (
                 <div className="text-xs text-gray-500 mt-1">
                   {selectedVariant.stock} in stock
                 </div>
               )}
-              {selectedVariant?.stock === 0 && (
+              {isSelectedVariantSoldOut && (
                 <div className="text-xs text-red-500 mt-1">Out of stock</div>
               )}
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 mb-8">
-              <Button
-                className="bg-revive-red hover:bg-revive-red/90 flex-1"
-                onClick={handleAddToCart}
-                disabled={selectedVariant?.stock === 0}
-              >
-                {selectedVariant?.stock === 0 ? "Out of Stock" : "Add to Cart"}
-              </Button>
+              {isSelectedVariantSoldOut ? (
+                <Button
+                  className="bg-revive-red hover:bg-revive-red/90 flex-1"
+                  onClick={handleNotifyMe}
+                >
+                  Notify Me
+                </Button>
+              ) : (
+                <Button
+                  className="bg-revive-red hover:bg-revive-red/90 flex-1"
+                  onClick={handleAddToCart}
+                >
+                  Add to Cart
+                </Button>
+              )}
 
               <Button
                 variant="outline"
-                className="border-gray-300 hover:bg-gray-50"
+                className={`border-gray-300 hover:bg-gray-50 ${isWishlisted ? 'border-revive-red text-revive-red bg-revive-red/5' : ''}`}
                 onClick={handleAddToWishlist}
-                disabled={
-                  selectedVariant?.stock === 0 ||
-                  wishlist.some((item) => item._id === product._id)
-                }
               >
-                <Heart size={18} className="mr-2" />
-                Wishlist
+                <Heart size={18} className={`mr-2 ${isWishlisted ? 'fill-current' : ''}`} />
+                {isWishlisted ? "Wishlisted" : "Wishlist"}
               </Button>
 
               <Button

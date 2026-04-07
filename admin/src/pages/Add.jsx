@@ -6,8 +6,9 @@ import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import Select from "react-select";
+import { deriveGeneralCategory } from "../utils/productCategory";
 
-export const backendUrls = import.meta.env.VITE_BACKEND_URL;
+export const backendUrls = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 const Add = ({ token }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -44,6 +45,7 @@ const Add = ({ token }) => {
     { value: "XL", label: "XL (58)" },
     { value: "XXL", label: "XXL (60)" },
   ];
+  const generalCategory = deriveGeneralCategory(category);
 
   // Helper to generate unique SKU per product and size
   function generateSku(slug, filterValue) {
@@ -104,6 +106,7 @@ const Add = ({ token }) => {
       formData.append("description", description);
       formData.append("price", price);
       formData.append("category", category);
+      formData.append("sub_category", generalCategory);
       formData.append("type", type);
       formData.append("bestseller", bestseller);
       formData.append("slug", slug);
@@ -311,6 +314,17 @@ const Add = ({ token }) => {
                 <option value="Stitched">Stitched</option>
                 <option value="Unstitched">Unstitched</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="subCategory" className="block text-sm font-medium text-gray-700 mb-1">General Category</label>
+              <input
+                id="subCategory"
+                value={generalCategory}
+                className="w-full px-3 py-2 bg-gray-100 text-gray-600"
+                type="text"
+                readOnly
+              />
             </div>
 
           </div>

@@ -4,7 +4,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend)
 
-export const backendUrls = import.meta.env.VITE_BACKEND_URL;
+export const backendUrls = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 const Dashboard = ({ token }) => {
   const [dashboardData, setDashboardData] = useState(null)

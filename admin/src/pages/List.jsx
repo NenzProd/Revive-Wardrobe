@@ -7,6 +7,7 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { deriveGeneralCategory } from '../utils/productCategory'
 
 const BULK_FIELDS = [
   { value: 'category', label: 'Category', type: 'select', options: ['Ethnic Elegance', 'Graceful Abayas', 'Intimate Collection', 'Stitching Services'] },
@@ -186,6 +187,7 @@ const List = ({ token }) => {
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        deriveGeneralCategory(item.category, item.sub_category).toLowerCase().includes(searchTerm.toLowerCase()) ||
         (item.variants || []).some(v => v.sku?.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     }
@@ -331,6 +333,7 @@ const List = ({ token }) => {
               <div>
                 <h3 className="font-medium">{item.name}</h3>
                 <p className="text-sm text-gray-500">{item.category}</p>
+                <p className="text-xs text-gray-400">{deriveGeneralCategory(item.category, item.sub_category)}</p>
               </div>
             </div>
             {/* Variants List */}
@@ -404,6 +407,7 @@ const List = ({ token }) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-500">{item.category}</div>
+                  <div className="text-xs text-gray-400">{deriveGeneralCategory(item.category, item.sub_category)}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{currency}{item.price}</div>
