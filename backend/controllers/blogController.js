@@ -1,4 +1,5 @@
 import blogModel from '../models/blogModel.js'
+import blogCommentModel from '../models/blogCommentModel.js'
 
 let cachedBlogList = null
 let cachedBlogListAt = 0
@@ -111,4 +112,101 @@ const editBlog = async (req, res) => {
   }
 }
 
-export { addBlog, listBlog, removeBlog, singleBlog, blogBySlug, editBlog }
+const addBlogComment = async (req, res) => {
+  try {
+    const { slug, name, email, comment } = req.body
+
+    if (!slug || !name || !email || !comment) {
+      return res.json({ success: false, message: 'All fields are required' })
+    }
+
+    const blog = await blogModel.findOne({ slug }).select('_id').lean()
+    if (!blog) {
+      return res.json({ success: false, message: 'Blog not found' })
+    }
+
+    const createdComment = await blogCommentModel.create({
+      blogId: blog._id,
+      name,
+      email,
+      comment,
+      status: 'pending',
+    })
+
+    res.json({
+      success: true,
+      message: 'Comment submitted successfully. It will appear after moderation.',
+      commentId: createdComment._id,
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+const listApprovedBlogComments = async (req, res) => {
+  try {
+    const { slug } = req.params
+    const blog = await blogModel.findOne({ slug }).select('_id').lean()
+    if (!blog) {
+      return res.json({ success: false, message: 'Blog not found' })
+    }
+
+    const comments = await blogCommentModel
+      .find({ blogId: blog._id, status: 'approved' })
+      .select('name comment date')
+      .sort({ date: -1 })
+      .lean()
+
+    res.json({ success: true, comments })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+const listBlogCommentsForAdmin = async (req, res) => {
+  try {
+    const { status } = req.body
+    const query = status && status !== 'all' ? { status } : {}
+
+    const comments = await blogCommentModel
+      .find(query)
+      .sort({ date: -1 })
+      .populate({ path: 'blogId', select: 'title slug' })
+      .lean()
+
+    res.json({ success: true, comments })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+const updateBlogCommentStatus = async (req, res) => {
+  try {
+    const { commentId, status } = req.body
+    const allowedStatuses = ['approved', 'rejected']
+
+    if (!commentId || !allowedStatuses.includes(status)) {
+      return res.json({ success: false, message: 'Invalid comment update payload' })
+    }
+
+    const updated = await blogCommentModel.findByIdAndUpdate(
+      commentId,
+      { status },
+      { new: true }
+    )
+
+    if (!updated) {
+      return res.json({ success: false, message: 'Comment not found' })
+    }
+
+    res.json({ success: true, message: `Comment ${status}` })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
+export { addBlog, listBlog, removeBlog, singleBlog, blogBySlug, editBlog, addBlogComment, listApprovedBlogComments, listBlogCommentsForAdmin, updateBlogCommentStatus }

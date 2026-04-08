@@ -139,8 +139,49 @@ const getUserProfile = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        phone: user.phone
+        phone: user.phone,
+        wishlistData: user.wishlistData || []
       }
+    })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+const updateWishlist = async (req, res) => {
+  try {
+    const { userId, productIds } = req.body
+    const user = await userModel.findById(userId)
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    const wishlistData = Array.isArray(productIds)
+      ? Array.from(new Set(productIds.filter(Boolean)))
+      : []
+
+    user.wishlistData = wishlistData
+    await user.save()
+
+    res.json({ success: true, wishlistData })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+const getWishlist = async (req, res) => {
+  try {
+    const { userId } = req.body
+    const user = await userModel.findById(userId)
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    res.json({
+      success: true,
+      wishlistData: Array.isArray(user.wishlistData) ? user.wishlistData : [],
     })
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
@@ -310,4 +351,4 @@ const resetPassword = async (req, res) => {
   }
 }
 
-export { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile, changeUserPassword, googleLogin, verifyEmailOtp, forgotPassword, resetPassword }
+export { loginUser, registerUser, adminLogin, getUserProfile, updateWishlist, getWishlist, updateUserProfile, changeUserPassword, googleLogin, verifyEmailOtp, forgotPassword, resetPassword }

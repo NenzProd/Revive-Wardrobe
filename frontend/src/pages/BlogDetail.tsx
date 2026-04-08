@@ -33,12 +33,26 @@ interface BlogPostContent {
   category: string;
 }
 
+interface BlogComment {
+  _id: string;
+  name: string;
+  comment: string;
+  date: string;
+}
+
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPostContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const [comments, setComments] = useState<BlogComment[]>([]);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentForm, setCommentForm] = useState({
+    name: '',
+    email: '',
+    comment: '',
+  });
 
   const decodeHtml = (html: string) => {
     const txt = document.createElement("textarea");
@@ -186,6 +200,23 @@ const BlogDetail = () => {
     fetchBlog();
   }, [slug]);
 
+  useEffect(() => {
+    async function fetchComments() {
+      if (!slug) return;
+      try {
+        const res = await fetch(
+          backendUrl + `/api/blog/comments/${encodeURIComponent(slug)}`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success) {
+          setComments(data.comments || []);
+        }
+      } catch (_) {}
+    }
+    fetchComments();
+  }, [slug]);
+
   const handleShare = async () => {
     try {
       const blogUrl = window.location.href;
@@ -208,6 +239,38 @@ const BlogDetail = () => {
         console.error("Fallback copy failed:", fallbackErr);
       }
       document.body.removeChild(textArea);
+    }
+  };
+
+  const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!slug) return;
+
+    const payload = {
+      slug,
+      name: commentForm.name.trim(),
+      email: commentForm.email.trim(),
+      comment: commentForm.comment.trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.comment) {
+      return;
+    }
+
+    setIsSubmittingComment(true);
+    try {
+      const res = await fetch(backendUrl + '/api/blog/comments/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCommentForm({ name: '', email: '', comment: '' });
+      }
+    } catch (_) {
+    } finally {
+      setIsSubmittingComment(false);
     }
   };
 
@@ -359,6 +422,70 @@ const BlogDetail = () => {
               </div>
             </div>
             {/* Related Posts Teaser (optional: can fetch and show more) */}
+            <div className="mt-12 border-t pt-8">
+              <h2 className="text-2xl font-serif mb-6">Comments</h2>
+
+              <form onSubmit={handleCommentSubmit} className="space-y-3 mb-8">
+                <div className="grid md:grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={commentForm.name}
+                    onChange={(e) =>
+                      setCommentForm((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    className="w-full rounded border border-gray-300 px-3 py-2"
+                    required
+                  />
+                  <input
+                    type="email"
+                    placeholder="Your email"
+                    value={commentForm.email}
+                    onChange={(e) =>
+                      setCommentForm((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                    className="w-full rounded border border-gray-300 px-3 py-2"
+                    required
+                  />
+                </div>
+                <textarea
+                  placeholder="Write your comment"
+                  value={commentForm.comment}
+                  onChange={(e) =>
+                    setCommentForm((prev) => ({ ...prev, comment: e.target.value }))
+                  }
+                  className="w-full rounded border border-gray-300 px-3 py-2 min-h-[110px]"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmittingComment}
+                  className="rounded bg-revive-red px-5 py-2 text-white hover:bg-revive-red/90 disabled:opacity-70"
+                >
+                  {isSubmittingComment ? 'Submitting...' : 'Post Comment'}
+                </button>
+                <p className="text-xs text-gray-500">
+                  Comments are moderated before they appear publicly.
+                </p>
+              </form>
+
+              <div className="space-y-4">
+                {comments.length === 0 && (
+                  <p className="text-sm text-gray-500">No approved comments yet.</p>
+                )}
+                {comments.map((comment) => (
+                  <div key={comment._id} className="rounded-lg border border-gray-200 p-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-gray-800">{comment.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(comment.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-700">{comment.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

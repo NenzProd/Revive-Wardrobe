@@ -46,6 +46,9 @@ const Shop = () => {
     setFilterOpen(!filterOpen);
   };
 
+  const matchesCategorySlug = (value?: string) =>
+    Boolean(value) && toSlug(value || '') === effectiveCategorySlug;
+
   // Update sort option in URL when dropdown changes
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -65,7 +68,7 @@ const Shop = () => {
 
     const matchesCategory = effectiveCategorySlug === 'all'
       ? true
-      : toSlug(p.category || '') === effectiveCategorySlug
+      : matchesCategorySlug(p.category) || matchesCategorySlug(p.sub_category)
 
     const matchesFabric = fabrics.length > 0 ? fabrics.includes(p.filter_name || '') : true
     const matchesType = typesParam.length > 0 ? typesParam.includes(p.type) : true

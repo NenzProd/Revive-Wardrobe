@@ -14,12 +14,11 @@ import dashboardRouter from './routes/dashboardRoute.js'
 import reviewRouter from './routes/reviewRoute.js'
 import cron from 'node-cron'
 import { updateAllProductStocks } from './controllers/productController.js'
+import { backfillMissingProductSubCategories } from './utils/productCategory.js'
 
 //App config
 const app = express()
 const port = process.env.PORT || 4000
-connectDB()
-connectCloudinary()
 
 //middleware
 app.use(express.json())
@@ -56,4 +55,21 @@ cron.schedule('0 */12 * * *', () => {
   )
 })
 
-app.listen(port, ()=> console.log('Server started on PORT : '+ port))
+const startServer = async () => {
+  try {
+    await connectDB()
+    await connectCloudinary()
+
+    const { updatedCount } = await backfillMissingProductSubCategories()
+    if (updatedCount > 0) {
+      console.log(`[STARTUP] Backfilled general category for ${updatedCount} products`)
+    }
+
+    app.listen(port, ()=> console.log('Server started on PORT : '+ port))
+  } catch (error) {
+    console.error('Failed to start server:', error)
+    process.exit(1)
+  }
+}
+
+startServer()

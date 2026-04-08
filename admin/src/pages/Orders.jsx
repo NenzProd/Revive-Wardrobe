@@ -133,7 +133,11 @@ const Orders = ({token}) => {
                   <h3 className="font-medium text-gray-700 mb-2">Items</h3>
                   <div className="space-y-1 max-h-40 overflow-y-auto pr-2">
                     {(order.line_items || []).map((item, idx) => {
-                      const price = Number(item.price) || 0;
+                      const retailPrice = Number(item.retail_price)
+                      const discount = Number(item.discount)
+                      const price = Number.isFinite(retailPrice)
+                        ? Math.max(retailPrice - (Number.isFinite(discount) ? discount : 0), 0)
+                        : Number(item.price) || 0;
                       const quantity = Number(item.quantity) || 0;
                       const subtotal = price * quantity;
                       return (
@@ -150,7 +154,14 @@ const Orders = ({token}) => {
                   </div>
                   {/* Total price calculation */}
                   <p className="text-sm font-medium mt-2">
-                    Total Price: {currency}{(order.line_items || []).reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0)}
+                    Total Price: {currency}{(order.line_items || []).reduce((sum, item) => {
+                      const retailPrice = Number(item.retail_price)
+                      const discount = Number(item.discount)
+                      const price = Number.isFinite(retailPrice)
+                        ? Math.max(retailPrice - (Number.isFinite(discount) ? discount : 0), 0)
+                        : Number(item.price) || 0
+                      return sum + (price * (Number(item.quantity) || 0))
+                    }, 0)}
                   </p>
                 </div>
                 {/* Customer Details */}

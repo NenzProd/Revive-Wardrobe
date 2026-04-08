@@ -1,6 +1,12 @@
 // updated
 import { v2 as cloudinary } from "cloudinary"
 import productModel from "../models/productModel.js"
+import { normalizeStock } from "../utils/pricing.js"
+import {
+  normalizeProductCategoryFields,
+  normalizeProductDocument,
+  deriveGeneralCategory,
+} from "../utils/productCategory.js"
 
 
 const addProduct = async (req, res) => {
@@ -29,17 +35,21 @@ const addProduct = async (req, res) => {
             parsedVariants = variants
           }
         }
-        // ✅ Enforce minimum stock of 1 — stock can never be saved as 0
+        // Normalize incoming stock so invalid values do not break sold-out logic.
         parsedVariants = parsedVariants.map(v => ({
           ...v,
-          stock: (v.stock === undefined || v.stock === null || v.stock < 1) ? 1 : v.stock
+          stock: normalizeStock(v.stock)
         }))
+
+        const normalizedCategories = normalizeProductCategoryFields({
+          category,
+          sub_category,
+        })
 
         const productData = {
           name,
           description,
-          category,
-          sub_category,
+          ...normalizedCategories,
           brand,
           currency,
           lead_time,
@@ -68,7 +78,7 @@ const addProduct = async (req, res) => {
 const listProduct = async (req, res) => {
   try {
     const products = await productModel.find({});
-    res.json({ success: true, products })
+    res.json({ success: true, products: products.map(normalizeProductDocument) })
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
@@ -89,7 +99,7 @@ const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body
     const product = await productModel.findById(productId)
-    res.json({ success: true, product })
+    res.json({ success: true, product: product ? normalizeProductDocument(product) : null })
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
@@ -131,18 +141,22 @@ const editProduct = async (req, res) => {
         parsedVariants = variants
       }
     }
-    // ✅ Enforce minimum stock of 1 — stock can never be saved as 0
+    // Normalize incoming stock so invalid values do not break sold-out logic.
     parsedVariants = parsedVariants.map(v => ({
       ...v,
-      stock: (v.stock === undefined || v.stock === null || v.stock < 1) ? 1 : v.stock
+      stock: normalizeStock(v.stock)
     }))
 
     // Update MongoDB
+    const normalizedCategories = normalizeProductCategoryFields({
+      category,
+      sub_category,
+    })
+
     const updateFields = {
       name,
       description,
-      category,
-      sub_category,
+      ...normalizedCategories,
       brand,
       currency,
       lead_time,
@@ -169,16 +183,14 @@ const editProduct = async (req, res) => {
 
 const updateAllProductStocks = async (req, res) => {
   try {
-    // Fetch all products
     const products = await productModel.find({})
     let updatedCount = 0
-    let errors = []
     for (const product of products) {
       let variantsChanged = false
       for (const variant of product.variants) {
-        // Set stock to 1 for every variant
-        if (variant.stock !== 1) {
-          variant.stock = 1
+        const normalizedStock = normalizeStock(variant.stock)
+        if (variant.stock !== normalizedStock) {
+          variant.stock = normalizedStock
           variantsChanged = true
         }
       }
@@ -187,7 +199,7 @@ const updateAllProductStocks = async (req, res) => {
         updatedCount++
       }
     }
-    res.json({ success: true, updatedProducts: updatedCount, message: "All stocks updated to 1 piece." })
+    res.json({ success: true, updatedProducts: updatedCount, message: "Product stock values normalized successfully." })
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
@@ -215,9 +227,17 @@ const bulkUpdateProducts = async (req, res) => {
     let updatedCount = 0
 
     if (productLevelFields.includes(field)) {
+      const updatePayload =
+        field === 'category'
+          ? normalizeProductCategoryFields({
+              category: value,
+              sub_category: deriveGeneralCategory(value),
+            })
+          : { [field]: value }
+
       const result = await productModel.updateMany(
         { _id: { $in: productIds } },
-        { $set: { [field]: value } }
+        { $set: updatePayload }
       )
       updatedCount = result.modifiedCount
     } else if (variantLevelFields.includes(field)) {
@@ -231,7 +251,6 @@ const bulkUpdateProducts = async (req, res) => {
           }
           if (field === 'stock' && newValue < 0) newValue = 0
           if (field === 'discount' && newValue < 0) newValue = 0
-          if (field === 'discount' && newValue > 100) newValue = 100
           variant[field] = newValue
           changed = true
         }

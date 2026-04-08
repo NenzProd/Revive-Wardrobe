@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     cartData: { type: Object, default: {} },
+    wishlistData: { type: [String], default: [] },
     deliveryAddress: { type: Object, default: {} },
     savedAddresses: { type: Array, default: [] },
     primaryAddress: { type: Object, default: {} },

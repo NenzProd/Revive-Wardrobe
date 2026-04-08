@@ -18,6 +18,20 @@ const BULK_FIELDS = [
   { value: 'filter_value', label: 'Size', type: 'text' },
 ]
 
+const getVariantDisplayPrice = (product) => {
+  const variants = Array.isArray(product?.variants) ? product.variants : []
+  if (variants.length === 0) return 0
+
+  const preferred =
+    variants.find((v) => Number(v?.retail_price) > 0 && Number(v?.stock) > 0) ||
+    variants.find((v) => Number(v?.retail_price) > 0) ||
+    variants[0]
+
+  const retail = Math.max(Number(preferred?.retail_price) || 0, 0)
+  const discount = Math.max(Number(preferred?.discount) || 0, 0)
+  return Math.max(retail - discount, 0)
+}
+
 const List = ({ token }) => {
   const [list, setList] = useState([])
   const [filteredList, setFilteredList] = useState([])
@@ -93,23 +107,6 @@ const List = ({ token }) => {
         icon: 'error',
         confirmButtonColor: '#ef4444'
       })
-    }
-  }
-
-  const updateStocks = async () => {
-    try {
-      toast.info('Updating stocks...')
-      const response = await axios.post(backendUrl + '/api/product/update-stocks', {}, { headers: { token } })
-      if (response.data.success) {
-        toast.success(`Stocks updated! ${response.data.updatedProducts} products updated`)
-        await fetchList();
-      }
-      else {
-        toast.error(response.data.message)
-      }
-    } catch (error) {
-      console.log(error)
-      toast.error(error.message)
     }
   }
 
@@ -217,6 +214,14 @@ const List = ({ token }) => {
     setFilteredList(filtered)
   }, [searchTerm, categoryFilter, typeFilter, stockFilter, list])
 
+  useEffect(() => {
+    const visibleIds = new Set(filteredList.map((item) => item._id))
+    setSelectedIds((prev) => {
+      const next = new Set([...prev].filter((id) => visibleIds.has(id)))
+      return next.size === prev.size ? prev : next
+    })
+  }, [filteredList])
+
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
@@ -230,12 +235,6 @@ const List = ({ token }) => {
               Bulk Update ({selectedIds.size})
             </button>
           )}
-          <button
-            onClick={updateStocks}
-            className='px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors'
-          >
-            Update Stocks
-          </button>
         </div>
       </div>
 
@@ -303,6 +302,7 @@ const List = ({ token }) => {
                 setCategoryFilter('All')
                 setTypeFilter('All')
                 setStockFilter('All')
+                setSelectedIds(new Set())
               }}
               className="w-full px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
             >
@@ -410,7 +410,7 @@ const List = ({ token }) => {
                   <div className="text-xs text-gray-400">{deriveGeneralCategory(item.category, item.sub_category)}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{currency}{item.price}</div>
+                  <div className="text-sm font-medium text-gray-900">{currency}{getVariantDisplayPrice(item)}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <ul className="space-y-1">

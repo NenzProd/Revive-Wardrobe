@@ -70,8 +70,8 @@ const ProductGrid = ({
         break;
       default: // newest
         filteredProducts.sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
+          const dateA = new Date(a.createdAt || a.date || 0).getTime();
+          const dateB = new Date(b.createdAt || b.date || 0).getTime();
           return dateB - dateA;
         });
     }

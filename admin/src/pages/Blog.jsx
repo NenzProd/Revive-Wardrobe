@@ -7,6 +7,8 @@ import AddBlog from './AddBlog'
 
 const Blog = ({ token }) => {
   const [blogs, setBlogs] = useState([])
+  const [comments, setComments] = useState([])
+  const [commentStatusFilter, setCommentStatusFilter] = useState('pending')
   const [showAdd, setShowAdd] = useState(false)
   const navigate = useNavigate()
 
@@ -37,9 +39,49 @@ const Blog = ({ token }) => {
     }
   }
 
+  const fetchComments = async (status = commentStatusFilter) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/blog/comments/list',
+        { status },
+        { headers: { token } }
+      )
+      if (response.data.success) {
+        setComments(response.data.comments || [])
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  const updateCommentStatus = async (commentId, status) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/blog/comments/status',
+        { commentId, status },
+        { headers: { token } }
+      )
+      if (response.data.success) {
+        toast.success(response.data.message)
+        fetchComments(commentStatusFilter)
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
     fetchBlogs()
+    fetchComments(commentStatusFilter)
   }, [])
+
+  useEffect(() => {
+    fetchComments(commentStatusFilter)
+  }, [commentStatusFilter])
 
   // Helper to strip HTML tags
   const stripHtml = (html) => {
@@ -153,6 +195,59 @@ const Blog = ({ token }) => {
             <p className="text-gray-500">No blogs found</p>
           </div>
         )}
+      </div>
+
+      <div className="mt-10 border-t pt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg md:text-xl font-semibold text-gray-800">Comments Moderation</h3>
+          <select
+            value={commentStatusFilter}
+            onChange={(e) => setCommentStatusFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+          >
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+
+        <div className="space-y-3">
+          {comments.length === 0 && (
+            <p className="text-sm text-gray-500">No comments found for this filter.</p>
+          )}
+          {comments.map((comment) => (
+            <div key={comment._id} className="rounded-lg border border-gray-200 bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="font-medium text-gray-800">{comment.name}</p>
+                  <p className="text-xs text-gray-500">{comment.email}</p>
+                  <p className="text-xs text-gray-500">
+                    Blog: {comment.blogId?.title || 'Unknown'} | {new Date(comment.date).toLocaleString()}
+                  </p>
+                </div>
+                <span className="px-2 py-1 rounded text-xs bg-gray-100 text-gray-700 uppercase">
+                  {comment.status}
+                </span>
+              </div>
+              <p className="mt-3 text-sm text-gray-700">{comment.comment}</p>
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => updateCommentStatus(comment._id, 'approved')}
+                  className="px-3 py-1.5 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition-colors"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => updateCommentStatus(comment._id, 'rejected')}
+                  className="px-3 py-1.5 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition-colors"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

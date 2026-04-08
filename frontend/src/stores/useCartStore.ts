@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { CartItem, Product } from "../types/product";
+import { backendUrl } from "../config/constants";
 import {
   getCartItemDisplayPrice,
   getCartItemFinalPrice,
@@ -15,7 +16,6 @@ import {
 
 const currency = "AED";
 const deliveryFee = 10;
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const normalizeProducts = (products: Product[] = []) =>
   products.map((product) => mapProductForUi(product));

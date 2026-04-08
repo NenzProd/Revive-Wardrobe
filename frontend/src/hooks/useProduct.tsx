@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import type { Product } from '../types/product'
 import { mapProductForUi } from '../lib/product'
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL
+import { backendUrl } from '../config/constants'
 
 export function useProductList () {
   const [products, setProducts] = useState<Product[]>([])

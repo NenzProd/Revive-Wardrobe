@@ -31,7 +31,7 @@ const Add = ({ token }) => {
       retail_price: '',
       discount: 0,
       weight_unit: 'Kg',
-      filter_value: 'L',
+      filter_value: '',
       min_order_quantity: 1,
       stock: 0
     }
@@ -70,17 +70,6 @@ const Add = ({ token }) => {
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)+/g, "")
       );
-      
-      // Auto-select size based on name
-      const targetSize = name.toLowerCase().includes('eternal noir') ? 'M' : 'L';
-      setVariants(prev => {
-         const newV = [...prev];
-         if (newV[0].filter_value !== targetSize) {
-            newV[0].filter_value = targetSize;
-         }
-         return newV;
-      });
-      
     } else {
       setSlug("");
     }
@@ -141,7 +130,7 @@ const Add = ({ token }) => {
             retail_price: '',
             discount: 0,
             weight_unit: 'Kg',
-            filter_value: 'L',
+            filter_value: '',
             min_order_quantity: 1,
             stock: 0
           }
@@ -417,7 +406,7 @@ const Add = ({ token }) => {
                       value={variant.stock}
                       onChange={e => {
                         const v = [...variants]
-                        v[idx].stock = e.target.value
+                        v[idx].stock = Number(e.target.value)
                         setVariants(v)
                       }}
                       min="0"
@@ -426,12 +415,44 @@ const Add = ({ token }) => {
                     />
                   </div>
                   <div className="flex items-end">
-                    {/* Inline remove button removed since only 1 size is allowed */}
+                    <button
+                      type="button"
+                      className="w-full px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
+                      onClick={() => {
+                        if (variants.length === 1) {
+                          toast.error('At least one variant is required')
+                          return
+                        }
+                        setVariants(variants.filter((_, i) => i !== idx))
+                      }}
+                    >
+                      Remove Variant
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
-            {/* Add Variant button removed to enforce single size only */}
+            <button
+              type="button"
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
+              onClick={() =>
+                setVariants([
+                  ...variants,
+                  {
+                    sku: '',
+                    purchase_price: '',
+                    retail_price: '',
+                    discount: 0,
+                    weight_unit: 'Kg',
+                    filter_value: '',
+                    min_order_quantity: 1,
+                    stock: 0,
+                  },
+                ])
+              }
+            >
+              Add Variant
+            </button>
           </div>
 
           <div className="mt-4 flex items-center">

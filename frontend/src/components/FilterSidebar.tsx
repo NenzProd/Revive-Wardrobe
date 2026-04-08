@@ -27,10 +27,13 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     ? [
         { id: 'Ethnic Elegance', slug: 'ethnic-elegance' },
         { id: 'Graceful Abayas', slug: 'graceful-abayas' },
+        { id: 'Jalabiya', slug: 'jalabiya' },
+        { id: 'Intimate Collection', slug: 'intimate-collection' },
+        { id: 'Stitching Services', slug: 'stitching-services' },
       ].find((category) => category.slug === categorySlug)?.id
     : undefined;
   const currentCategory = categoryFromSlug || searchParams.get('category') || 'all';
-  const currentPriceMin = parseInt(searchParams.get('minPrice') || '100');
+  const currentPriceMin = parseInt(searchParams.get('minPrice') || '0');
   const currentPriceMax = parseInt(searchParams.get('maxPrice') || '2000');
   const currentColors = searchParams.getAll('color');
   const currentType = searchParams.getAll('type');
@@ -44,7 +47,9 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   const categories = [
     { id: 'Ethnic Elegance', name: 'Ethnic Elegance (Pakistani Wear)' },
     { id: 'Graceful Abayas', name: 'Graceful Abayas' },
-    // { id: 'Intimate Collection', name: 'Intimate Collection' },
+    { id: 'Jalabiya', name: 'Jalabiya' },
+    { id: 'Intimate Collection', name: 'Intimate Collection' },
+    { id: 'Stitching Services', name: 'Stitching Services' },
   ];
 
   const colors = [
@@ -66,7 +71,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   //   { id: 'Organza', name: 'organza' },
   // ];
 
-  const minRange = 100;
+  const minRange = 0;
   const maxRange = 2000;
   const [isDragging, setIsDragging] = useState({ min: false, max: false });
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -167,7 +172,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
     }
 
     // Set price range only if different from default
-    if (priceRange[0] > 100) {
+    if (priceRange[0] > 0) {
       params.set('minPrice', priceRange[0].toString());
     }
     if (priceRange[1] < 2000) {
@@ -195,7 +200,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   };
 
   const resetFilters = () => {
-    setPriceRange([100, 2000]);
+    setPriceRange([0, 2000]);
     setSelectedCategory('all');
     // setSelectedFabrics([]);
     setSelectedColors([]);

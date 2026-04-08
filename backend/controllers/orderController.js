@@ -5,6 +5,7 @@ import axios from "axios";
 import productModel from "../models/productModel.js";
 import transporter from '../config/nodemailer.js';
 import { ORDER_STATUS_UPDATE_TEMPLATE, ORDER_CONFIRMATION_TEMPLATE } from '../config/emailTemplates.js';
+import { getVariantDiscount, getVariantFinalPrice, getVariantRetailPrice } from "../utils/pricing.js";
 
 function sendMail({ to, subject, html }) {
   console.log('SendMail function called with:', { to, subject: subject.substring(0, 50) + '...' });
@@ -15,6 +16,51 @@ function sendMail({ to, subject, html }) {
     html
   })
 }
+
+const buildValidatedLineItems = async (lineItems = []) => {
+  const validatedItems = [];
+  let subtotal = 0;
+
+  for (const rawItem of lineItems) {
+    const product = await productModel.findById(rawItem.product_id);
+    if (!product) {
+      throw new Error(`Product not found for item ${rawItem.product_id}`);
+    }
+
+    const variant = rawItem.sku_id
+      ? product.variants.find((entry) => entry.sku === rawItem.sku_id)
+      : product.variants[0];
+
+    if (!variant) {
+      throw new Error(`Variant not found for SKU ${rawItem.sku_id || "unknown"}`);
+    }
+
+    const quantity = Math.max(parseInt(rawItem.quantity, 10) || 1, 1);
+    const unitPrice = getVariantFinalPrice(variant);
+    const retailPrice = getVariantRetailPrice(variant);
+    const discount = getVariantDiscount(variant);
+    const lineTotal = unitPrice * quantity;
+
+    subtotal += lineTotal;
+
+    validatedItems.push({
+      ...rawItem,
+      product,
+      variant,
+      product_id: product._id.toString(),
+      sku_id: variant.sku || "",
+      name: rawItem.name || product.name || "Product",
+      image: rawItem.image || product.image?.[0] || "",
+      quantity: quantity.toString(),
+      price: unitPrice.toString(),
+      retail_price: retailPrice.toString(),
+      discount: discount.toString(),
+      linetotal: lineTotal.toString(),
+    });
+  }
+
+  return { validatedItems, subtotal };
+};
 
 // Test email function for debugging
 const testEmail = async (req, res) => {
@@ -53,7 +99,7 @@ const testEmail = async (req, res) => {
 const createPaymenntOrder = async (req, res) => {
   try {
     const { amount, address, line_items } = req.body;
-    if (!amount)
+    if (!amount && (!line_items || line_items.length === 0))
       return res
         .status(400)
         .json({ success: false, message: "Amount required" });
@@ -62,26 +108,31 @@ const createPaymenntOrder = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Address required" });
 
-    // Build items array from line_items
-    const items = line_items?.map((item) => ({
-      name: item.name || "Product",
-      quantity: parseInt(item.quantity) || 1,
-      price: parseFloat(item.price) || 0,
-      linetotal: parseFloat(item.price) * parseInt(item.quantity) || 0,
-    })) || [
-        {
-          name: "Order",
-          quantity: 1,
-          price: amount,
-          linetotal: amount,
-        },
-      ];
+    const { validatedItems, subtotal } = line_items?.length
+      ? await buildValidatedLineItems(line_items)
+      : { validatedItems: [], subtotal: parseFloat(amount) || 0 };
+
+    const items = validatedItems.length > 0
+      ? validatedItems.map((item) => ({
+          name: item.name || "Product",
+          quantity: parseInt(item.quantity) || 1,
+          price: parseFloat(item.price) || 0,
+          linetotal: parseFloat(item.linetotal) || 0,
+        }))
+      : [
+          {
+            name: "Order",
+            quantity: 1,
+            price: subtotal,
+            linetotal: subtotal,
+          },
+        ];
 
     const payload = {
       requestId: "REQ-" + Date.now(),
       orderId: "ORD-" + Date.now(),
       currency: "AED",
-      amount: parseFloat(amount),
+      amount: subtotal,
       items,
       customer: {
         firstName: address.first_name || "Customer",
@@ -167,45 +218,36 @@ const verifyPaymennt = async (req, res) => {
       });
     }
 
+    const { validatedItems, subtotal } = await buildValidatedLineItems(line_items);
+
     // Check stock for each line item
-    for (const item of line_items) {
-      const product = await productModel.findById(item.product_id);
-      if (!product) {
+    for (const item of validatedItems) {
+      if (item.variant.stock < Number(item.quantity)) {
         return res.json({
           success: false,
-          message: `Product not found for item ${item.product_id}`,
-        });
-      }
-      const variant = product.variants.find((v) => v.sku === item.sku_id);
-      if (!variant) {
-        return res.json({
-          success: false,
-          message: `Variant not found for SKU ${item.sku_id}`,
-        });
-      }
-      if (variant.stock < Number(item.quantity)) {
-        return res.json({
-          success: false,
-          message: `Insufficient stock for ${product.name} (${variant.filter_value}). Only ${variant.stock} left.`,
+          message: `Insufficient stock for ${item.product.name} (${item.variant.filter_value}). Only ${item.variant.stock} left.`,
         });
       }
     }
 
     // Decrement stock for each line item
-    for (const item of line_items) {
-      const product = await productModel.findById(item.product_id);
-      const variant = product.variants.find((v) => v.sku === item.sku_id);
-      variant.stock -= Number(item.quantity);
-      if (variant.stock < 0) variant.stock = 0;
-      await product.save();
+    for (const item of validatedItems) {
+      item.variant.stock -= Number(item.quantity);
+      if (item.variant.stock < 0) item.variant.stock = 0;
+      await item.product.save();
     }
+
+    const normalizedLineItems = validatedItems.map(({ product, variant, ...item }) => item);
 
     // Create order in DB
     const orderData = {
       userId,
       address,
-      price,
-      line_items,
+      price: {
+        ...price,
+        subtotal: subtotal.toString(),
+      },
+      line_items: normalizedLineItems,
       paymentMethod: "paymennt",
       paymentId: paymentData.id,
       status: "Order Placed",
