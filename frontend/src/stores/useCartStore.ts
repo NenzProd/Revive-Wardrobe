@@ -21,16 +21,6 @@ const STORAGE_VERSION = 2;
 const getSafeBackendUrl = (value?: string) =>
   typeof value === "string" && value.trim().length > 0 ? value : backendUrl;
 
-const isAuthError = (message = "") => {
-  const value = String(message).toLowerCase();
-  return (
-    value.includes("not authorized") ||
-    value.includes("jwt") ||
-    value.includes("token") ||
-    value.includes("unauthorized")
-  );
-};
-
 const normalizeProducts = (products: Product[] = []) =>
   products.map((product) => mapProductForUi(product));
 
@@ -266,33 +256,12 @@ export const useCartStore = create<CartState>()(
           );
 
           if (!response.data?.success) {
-            if (isAuthError(response.data?.message)) {
-              get().logout();
-              toast({
-                title: "Session expired",
-                description: "Please login again to sync wishlist.",
-                variant: "destructive",
-              });
-              return;
-            }
             throw new Error(response.data?.message || "Wishlist sync failed");
           }
-        } catch (err: any) {
-          const serverMessage = err?.response?.data?.message || err?.message || "";
-
-          if (isAuthError(serverMessage)) {
-            get().logout();
-            toast({
-              title: "Session expired",
-              description: "Please login again to sync wishlist.",
-              variant: "destructive",
-            });
-            return;
-          }
-
+        } catch (err) {
           toast({
             title: "Wishlist sync failed",
-            description: serverMessage || "Could not sync wishlist right now.",
+            description: err.message,
             variant: "destructive",
           });
         }
@@ -556,9 +525,6 @@ export const useCartStore = create<CartState>()(
           });
 
           if (!res.data.success) {
-            if (isAuthError(res.data?.message)) {
-              get().logout();
-            }
             return;
           }
 
@@ -577,11 +543,7 @@ export const useCartStore = create<CartState>()(
           if (!arraysEqual(mergedIds, remoteSorted)) {
             await get().syncWishlistToBackend(mergedIds);
           }
-        } catch (err: any) {
-          if (isAuthError(err?.response?.data?.message || err?.message)) {
-            get().logout();
-          }
-        }
+        } catch (err) {}
       },
 
       logout: () => {
