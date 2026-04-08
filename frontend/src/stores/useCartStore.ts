@@ -18,6 +18,7 @@ import {
 const currency = "AED";
 const deliveryFee = 10;
 const STORAGE_VERSION = 2;
+let wishlistSyncEndpointMissing = false;
 
 const getSafeBackendUrl = (value?: string) =>
   typeof value === "string" && value.trim().length > 0 ? value : backendUrl;
@@ -245,6 +246,9 @@ export const useCartStore = create<CartState>()(
         if (!get().token) {
           return;
         }
+        if (wishlistSyncEndpointMissing) {
+          return;
+        }
 
         try {
           const response = await axios.post(
@@ -256,10 +260,16 @@ export const useCartStore = create<CartState>()(
           if (!response.data?.success) {
             throw new Error(response.data?.message || "Wishlist sync failed");
           }
-        } catch (err) {
+        } catch (err: any) {
+          const status = Number(err?.response?.status || 0);
+          if (status === 404) {
+            wishlistSyncEndpointMissing = true;
+            return;
+          }
+
           toast({
             title: "Wishlist sync failed",
-            description: err.message,
+            description: err?.response?.data?.message || err.message,
             variant: "destructive",
           });
         }
