@@ -11,9 +11,10 @@ import axios from 'axios'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import SEO from '@/components/SEO'
-import { backendUrl } from '@/config/constants'
 
 type Step = "enter-contact" | "verify-otp" | "reset-password";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const ForgotPassword = () => {
   const [step, setStep] = useState<Step>("enter-contact");
@@ -36,7 +37,7 @@ const ForgotPassword = () => {
     setIsLoading(true);
     setError('')
     try {
-      const res = await axios.post(`${backendUrl}/api/user/forgot-password`, { email: contact })
+      const res = await axios.post(`${BACKEND_URL}/api/user/forgot-password`, { email: contact })
       if (res.data.success) {
         toast({
           title: 'OTP Sent',
@@ -79,7 +80,7 @@ const ForgotPassword = () => {
     setIsLoading(true);
     setError('')
     try {
-      const res = await axios.post(`${backendUrl}/api/user/reset-password`, {
+      const res = await axios.post(`${BACKEND_URL}/api/user/reset-password`, {
         email: contact,
         otp,
         newPassword: passwords.newPassword

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getOptimizedImageUrl, getOptimizedSrcSet } from "../lib/image";
-import { backendUrl } from "@/config/constants";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface Blog {
   _id: string;
