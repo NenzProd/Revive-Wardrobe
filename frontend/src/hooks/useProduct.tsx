@@ -3,6 +3,7 @@ import axios from 'axios'
 import type { Product } from '../types/product'
 import { mapProductForUi } from '../lib/product'
 import { backendUrl } from '../config/constants'
+import { getVisibleCategories } from '@/lib/categoryVisibility'
 
 export function useProductList () {
   const [products, setProducts] = useState<Product[]>([])
@@ -13,14 +14,12 @@ export function useProductList () {
     async function fetchProducts () {
       setLoading(true)
       try {
-        const [productRes, categoryRes] = await Promise.all([
-          axios.get(backendUrl + '/api/product/list'),
-          axios.get(backendUrl + '/api/product/categories')
-        ])
+        const productRes = await axios.get(backendUrl + '/api/product/list')
         if (productRes.data.success) {
-          const enabledCategories = Array.isArray(categoryRes.data?.categories)
-            ? categoryRes.data.categories.filter((entry: any) => entry.enabled).map((entry: any) => entry.category)
-            : []
+          const categories = await getVisibleCategories(backendUrl)
+          const enabledCategories = categories
+            .filter((entry) => entry.enabled)
+            .map((entry) => entry.category)
           const rawProducts = productRes.data.products as Product[]
           const filteredProducts = enabledCategories.length > 0
             ? rawProducts.filter((p) => enabledCategories.includes(p.category))
@@ -51,14 +50,12 @@ export function useProductBySlug (slug: string) {
     async function fetchProduct () {
       setLoading(true)
       try {
-        const [productRes, categoryRes] = await Promise.all([
-          axios.get(backendUrl + '/api/product/list'),
-          axios.get(backendUrl + '/api/product/categories')
-        ])
+        const productRes = await axios.get(backendUrl + '/api/product/list')
         if (productRes.data.success) {
-          const enabledCategories = Array.isArray(categoryRes.data?.categories)
-            ? categoryRes.data.categories.filter((entry: any) => entry.enabled).map((entry: any) => entry.category)
-            : []
+          const categories = await getVisibleCategories(backendUrl)
+          const enabledCategories = categories
+            .filter((entry) => entry.enabled)
+            .map((entry) => entry.category)
           const visibleProducts: Product[] = enabledCategories.length > 0
             ? productRes.data.products.filter((p: Product) => enabledCategories.includes(p.category))
             : productRes.data.products

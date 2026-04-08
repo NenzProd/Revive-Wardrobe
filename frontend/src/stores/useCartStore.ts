@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { CartItem, Product } from "../types/product";
 import { backendUrl } from "../config/constants";
+import { getVisibleCategories } from "@/lib/categoryVisibility";
 import {
   getCartItemDisplayPrice,
   getCartItemFinalPrice,
@@ -129,16 +130,13 @@ export const useCartStore = create<CartState>()(
 
       getProductsData: async () => {
         try {
-          const [productRes, categoryRes] = await Promise.all([
-            axios.get(getSafeBackendUrl(get().backendUrl) + "/api/product/list"),
-            axios.get(getSafeBackendUrl(get().backendUrl) + "/api/product/categories"),
-          ]);
+          const safeBackendUrl = getSafeBackendUrl(get().backendUrl);
+          const productRes = await axios.get(safeBackendUrl + "/api/product/list");
           if (productRes.data.success) {
-            const enabledCategories = Array.isArray(categoryRes.data?.categories)
-              ? categoryRes.data.categories
-                  .filter((entry: any) => entry.enabled)
-                  .map((entry: any) => entry.category)
-              : [];
+            const categories = await getVisibleCategories(safeBackendUrl);
+            const enabledCategories = categories
+              .filter((entry) => entry.enabled)
+              .map((entry) => entry.category);
             const rawProducts = productRes.data.products as Product[];
             const visibleProducts =
               enabledCategories.length > 0
