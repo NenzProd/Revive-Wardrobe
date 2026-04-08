@@ -6,6 +6,10 @@ import { Calendar, User, ArrowLeft, Share2, Clock } from "lucide-react";
 import SEO from "../components/SEO";
 import { backendUrl } from "../config/constants";
 import { PRIMARY_BUTTON_CLASS, SECONDARY_BUTTON_CLASS } from "@/lib/buttonStyles";
+import BlogHero from "@/components/blog/BlogHero";
+import StorySectionRenderer from "@/components/blog/StorySectionRenderer";
+import RelatedBlogs from "@/components/blog/RelatedBlogs";
+import type { StorySection } from "@/components/blog/types";
 
 interface Blog {
   _id: string;
@@ -18,6 +22,7 @@ interface Blog {
   slug: string;
   readTime: string;
   category: string;
+  sections?: StorySection[];
 }
 
 interface BlogPostContent {
@@ -31,6 +36,7 @@ interface BlogPostContent {
   author: string;
   readTime: string;
   category: string;
+  sections: StorySection[];
 }
 
 interface BlogComment {
@@ -134,6 +140,7 @@ const BlogDetail = () => {
           author: found.author,
           readTime: found.readTime,
           category: found.category,
+          sections: Array.isArray(found.sections) ? found.sections : [],
         });
       } catch {
         setError("Could not connect to blog API. Check your backend URL and CORS.");
@@ -225,14 +232,23 @@ const BlogDetail = () => {
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto mb-10">
-            <div className="rounded-2xl overflow-hidden h-72 md:h-96 border border-[#7b4d2e]/10 shadow-[0_20px_45px_rgba(0,0,0,0.08)]">
-              <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover object-top" />
-            </div>
+          <div className="max-w-6xl mx-auto mb-10">
+            <BlogHero
+              title={post.title.replace(/<[^>]*>?/gm, "")}
+              author={post.author}
+              readTime={post.readTime}
+              coverImage={post.imageUrl}
+            />
           </div>
 
-          <div className="max-w-3xl mx-auto rounded-2xl border border-[#7b4d2e]/10 bg-white p-6 md:p-8 shadow-[0_18px_40px_rgba(0,0,0,0.06)]">
-            <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div className="max-w-6xl mx-auto rounded-2xl border border-[#7b4d2e]/10 bg-white p-6 md:p-10 shadow-[0_18px_40px_rgba(0,0,0,0.06)]">
+            {post.sections.length > 0 ? (
+              <StorySectionRenderer sections={post.sections} />
+            ) : (
+              <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+            )}
+
+            <RelatedBlogs />
 
             <div className="mt-12 pt-8 border-t">
               <div className="flex items-center">

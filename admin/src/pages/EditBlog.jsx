@@ -21,6 +21,7 @@ const EditBlog = ({ token }) => {
   const [author, setAuthor] = useState('')
   const [category, setCategory] = useState('')
   const [readTime, setReadTime] = useState('')
+  const [sectionsJson, setSectionsJson] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const EditBlog = ({ token }) => {
           setAuthor(b.author || '')
           setCategory(b.category || '')
           setReadTime(b.readTime || '')
+          setSectionsJson(Array.isArray(b.sections) ? JSON.stringify(b.sections, null, 2) : '')
         } else {
           toast.error(res.data.message || 'Blog not found')
         }
@@ -64,9 +66,20 @@ const EditBlog = ({ token }) => {
   const onSubmitHandler = async e => {
     e.preventDefault()
     try {
+      let sections
+      if (sectionsJson.trim()) {
+        sections = JSON.parse(sectionsJson)
+        if (!Array.isArray(sections)) {
+          toast.error('Story sections must be a JSON array')
+          return
+        }
+      } else {
+        sections = []
+      }
+
       const response = await axios.post(
         backendUrl + '/api/blog/edit',
-        { id, title, slug, excerpt, content, image, date, author, category, readTime },
+        { id, title, slug, excerpt, content, image, date, author, category, readTime, sections },
         { headers: { token } }
       )
       if (response.data.success) {
@@ -162,6 +175,16 @@ const EditBlog = ({ token }) => {
               <label htmlFor='readTime' className='block text-sm font-medium text-gray-700 mb-1'>Read Time</label>
               <input id='readTime' value={readTime} onChange={e => setReadTime(e.target.value)} className='w-full px-3 py-2 bg-white' type='text' required />
             </div>
+          </div>
+          <div className='mt-4'>
+            <label htmlFor='sectionsJson' className='block text-sm font-medium text-gray-700 mb-1'>Story Sections (JSON Array, optional)</label>
+            <textarea
+              id='sectionsJson'
+              value={sectionsJson}
+              onChange={e => setSectionsJson(e.target.value)}
+              className='w-full px-3 py-2 bg-white min-h-[160px] font-mono text-xs'
+              placeholder='[{\"type\":\"intro\",\"heading\":\"...\",\"content\":\"...\"}]'
+            />
           </div>
         </div>
         <button type='submit' className='mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start'>Save Changes</button>

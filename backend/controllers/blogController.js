@@ -10,10 +10,34 @@ const invalidateBlogListCache = () => {
   cachedBlogListAt = 0
 }
 
+const parseSections = (sectionsInput) => {
+  if (!sectionsInput) return []
+
+  const parsed =
+    typeof sectionsInput === 'string'
+      ? JSON.parse(sectionsInput)
+      : sectionsInput
+
+  if (!Array.isArray(parsed)) return []
+
+  return parsed.filter((section) => section && typeof section === 'object' && section.type)
+}
+
 const addBlog = async (req, res) => {
   try {
-    const { title, slug, excerpt, content, image, date, author, category, readTime } = req.body
-    const blog = new blogModel({ title, slug, excerpt, content, image, date, author, category, readTime })
+    const { title, slug, excerpt, content, image, date, author, category, readTime, sections } = req.body
+    const blog = new blogModel({
+      title,
+      slug,
+      excerpt,
+      content,
+      image,
+      date,
+      author,
+      category,
+      readTime,
+      sections: parseSections(sections),
+    })
     await blog.save()
     invalidateBlogListCache()
     res.json({ success: true, message: 'Blog added' })
@@ -89,7 +113,7 @@ const blogBySlug = async (req, res) => {
 
 const editBlog = async (req, res) => {
   try {
-    const { id, title, slug, excerpt, content, image, date, author, category, readTime } = req.body
+    const { id, title, slug, excerpt, content, image, date, author, category, readTime, sections } = req.body
     if (!id) return res.json({ success: false, message: 'Blog ID is required' })
     const blog = await blogModel.findById(id)
     if (!blog) return res.json({ success: false, message: 'Blog not found' })
@@ -103,6 +127,7 @@ const editBlog = async (req, res) => {
     if (author !== undefined) updateFields.author = author
     if (category !== undefined) updateFields.category = category
     if (readTime !== undefined) updateFields.readTime = readTime
+    if (sections !== undefined) updateFields.sections = parseSections(sections)
     await blogModel.findByIdAndUpdate(id, updateFields)
     invalidateBlogListCache()
     res.json({ success: true, message: 'Blog updated' })

@@ -19,6 +19,7 @@ const AddBlog = ({ token, onSuccess }) => {
   const [author, setAuthor] = useState('')
   const [category, setCategory] = useState('')
   const [readTime, setReadTime] = useState('')
+  const [sectionsJson, setSectionsJson] = useState('')
 
   useEffect(() => {
     if (title) {
@@ -36,9 +37,18 @@ const AddBlog = ({ token, onSuccess }) => {
   const onSubmitHandler = async e => {
     e.preventDefault()
     try {
+      let sections = []
+      if (sectionsJson.trim()) {
+        sections = JSON.parse(sectionsJson)
+        if (!Array.isArray(sections)) {
+          toast.error('Story sections must be a JSON array')
+          return
+        }
+      }
+
       const response = await axios.post(
         backendUrl + '/api/blog/add',
-        { title, slug, excerpt, content, image, date, author, category, readTime },
+        { title, slug, excerpt, content, image, date, author, category, readTime, sections },
         { headers: { token } }
       )
       if (response.data.success) {
@@ -52,6 +62,7 @@ const AddBlog = ({ token, onSuccess }) => {
         setAuthor('')
         setCategory('')
         setReadTime('')
+        setSectionsJson('')
         if (onSuccess) onSuccess()
       } else {
         toast.error(response.data.message)
@@ -144,6 +155,16 @@ const AddBlog = ({ token, onSuccess }) => {
               <label htmlFor='readTime' className='block text-sm font-medium text-gray-700 mb-1'>Read Time</label>
               <input id='readTime' value={readTime} onChange={e => setReadTime(e.target.value)} className='w-full px-3 py-2 bg-white' type='text' required />
             </div>
+          </div>
+          <div className='mt-4'>
+            <label htmlFor='sectionsJson' className='block text-sm font-medium text-gray-700 mb-1'>Story Sections (JSON Array, optional)</label>
+            <textarea
+              id='sectionsJson'
+              value={sectionsJson}
+              onChange={e => setSectionsJson(e.target.value)}
+              className='w-full px-3 py-2 bg-white min-h-[160px] font-mono text-xs'
+              placeholder='[{\"type\":\"intro\",\"heading\":\"...\",\"content\":\"...\"}]'
+            />
           </div>
         </div>
         <button type='submit' className='mt-2 px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white font-medium rounded-md hover:shadow-lg transition-all w-full sm:w-auto self-start'>Add Blog</button>
