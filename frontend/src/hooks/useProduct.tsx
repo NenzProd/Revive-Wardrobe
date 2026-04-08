@@ -13,12 +13,22 @@ export function useProductList () {
     async function fetchProducts () {
       setLoading(true)
       try {
-        const res = await axios.get(backendUrl + '/api/product/list')
-        if (res.data.success) {
-          const mapped = res.data.products.map((p: Product) => mapProductForUi(p))
+        const [productRes, categoryRes] = await Promise.all([
+          axios.get(backendUrl + '/api/product/list'),
+          axios.get(backendUrl + '/api/product/categories')
+        ])
+        if (productRes.data.success) {
+          const enabledCategories = Array.isArray(categoryRes.data?.categories)
+            ? categoryRes.data.categories.filter((entry: any) => entry.enabled).map((entry: any) => entry.category)
+            : []
+          const rawProducts = productRes.data.products as Product[]
+          const filteredProducts = enabledCategories.length > 0
+            ? rawProducts.filter((p) => enabledCategories.includes(p.category))
+            : rawProducts
+          const mapped = filteredProducts.map((p: Product) => mapProductForUi(p))
           setProducts(mapped)
         } else {
-          setError(res.data.message)
+          setError(productRes.data.message)
         }
       } catch (err: any) {
         setError(err.message)
@@ -41,16 +51,25 @@ export function useProductBySlug (slug: string) {
     async function fetchProduct () {
       setLoading(true)
       try {
-        const res = await axios.get(backendUrl + '/api/product/list')
-        if (res.data.success) {
-          const found: Product | undefined = res.data.products.find((p: Product) => p.slug === slug)
+        const [productRes, categoryRes] = await Promise.all([
+          axios.get(backendUrl + '/api/product/list'),
+          axios.get(backendUrl + '/api/product/categories')
+        ])
+        if (productRes.data.success) {
+          const enabledCategories = Array.isArray(categoryRes.data?.categories)
+            ? categoryRes.data.categories.filter((entry: any) => entry.enabled).map((entry: any) => entry.category)
+            : []
+          const visibleProducts: Product[] = enabledCategories.length > 0
+            ? productRes.data.products.filter((p: Product) => enabledCategories.includes(p.category))
+            : productRes.data.products
+          const found: Product | undefined = visibleProducts.find((p: Product) => p.slug === slug)
           if (found) {
             setProduct(mapProductForUi(found))
           } else {
             setProduct(null)
           }
         } else {
-          setError(res.data.message)
+          setError(productRes.data.message)
         }
       } catch (err: any) {
         setError(err.message)

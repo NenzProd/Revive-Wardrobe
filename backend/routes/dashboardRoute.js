@@ -6,12 +6,12 @@ import {
   getBestSellers, 
   getAllDashboardData 
 } from '../controllers/dashboardController.js'
-import adminAuth from '../middleware/adminAuth.js'
+import { authorizeAdmin } from '../middleware/adminAuth.js'
 
 const dashboardRouter = express.Router()
 
 // All dashboard routes require admin authentication
-dashboardRouter.use(adminAuth)
+dashboardRouter.use(authorizeAdmin(['super_admin', 'operations_manager', 'inventory_manager', 'content_manager']))
 
 // Get all dashboard data in one call (recommended for initial load)
 dashboardRouter.get('/overview', getAllDashboardData)

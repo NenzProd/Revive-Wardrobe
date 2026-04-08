@@ -1,164 +1,144 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useProductList } from "@/hooks/useProduct";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PRIMARY_BUTTON_CLASS, SECONDARY_BUTTON_CLASS } from "@/lib/buttonStyles";
 
-// Import local carousel images
 import auroraBlossomImg from "@/assets/img/carasoul images/aurora blossom.png";
-import eternalNoirImg from "@/assets/img/carasoul images/eternal noir.png";
-import lunarGlowImg from "@/assets/img/carasoul images/lunar glow.png";
-import midnightEleganceImg from "@/assets/img/carasoul images/midnight elegance.png";
 import regalImg from "@/assets/img/carasoul images/regal.png";
 import twilightGraceImg from "@/assets/img/carasoul images/twilight grace.png";
 
-// Map product names (lowercase) to local images
-const localImageMap: Record<string, string> = {
-  "aurora blossom": auroraBlossomImg,
-  "eternal noir": eternalNoirImg,
-  "lunar glow": lunarGlowImg,
-  "midnight elegance": midnightEleganceImg,
-  regal: regalImg,
-  "twilight grace": twilightGraceImg,
-};
-
-// Helper function to get local image by product name
-const getLocalImage = (productName: string): string | null => {
-  const normalizedName = productName.toLowerCase().trim();
-
-  // Try exact match first
-  if (localImageMap[normalizedName]) {
-    return localImageMap[normalizedName];
-  }
-
-  // Try partial match (if product name contains the key)
-  for (const [key, image] of Object.entries(localImageMap)) {
-    if (normalizedName.includes(key) || key.includes(normalizedName)) {
-      return image;
-    }
-  }
-
-  return null;
-};
-
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { products, loading } = useProductList();
 
-  const slides = useMemo(() => {
-    const abayaProducts = products
-      .filter(
-        (p) =>
-          p.category?.toLowerCase().includes("abaya") ||
-          p.category?.toLowerCase().includes("graceful")
-      )
-      .slice(0, 6);
+  const slides = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Dubai Evenings, Timeless Abayas",
+        subtitle: "Graceful Abayas",
+        description:
+          "Flowing silhouettes and couture-level finishing made for elegant nights and statement entrances.",
+        ctaPrimary: "Explore Abayas",
+        ctaSecondary: "View Collection",
+        image: twilightGraceImg,
+        linkPrimary: "/shop/category/graceful-abayas",
+        linkSecondary: "/shop/category/graceful-abayas",
+      },
+      {
+        id: 2,
+        title: "Pakistani Craft, Modern Luxe",
+        subtitle: "Ethnic Elegance",
+        description:
+          "Refined Pakistani wear with premium drape, rich textures, and a contemporary Dubai luxury look.",
+        ctaPrimary: "Shop Ethnic Elegance",
+        ctaSecondary: "Discover Styles",
+        image: regalImg,
+        linkPrimary: "/shop/category/ethnic-elegance",
+        linkSecondary: "/shop/category/ethnic-elegance",
+      },
+      {
+        id: 3,
+        title: "Jalabiya, Reimagined in Luxury",
+        subtitle: "Jalabiya",
+        description:
+          "Soft structure, graceful movement, and polished details for modern celebratory dressing.",
+        ctaPrimary: "Shop Jalabiya",
+        ctaSecondary: "See New Arrivals",
+        image: auroraBlossomImg,
+        linkPrimary: "/shop/category/jalabiya",
+        linkSecondary: "/shop/category/jalabiya",
+      },
+    ],
+    []
+  );
 
-    // Fallback: if no abaya products, show first 6 products
-    const displayProducts = abayaProducts.length > 0 ? abayaProducts : products.slice(0, 6);
-
-    console.log("🎠 Carousel Debug:", { 
-      totalProducts: products.length, 
-      abayaProducts: abayaProducts.length,
-      displayProducts: displayProducts.length,
-      firstProduct: displayProducts[0]?.name 
-    });
-
-    return displayProducts.map((product, index) => {
-      // Use local image if available, otherwise fallback to product image
-      const localImage = getLocalImage(product.name);
-
-      return {
-        id: index + 1,
-        title: product.name,
-        description: "Handcrafted with elegance for you.",
-        ctaPrimary: "Shop Now",
-        image: localImage || product.image?.[0] || "",
-        linkPrimary: `/product/${product.slug}`,
-      };
-    });
-  }, [products]);
-
-  const nextSlide = () => {
-    if (slides.length === 0) return;
+  const goToNext = () =>
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  };
+
+  const goToPrevious = () =>
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
 
   useEffect(() => {
-    if (slides.length === 0) return;
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 6000);
+    const interval = setInterval(goToNext, 7000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  // Reset currentSlide if slides change
-  useEffect(() => {
-    if (currentSlide >= slides.length && slides.length > 0) {
-      setCurrentSlide(0);
-    }
-  }, [slides.length, currentSlide]);
-
-  if (loading) {
-    return (
-      <section className="relative w-full h-[38vh] md:h-[60vh] bg-gray-100">
-        <div className="container mx-auto px-4 h-full flex items-center justify-center">
-          <div className="animate-pulse text-gray-400">Loading...</div>
-        </div>
-      </section>
-    );
-  }
-
-  if (slides.length === 0) {
-    return null; // Or a fallback UI
-  }
+  const activeSlide = slides[currentSlide];
 
   return (
-    <section className="relative w-full h-[38vh] md:h-[60vh] bg-white shadow-sm">
-      <div className="container mx-auto px-3 md:px-4 h-full">
-        <div className="flex flex-row h-full">
-          {/* Left: Image Carousel */}
-          <div className="w-[60%] md:w-[65%] h-full relative overflow-hidden group">
-            {slides.map((slide, index) => (
-              <div
-                key={slide.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                  index === currentSlide
-                    ? "opacity-100 z-10"
-                    : "opacity-0 -z-10"
-                }`}
-              >
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: "center 13%" }}
-                />
-                <div className="absolute inset-0 bg-black/5 md:bg-transparent" />
-              </div>
-            ))}
-          </div>
+    <section className="relative w-full min-h-[86vh] overflow-hidden bg-black">
+      {slides.map((slide, index) => (
+        <div
+          key={slide.id}
+          className={`absolute inset-0 transition-opacity duration-700 ${
+            index === currentSlide ? "opacity-100 z-10" : "opacity-0 -z-10"
+          }`}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_45%)]" />
+          <img
+            src={slide.image}
+            alt={slide.title}
+            className="absolute inset-0 w-full h-full object-contain"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+        </div>
+      ))}
 
-          {/* Right: Content Side */}
-          <div className="w-[40%] md:w-[35%] h-full flex flex-col items-center justify-center bg-white p-2 md:p-12 text-center border-l border-gray-50">
-            <div
-              key={currentSlide}
-              className="animate-in fade-in slide-in-from-bottom-4 duration-700 flex flex-col items-center"
-            >
-              <h2 className="text-base md:text-5xl font-serif text-amber-900 mb-2 md:mb-6 font-medium leading-tight line-clamp-3">
-                {slides[currentSlide]?.title}
-              </h2>
-              <p className="text-gray-600 text-[10px] md:text-lg font-light mb-3 md:mb-10 max-w-xs font-playfair tracking-wide hidden md:block">
-                {slides[currentSlide]?.description}
-              </p>
-              <Link to={slides[currentSlide]?.linkPrimary || "/shop"}>
-                <Button className="w-full md:w-auto bg-revive-red text-white hover:bg-opacity-90 px-3 py-1.5 md:px-6 md:py-3 rounded text-[10px] md:text-sm tracking-widest uppercase transition-all hover:scale-105 font-medium">
-                  {slides[currentSlide]?.ctaPrimary}
-                </Button>
-              </Link>
-            </div>
+      <div className="relative z-20 container mx-auto px-4 py-14 md:py-20 min-h-[86vh] flex items-center">
+        <div className="max-w-2xl text-white">
+          <p className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs tracking-[0.18em] uppercase text-white/90">
+            {activeSlide.subtitle}
+          </p>
+          <h2 className="mt-5 text-4xl md:text-6xl leading-tight font-serif">{activeSlide.title}</h2>
+          <p className="mt-5 text-sm md:text-lg text-white/85 max-w-xl leading-relaxed">{activeSlide.description}</p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to={activeSlide.linkPrimary}>
+              <Button className={`${PRIMARY_BUTTON_CLASS} px-7 py-6 rounded-md text-sm tracking-[0.14em] uppercase transition-all hover:scale-[1.02]`}>
+                {activeSlide.ctaPrimary}
+              </Button>
+            </Link>
+            <Link to={activeSlide.linkSecondary}>
+              <Button variant="outline" className={`${SECONDARY_BUTTON_CLASS} px-7 py-6 rounded-md text-sm tracking-[0.14em] uppercase`}>
+                {activeSlide.ctaSecondary}
+              </Button>
+            </Link>
           </div>
         </div>
+
+        <div className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
+          <button
+            onClick={goToPrevious}
+            className="h-10 w-10 rounded-full border border-white/45 bg-black/35 text-white flex items-center justify-center hover:bg-black/60 transition-colors"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={goToNext}
+            className="h-10 w-10 rounded-full border border-white/45 bg-black/35 text-white flex items-center justify-center hover:bg-black/60 transition-colors"
+            aria-label="Next slide"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+          {slides.map((slide, index) => (
+            <button
+              key={`hero-dot-${slide.id}`}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                index === currentSlide ? "w-8 bg-white" : "w-2.5 bg-white/45 hover:bg-white/80"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
+
+      <div className="absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-black/65 to-transparent" />
     </section>
   );
 };

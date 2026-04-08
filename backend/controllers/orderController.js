@@ -7,6 +7,22 @@ import transporter from '../config/nodemailer.js';
 import { ORDER_STATUS_UPDATE_TEMPLATE, ORDER_CONFIRMATION_TEMPLATE } from '../config/emailTemplates.js';
 import { getVariantDiscount, getVariantFinalPrice, getVariantRetailPrice } from "../utils/pricing.js";
 
+const buildWhatsAppUrl = (order) => {
+  const rawPhone = order?.address?.phone || ""
+  const phone = String(rawPhone).replace(/[^\d]/g, "")
+  if (!phone) return ""
+
+  const orderId = order?._id?.toString() || "N/A"
+  const customerName = `${order?.address?.first_name || ""} ${order?.address?.last_name || ""}`.trim() || "Customer"
+  const status = order?.status || "Order Placed"
+  const trackingLink = order?.tracking_url || `${process.env.FRONTEND_URL || "https://revivewardrobe.com"}/account`
+  const message =
+    `Hi ${customerName}, your Revive Wardrobe order #${orderId.slice(-6)} is now "${status}". ` +
+    `Track here: ${trackingLink}`
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
+
 function sendMail({ to, subject, html }) {
   console.log('SendMail function called with:', { to, subject: subject.substring(0, 50) + '...' });
   return transporter.sendMail({
@@ -251,6 +267,14 @@ const verifyPaymennt = async (req, res) => {
       paymentMethod: "paymennt",
       paymentId: paymentData.id,
       status: "Order Placed",
+      statusHistory: [
+        {
+          status: "Order Placed",
+          date: new Date(),
+          note: "Order created after successful payment verification",
+          updatedBy: "system",
+        },
+      ],
       date: new Date(),
     };
 
@@ -369,7 +393,14 @@ const verifyPaymennt = async (req, res) => {
 const allOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
-    res.json({ success: true, orders });
+    const enrichedOrders = orders.map((order) => {
+      const orderObject = order.toObject ? order.toObject() : order
+      return {
+        ...orderObject,
+        whatsappUrl: buildWhatsAppUrl(orderObject),
+      }
+    })
+    res.json({ success: true, orders: enrichedOrders });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -394,9 +425,25 @@ const userOrders = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   try {
-    const { orderId, status } = req.body;
+    const { orderId, status, note } = req.body;
 
-    await orderModel.findByIdAndUpdate(orderId, { status });
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res.json({ success: false, message: "Order not found" });
+    }
+
+    order.status = status;
+    order.statusHistory = [
+      ...(order.statusHistory || []),
+      {
+        status,
+        date: new Date(),
+        note: note || "",
+        updatedBy: req?.admin?.email || "admin",
+      },
+    ];
+    await order.save();
+
     res.json({ success: true, message: "Order status updated successfully" });
   } catch (error) {
     console.log(error);
@@ -508,6 +555,26 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+const getOrderWhatsAppLink = async (req, res) => {
+  try {
+    const { orderId } = req.body
+    if (!orderId) return res.json({ success: false, message: "Order ID required" })
+
+    const order = await orderModel.findById(orderId).lean()
+    if (!order) return res.json({ success: false, message: "Order not found" })
+
+    const whatsappUrl = buildWhatsAppUrl(order)
+    if (!whatsappUrl) {
+      return res.json({ success: false, message: "Customer phone number not available" })
+    }
+
+    res.json({ success: true, whatsappUrl })
+  } catch (error) {
+    console.log(error)
+    res.json({ success: false, message: error.message })
+  }
+}
+
 export {
   createPaymenntOrder,
   verifyPaymennt,
@@ -517,4 +584,5 @@ export {
   depoterWebhook,
   testEmail,
   deleteOrder,
+  getOrderWhatsAppLink,
 };

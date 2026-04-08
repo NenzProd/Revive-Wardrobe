@@ -1,14 +1,12 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  EthnicElegance,
-  GracefulAbayas,
-  DesignerJalabiya,
-} from "../assets/assets";
-import { cn } from "@/lib/utils";
+import { useVisibleCategories } from "@/hooks/useVisibleCategories";
 
 const BentoCategories = () => {
   const navigate = useNavigate();
+  const { enabledCategories } = useVisibleCategories();
+
+  const isEnabled = (category: string) =>
+    enabledCategories.some((entry) => entry.category === category);
 
   return (
     <section className="pt-4 pb-6 md:py-20 bg-white">
@@ -23,8 +21,8 @@ const BentoCategories = () => {
         {/* Bento Grid */}
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-2 md:pb-0 md:grid md:grid-cols-4 md:gap-6 max-w-6xl mx-auto h-auto md:h-[70vh] md:auto-rows-auto scrollbar-hide">
           {/* Main Large Item (Left) - Abayas */}
-          <div
-            onClick={() => navigate("/shop?category=Graceful+Abayas")}
+          {isEnabled("Graceful Abayas") && <div
+            onClick={() => navigate("/shop/category/graceful-abayas")}
             className="min-w-[60vw] md:min-w-0 snap-start h-[26vh] md:h-auto col-span-1 row-span-2 md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-3xl cursor-pointer"
           >
             <img
@@ -44,11 +42,11 @@ const BentoCategories = () => {
                 Shop Collection
               </button>
             </div>
-          </div>
+          </div>}
 
           {/* Right Top - Jalabiyas */}
-          <div
-            onClick={() => navigate("/shop?category=Graceful+Abayas")}
+          {isEnabled("Jalabiya") && <div
+            onClick={() => navigate("/shop/category/jalabiya")}
             className="min-w-[60vw] md:min-w-0 snap-start h-[26vh] md:h-full col-span-1 row-span-1 md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl cursor-pointer"
           >
             <img
@@ -65,29 +63,29 @@ const BentoCategories = () => {
                 Luxury reimagined for comfort.
               </p>
             </div>
-          </div>
+          </div>}
 
           {/* Right Bottom Left - Ethnic Elegance */}
-          <div
-            onClick={() => navigate("/shop?category=Ethnic+Elegance")}
+          {isEnabled("Ethnic Elegance") && <div
+            onClick={() => navigate("/shop/category/ethnic-elegance")}
             className="min-w-[60vw] md:min-w-0 snap-start h-[26vh] md:h-full col-span-1 row-span-1 md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl cursor-pointer"
           >
             <img
               src="https://res.cloudinary.com/dia8x6y6u/image/upload/v1766769384/ytitpqsuvwkzb9qiaqyn.jpg"
-              alt="Aurora Blossom Abaya"
+              alt="Ethnic Elegance Collection"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
             <div className="absolute inset-0 flex items-center justify-center">
               <h3 className="text-lg md:text-xl font-serif text-white text-center px-2">
-                Aurora Blossom Abaya
+                Ethnic Elegance
               </h3>
             </div>
-          </div>
+          </div>}
 
           {/* Right Bottom Right - New Arrivals / Sale (Placeholder or link to Shop) */}
           <div
-            onClick={() => navigate("/shop?category=Graceful+Abayas")}
+            onClick={() => navigate("/shop/category/graceful-abayas")}
             className="hidden md:flex md:min-w-0 snap-center h-[calc(30vh-4%)] md:h-full col-span-2 row-span-1 md:col-span-1 md:row-span-1 bg-transparent md:bg-gray-100 relative group overflow-hidden rounded-3xl cursor-pointer items-center justify-center text-center p-4 border-0 md:border md:border-gray-200 hover:border-black/10 transition-colors"
           >
             <div className="w-full flex items-center justify-center">
@@ -100,7 +98,7 @@ const BentoCategories = () => {
 
         {/* Mobile View All Button (Below Cards) */}
         <div
-          onClick={() => navigate("/shop?category=Graceful+Abayas")}
+          onClick={() => navigate("/shop/category/graceful-abayas")}
           className="block md:hidden w-full mt-2 relative group overflow-hidden cursor-pointer flex items-center justify-center text-center p-4 transition-colors"
         >
           <div className="w-full">

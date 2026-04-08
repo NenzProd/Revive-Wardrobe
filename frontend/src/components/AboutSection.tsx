@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { PRIMARY_BUTTON_CLASS } from "@/lib/buttonStyles";
 
 const AboutSection = () => {
   return (
-    <section className="h-auto md:h-[40vh] bg-white overflow-hidden">
+    <section className="h-auto md:h-[44vh] bg-[#faf6f0] overflow-hidden py-6">
       <div className="container mx-auto px-4 h-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 rounded-3xl border border-[#7b4d2e]/10 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.07)] p-4 md:p-8">
           {/* Left Side - Story */}
           <div className="relative flex flex-col justify-start px-4 md:px-0 py-8 bg-white">
             {/* Vertical RW Icon - Simplified */}
@@ -16,7 +17,7 @@ const AboutSection = () => {
             </div>
 
             <div className="relative z-10 max-w-md">
-              <h1 className="text-4xl md:text-5xl font-serif text-[#C10000] mb-6">
+              <h1 className="text-4xl md:text-5xl font-serif text-[#C10000] mb-6 leading-tight">
                 The Revive Story
               </h1>
               <p className="text-gray-600 mb-8 leading-relaxed">
@@ -25,7 +26,7 @@ const AboutSection = () => {
                 empower confident expression while honoring cultural heritage.
               </p>
               <Link to="/about">
-                <button className="w-full md:w-auto bg-revive-red text-white px-6 py-3 rounded hover:bg-opacity-90 transition-all font-medium">
+                <button className={`w-full md:w-auto ${PRIMARY_BUTTON_CLASS} px-6 py-3 rounded transition-all font-medium`}>
                   Full Story
                 </button>
               </Link>

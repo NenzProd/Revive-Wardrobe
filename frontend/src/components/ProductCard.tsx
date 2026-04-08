@@ -43,6 +43,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
   const removeFromWishlist = useCartStore(state => state.removeFromWishlist);
   const isInWishlist = wishlist.some(item => item._id === _id);
   const isSoldOut = isProductSoldOut(product);
+  const isLimitedStock =
+    !isSoldOut &&
+    typeof primaryVariant?.stock === 'number' &&
+    primaryVariant.stock > 0 &&
+    primaryVariant.stock <= 3;
 
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -95,6 +100,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
           {isSoldOut && (
             <span className="absolute bottom-2 left-2 bg-revive-black/85 text-white text-xs px-2 py-1 rounded z-10">
               SOLD OUT
+            </span>
+          )}
+          {isLimitedStock && (
+            <span className="absolute top-10 left-2 bg-amber-600 text-white text-[10px] px-2 py-1 rounded z-10 animate-pulse">
+              ONLY {primaryVariant.stock} LEFT
             </span>
           )}
 
@@ -171,6 +181,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
             SOLD OUT
           </span>
         )}
+        {isLimitedStock && (
+          <span className="absolute top-10 left-2 bg-amber-600 text-white text-[10px] px-2 py-1 rounded z-10 animate-pulse">
+            ONLY {primaryVariant.stock} LEFT
+          </span>
+        )}
         <button
           className="absolute top-2 right-2 z-20 rounded-full bg-white p-2 text-revive-black shadow hover:bg-gray-100 transition-colors"
           aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
@@ -228,6 +243,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
             <p className="text-lg font-semibold text-revive-red">{priceSymbol} {price.toLocaleString()}</p>
           )}
         </div>
+        {isLimitedStock && (
+          <p className="mt-2 text-[11px] text-amber-700 font-medium">
+            Loved fast. Secure this piece before it sells out.
+          </p>
+        )}
       </div>
     </div>
   );

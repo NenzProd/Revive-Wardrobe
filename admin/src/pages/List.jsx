@@ -9,8 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { deriveGeneralCategory } from '../utils/productCategory'
 
-const BULK_FIELDS = [
-  { value: 'category', label: 'Category', type: 'select', options: ['Ethnic Elegance', 'Graceful Abayas', 'Intimate Collection', 'Stitching Services'] },
+const STATIC_BULK_FIELDS = [
   { value: 'stock', label: 'Stock', type: 'number' },
   { value: 'purchase_price', label: 'Purchase Price', type: 'number' },
   { value: 'retail_price', label: 'Retail Price', type: 'number' },
@@ -45,6 +44,23 @@ const List = ({ token }) => {
   const [bulkStep, setBulkStep] = useState(0)
   const [bulkField, setBulkField] = useState('')
   const [bulkValue, setBulkValue] = useState('')
+  const [previewProduct, setPreviewProduct] = useState(null)
+  const [categoryVisibility, setCategoryVisibility] = useState([])
+
+  const managedCategories = Array.from(
+    new Set([
+      'Graceful Abayas',
+      'Ethnic Elegance',
+      'Jalabiya',
+      ...categoryVisibility.map((entry) => entry.category),
+      ...list.map((item) => item.category).filter(Boolean),
+    ])
+  ).sort((a, b) => a.localeCompare(b))
+
+  const bulkFields = [
+    { value: 'category', label: 'Category', type: 'select', options: managedCategories },
+    ...STATIC_BULK_FIELDS,
+  ]
 
   const fetchList = async () => {
     try {
@@ -54,6 +70,36 @@ const List = ({ token }) => {
         setFilteredList(response.data.products)
       }
       else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
+  const fetchCategoryVisibility = async () => {
+    try {
+      const response = await axios.get(backendUrl + '/api/product/categories')
+      if (response.data.success) {
+        setCategoryVisibility(response.data.categories || [])
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const toggleCategoryVisibility = async (category, enabled) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/product/categories/update',
+        { category, enabled: !enabled },
+        { headers: { token } }
+      )
+      if (response.data.success) {
+        setCategoryVisibility(response.data.categories || [])
+        toast.success(`Category ${!enabled ? 'enabled' : 'disabled'} successfully`)
+      } else {
         toast.error(response.data.message)
       }
     } catch (error) {
@@ -171,10 +217,11 @@ const List = ({ token }) => {
     }
   }
 
-  const getFieldConfig = () => BULK_FIELDS.find(f => f.value === bulkField)
+  const getFieldConfig = () => bulkFields.find(f => f.value === bulkField)
 
   useEffect(() => {
     fetchList()
+    fetchCategoryVisibility()
   }, [])
 
   useEffect(() => {
@@ -239,6 +286,25 @@ const List = ({ token }) => {
       </div>
 
       {/* Search and Filters */}
+      <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+        <h3 className="text-sm font-semibold text-gray-800 mb-3">Frontend Category Visibility</h3>
+        <div className="flex flex-wrap gap-2">
+          {categoryVisibility.map((entry) => (
+            <button
+              key={entry.category}
+              onClick={() => toggleCategoryVisibility(entry.category, entry.enabled)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                entry.enabled
+                  ? 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200'
+                  : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
+              }`}
+            >
+              {entry.enabled ? 'Visible' : 'Hidden'}: {entry.category}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="mb-6 space-y-4">
         {/* Search Bar */}
         <div className="w-full">
@@ -261,10 +327,9 @@ const List = ({ token }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="All">All Categories</option>
-              <option value="Ethnic Elegance">Ethnic Elegance</option>
-              <option value="Graceful Abayas">Graceful Abayas</option>
-              <option value="Intimate Collection">Intimate Collection</option>
-              <option value="Stitching Services">Stitching Services</option>
+              {managedCategories.map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
             </select>
           </div>
 
@@ -351,6 +416,12 @@ const List = ({ token }) => {
 
             <div className="flex justify-end gap-2 mt-2">
               <button
+                onClick={() => setPreviewProduct(item)}
+                className='px-3 py-1.5 bg-gray-700 text-white rounded-md text-sm hover:bg-gray-800 transition-colors'
+              >
+                Preview
+              </button>
+              <button
                 onClick={() => navigate(`/edit/${item._id}`)}
                 className='px-3 py-1.5 bg-amber-500 text-white rounded-md text-sm hover:bg-amber-600 transition-colors'
               >
@@ -425,6 +496,12 @@ const List = ({ token }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">
                     <button
+                      onClick={() => setPreviewProduct(item)}
+                      className='px-3 py-1 bg-gray-700 text-white rounded text-xs hover:bg-gray-800 transition-colors'
+                    >
+                      Preview
+                    </button>
+                    <button
                       onClick={() => navigate(`/edit/${item._id}`)}
                       className='px-3 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 transition-colors'
                     >
@@ -452,6 +529,29 @@ const List = ({ token }) => {
         </div>
       )}
 
+      {previewProduct && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">{previewProduct.name} - Gallery</h3>
+              <button
+                onClick={() => setPreviewProduct(null)}
+                className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm"
+              >
+                Close
+              </button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {(previewProduct.image || []).map((img, idx) => (
+                <a key={idx} href={img} target="_blank" rel="noreferrer" className="block border rounded overflow-hidden">
+                  <img src={img} alt={`${previewProduct.name}-${idx + 1}`} className="w-full h-36 object-cover" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bulk Update Modal */}
       {bulkStep > 0 && (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4">
@@ -469,7 +569,7 @@ const List = ({ token }) => {
                 <h3 className="text-lg font-semibold mb-1">Step 1: Choose Field</h3>
                 <p className="text-sm text-gray-500 mb-4">Select which field to update for {selectedIds.size} product{selectedIds.size > 1 ? 's' : ''}</p>
                 <div className="space-y-2">
-                  {BULK_FIELDS.map(f => (
+                  {bulkFields.map(f => (
                     <button
                       key={f.value}
                       onClick={() => { setBulkField(f.value); setBulkValue(''); setBulkStep(2) }}

@@ -38,6 +38,7 @@ function Edit({ token }) {
       stock: 0
     }
   ])
+  const [priceHistory, setPriceHistory] = useState([])
 
   const sizeOptions = [
     { value: 'XS', label: 'XS (50)' },
@@ -94,6 +95,17 @@ function Edit({ token }) {
           toast.error('Product not found')
           navigate('/list')
         }
+
+        try {
+          const historyRes = await axios.post(
+            backendUrl + '/api/product/price-history',
+            { productId: id, limit: 100 },
+            { headers: { token } }
+          )
+          if (historyRes.data.success) {
+            setPriceHistory(historyRes.data.history || [])
+          }
+        } catch {}
       } catch {
         toast.error('Error fetching product')
         navigate('/list')
@@ -450,6 +462,42 @@ function Edit({ token }) {
             'Update Product'
           )}
         </button>
+
+        <div className="mt-8 bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-gray-800 mb-3">Price History</h3>
+          {priceHistory.length === 0 ? (
+            <p className="text-sm text-gray-500">No price changes recorded yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-500 border-b">
+                    <th className="py-2 pr-3">Date</th>
+                    <th className="py-2 pr-3">SKU</th>
+                    <th className="py-2 pr-3">Field</th>
+                    <th className="py-2 pr-3">Old</th>
+                    <th className="py-2 pr-3">New</th>
+                    <th className="py-2 pr-3">By</th>
+                    <th className="py-2 pr-3">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {priceHistory.map((entry) => (
+                    <tr key={entry._id} className="border-b border-gray-100">
+                      <td className="py-2 pr-3">{new Date(entry.date).toLocaleString()}</td>
+                      <td className="py-2 pr-3 font-mono">{entry.sku || "-"}</td>
+                      <td className="py-2 pr-3">{entry.field}</td>
+                      <td className="py-2 pr-3">{entry.oldValue}</td>
+                      <td className="py-2 pr-3 font-semibold text-emerald-700">{entry.newValue}</td>
+                      <td className="py-2 pr-3">{entry.changedByRole}</td>
+                      <td className="py-2 pr-3">{entry.source}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   )

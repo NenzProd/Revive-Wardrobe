@@ -1,11 +1,12 @@
 import { ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PRIMARY_BUTTON_CLASS } from '@/lib/buttonStyles';
 
 const Newsletter = () => {
   const navigate = useNavigate();
 
   const handleShopClick = () => {
-    navigate('/shop');
+    navigate('/shop/category/graceful-abayas');
   };
 
   return (
@@ -19,7 +20,7 @@ const Newsletter = () => {
           </p>
           <button 
             onClick={handleShopClick}
-            className="bg-revive-red hover:bg-opacity-90 text-white px-8 py-3 rounded transition-all font-medium text-lg"
+            className={`${PRIMARY_BUTTON_CLASS} px-8 py-3 rounded transition-all font-medium text-lg`}
           >
             Start Shopping
           </button>

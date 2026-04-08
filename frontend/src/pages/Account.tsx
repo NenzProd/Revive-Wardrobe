@@ -436,7 +436,7 @@ const Account = () => {
                       <p className="text-lg text-gray-500">No orders yet</p>
                       <p className="text-gray-400 mt-1">When you place orders, they will appear here</p>
                       <a 
-                        href="/shop"
+                        href="/shop/category/graceful-abayas"
                         className="mt-4 inline-block bg-revive-red hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300"
                       >
                         Start Shopping

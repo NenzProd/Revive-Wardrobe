@@ -112,9 +112,42 @@ const registerUser = async (req, res) => {
 const adminLogin = async (req, res) => {
     try {
         const {email, password} = req.body
-        if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-            const token = jwt.sign(email+password, process.env.JWT_SECRET);
-            res.json({success:true, token})
+        const normalizedEmail = (email || '').trim().toLowerCase()
+
+        const adminAccounts = [
+          {
+            email: (process.env.ADMIN_EMAIL || '').trim().toLowerCase(),
+            password: process.env.ADMIN_PASSWORD || '',
+            role: process.env.ADMIN_ROLE || 'super_admin',
+          },
+          {
+            email: (process.env.INVENTORY_ADMIN_EMAIL || '').trim().toLowerCase(),
+            password: process.env.INVENTORY_ADMIN_PASSWORD || '',
+            role: 'inventory_manager',
+          },
+          {
+            email: (process.env.OPERATIONS_ADMIN_EMAIL || '').trim().toLowerCase(),
+            password: process.env.OPERATIONS_ADMIN_PASSWORD || '',
+            role: 'operations_manager',
+          },
+          {
+            email: (process.env.CONTENT_ADMIN_EMAIL || '').trim().toLowerCase(),
+            password: process.env.CONTENT_ADMIN_PASSWORD || '',
+            role: 'content_manager',
+          },
+        ].filter((account) => account.email && account.password)
+
+        const matchedAccount = adminAccounts.find(
+          (account) =>
+            account.email === normalizedEmail && account.password === password
+        )
+
+        if (matchedAccount) {
+            const token = jwt.sign(
+              { email: matchedAccount.email, role: matchedAccount.role },
+              process.env.JWT_SECRET
+            );
+            res.json({success:true, token, role: matchedAccount.role})
         }
         else{
             res.json({success:false, message:"invalid credits"})

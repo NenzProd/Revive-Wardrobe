@@ -16,6 +16,10 @@ import {
 
 const currency = "AED";
 const deliveryFee = 10;
+const STORAGE_VERSION = 2;
+
+const getSafeBackendUrl = (value?: string) =>
+  typeof value === "string" && value.trim().length > 0 ? value : backendUrl;
 
 const normalizeProducts = (products: Product[] = []) =>
   products.map((product) => mapProductForUi(product));
@@ -125,9 +129,22 @@ export const useCartStore = create<CartState>()(
 
       getProductsData: async () => {
         try {
-          const res = await axios.get(get().backendUrl + "/api/product/list");
-          if (res.data.success) {
-            const products = normalizeProducts(res.data.products);
+          const [productRes, categoryRes] = await Promise.all([
+            axios.get(getSafeBackendUrl(get().backendUrl) + "/api/product/list"),
+            axios.get(getSafeBackendUrl(get().backendUrl) + "/api/product/categories"),
+          ]);
+          if (productRes.data.success) {
+            const enabledCategories = Array.isArray(categoryRes.data?.categories)
+              ? categoryRes.data.categories
+                  .filter((entry: any) => entry.enabled)
+                  .map((entry: any) => entry.category)
+              : [];
+            const rawProducts = productRes.data.products as Product[];
+            const visibleProducts =
+              enabledCategories.length > 0
+                ? rawProducts.filter((product) => enabledCategories.includes(product.category))
+                : rawProducts;
+            const products = normalizeProducts(visibleProducts);
             set((state) => ({
               products,
               wishlist: buildWishlistProducts(products, getWishlistIds(state.wishlist), state.wishlist),
@@ -135,7 +152,7 @@ export const useCartStore = create<CartState>()(
             return products;
           }
 
-          toast({ title: "Error", description: res.data.message });
+          toast({ title: "Error", description: productRes.data.message });
         } catch (err) {
           toast({ title: "Error", description: err.message });
         }
@@ -146,7 +163,7 @@ export const useCartStore = create<CartState>()(
       getUserCart: async (token) => {
         try {
           const res = await axios.post(
-            get().backendUrl + "/api/cart/get",
+            getSafeBackendUrl(get().backendUrl) + "/api/cart/get",
             {},
             { headers: { token } }
           );
@@ -232,11 +249,15 @@ export const useCartStore = create<CartState>()(
         }
 
         try {
-          await axios.post(
-            get().backendUrl + "/api/user/wishlist",
+          const response = await axios.post(
+            getSafeBackendUrl(get().backendUrl) + "/api/user/wishlist",
             { productIds },
             { headers: { token: get().token } }
           );
+
+          if (!response.data?.success) {
+            throw new Error(response.data?.message || "Wishlist sync failed");
+          }
         } catch (err) {
           toast({
             title: "Wishlist sync failed",
@@ -318,7 +339,7 @@ export const useCartStore = create<CartState>()(
         if (get().token) {
           try {
             await axios.post(
-              get().backendUrl + "/api/cart/add",
+              getSafeBackendUrl(get().backendUrl) + "/api/cart/add",
               { itemId, quantity },
               { headers: { token: get().token } }
             );
@@ -411,7 +432,7 @@ export const useCartStore = create<CartState>()(
         if (get().token) {
           try {
             await axios.post(
-              get().backendUrl + "/api/cart/update",
+              getSafeBackendUrl(get().backendUrl) + "/api/cart/update",
               { itemId, quantity },
               { headers: { token: get().token } }
             );
@@ -499,7 +520,7 @@ export const useCartStore = create<CartState>()(
 
       fetchUser: async (token) => {
         try {
-          const res = await axios.get(get().backendUrl + "/api/user/profile", {
+          const res = await axios.get(getSafeBackendUrl(get().backendUrl) + "/api/user/profile", {
             headers: { token },
           });
 
@@ -532,8 +553,43 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "rw-cart-storage",
+      version: STORAGE_VERSION,
+      migrate: (persistedState: any, version) => {
+        const state = persistedState || {};
+
+        if (version < STORAGE_VERSION) {
+          return {
+            ...state,
+            backendUrl,
+          };
+        }
+
+        return {
+          ...state,
+          backendUrl: getSafeBackendUrl(state.backendUrl),
+        };
+      },
+      partialize: (state) => ({
+        cart: state.cart,
+        cartItems: state.cartItems,
+        wishlist: state.wishlist,
+        itemCount: state.itemCount,
+        subtotal: state.subtotal,
+        shippingCost: state.shippingCost,
+        total: state.total,
+        products: state.products,
+        search: state.search,
+        showSearch: state.showSearch,
+        token: state.token,
+        user: state.user,
+      }),
       onRehydrateStorage: () => (state) => {
-        state?.recalculateTotals();
+        if (!state) {
+          return;
+        }
+
+        state.backendUrl = backendUrl;
+        state.recalculateTotals();
       },
     }
   )

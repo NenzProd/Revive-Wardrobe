@@ -8,6 +8,7 @@ import BlogPreview from "../components/BlogPreview";
 import Footer from "../components/Footer";
 import SEO from "../components/SEO";
 import EthnicElegance from "../components/EthnicElegance";
+import StorytellingSection from "../components/StorytellingSection";
 
 import CashbackBanner from "../components/CashbackBanner";
 
@@ -23,6 +24,7 @@ const Index = () => {
       <Navbar />
       <h1 className="sr-only">Abayas Online in Dubai</h1>
       <HeroSection />
+      <StorytellingSection />
       <CashbackBanner />
       <BentoCategories />
       <AboutSection />

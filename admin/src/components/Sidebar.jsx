@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, BookText, Menu } from 'lucide-react'
 import PropTypes from 'prop-types'
 
-const Sidebar = ({ onSidebarToggle }) => {
+const Sidebar = ({ onSidebarToggle, role = 'super_admin' }) => {
   const [isOpen, setIsOpen] = useState(true)
 
   // Responsive sidebar open/close
@@ -59,42 +59,50 @@ const Sidebar = ({ onSidebarToggle }) => {
             <LayoutDashboard className='w-5 h-5' />
             {isOpen && <span className="transition-all whitespace-nowrap">Dashboard</span>}
           </NavLink>
-          <NavLink
-            className={({isActive}) =>
-              `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
-            }
-            to="/add"
-          >
-            <PlusCircle className='w-5 h-5' />
-            {isOpen && <span className="transition-all whitespace-nowrap">Add Items</span>}
-          </NavLink>
-          <NavLink
-            className={({isActive}) =>
-              `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
-            }
-            to="/list"
-          >
-            <ListOrdered className='w-5 h-5' />
-            {isOpen && <span className="transition-all whitespace-nowrap">List Items</span>}
-          </NavLink>
-          <NavLink
-            className={({isActive}) =>
-              `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
-            }
-            to="/orders"
-          >
-            <ShoppingBag className='w-5 h-5' />
-            {isOpen && <span className="transition-all whitespace-nowrap">Orders</span>}
-          </NavLink>
-          <NavLink
-            className={({isActive}) =>
-              `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
-            }
-            to="/blog"
-          >
-            <BookText className='w-5 h-5' />
-            {isOpen && <span className="transition-all whitespace-nowrap">Blog</span>}
-          </NavLink>
+          {(role === 'super_admin' || role === 'inventory_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/add"
+            >
+              <PlusCircle className='w-5 h-5' />
+              {isOpen && <span className="transition-all whitespace-nowrap">Add Items</span>}
+            </NavLink>
+          )}
+          {(role === 'super_admin' || role === 'inventory_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/list"
+            >
+              <ListOrdered className='w-5 h-5' />
+              {isOpen && <span className="transition-all whitespace-nowrap">List Items</span>}
+            </NavLink>
+          )}
+          {(role === 'super_admin' || role === 'operations_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/orders"
+            >
+              <ShoppingBag className='w-5 h-5' />
+              {isOpen && <span className="transition-all whitespace-nowrap">Orders</span>}
+            </NavLink>
+          )}
+          {(role === 'super_admin' || role === 'content_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/blog"
+            >
+              <BookText className='w-5 h-5' />
+              {isOpen && <span className="transition-all whitespace-nowrap">Blog</span>}
+            </NavLink>
+          )}
         </div>
         {/* TenSketch branding at the bottom */}
         <div className="px-2 pb-4 mt-auto">
@@ -115,7 +123,8 @@ const Sidebar = ({ onSidebarToggle }) => {
 }
 
 Sidebar.propTypes = {
-  onSidebarToggle: PropTypes.func
+  onSidebarToggle: PropTypes.func,
+  role: PropTypes.string,
 }
 
 export default Sidebar

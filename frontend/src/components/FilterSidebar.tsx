@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useVisibleCategories } from "@/hooks/useVisibleCategories";
 
 interface FilterSidebarProps {
   onClose: () => void;
@@ -13,6 +14,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   const navigate = useNavigate();
   const { categorySlug } = useParams<{ categorySlug?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { enabledCategories } = useVisibleCategories();
 
   const toSlug = (value: string) =>
     value
@@ -24,13 +26,7 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
 
   // Get current filters from URL parameters
   const categoryFromSlug = categorySlug
-    ? [
-        { id: 'Ethnic Elegance', slug: 'ethnic-elegance' },
-        { id: 'Graceful Abayas', slug: 'graceful-abayas' },
-        { id: 'Jalabiya', slug: 'jalabiya' },
-        { id: 'Intimate Collection', slug: 'intimate-collection' },
-        { id: 'Stitching Services', slug: 'stitching-services' },
-      ].find((category) => category.slug === categorySlug)?.id
+    ? enabledCategories.find((category) => category.slug === categorySlug)?.category
     : undefined;
   const currentCategory = categoryFromSlug || searchParams.get('category') || 'all';
   const currentPriceMin = parseInt(searchParams.get('minPrice') || '0');
@@ -44,13 +40,10 @@ const FilterSidebar = ({ onClose }: FilterSidebarProps) => {
   const [selectedColors, setSelectedColors] = useState<string[]>(currentColors);
 
 
-  const categories = [
-    { id: 'Ethnic Elegance', name: 'Ethnic Elegance (Pakistani Wear)' },
-    { id: 'Graceful Abayas', name: 'Graceful Abayas' },
-    { id: 'Jalabiya', name: 'Jalabiya' },
-    { id: 'Intimate Collection', name: 'Intimate Collection' },
-    { id: 'Stitching Services', name: 'Stitching Services' },
-  ];
+  const categories = enabledCategories.map((entry) => ({
+    id: entry.category,
+    name: entry.category,
+  }));
 
   const colors = [
     { id: 'color-red', name: 'Red', hex: '#FF0000' },

@@ -31,6 +31,24 @@ const Orders = ({token}) => {
     }
   }
 
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/order/status',
+        { orderId, status },
+        { headers: { token } }
+      )
+      if (response.data.success) {
+        toast.success('Order status updated')
+        await fetchAllOrders()
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   const deleteOrder = async (orderId) => {
     const result = await Swal.fire({
       title: 'Delete Order?',
@@ -119,6 +137,14 @@ const Orders = ({token}) => {
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
+                  {order.whatsappUrl && (
+                    <button
+                      onClick={() => window.open(order.whatsappUrl, '_blank', 'noopener,noreferrer')}
+                      className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition-colors"
+                    >
+                      WhatsApp
+                    </button>
+                  )}
                   <button
                     onClick={() => deleteOrder(order._id)}
                     className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
@@ -186,6 +212,30 @@ const Orders = ({token}) => {
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
+                  <div className="mt-3">
+                    <select
+                      value={order.status}
+                      onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                      className="w-full rounded border border-gray-300 px-2 py-1.5 text-xs"
+                    >
+                      <option value="Order Placed">Order Placed</option>
+                      <option value="Packing">Packing</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Out for Delivery">Out for Delivery</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  {Array.isArray(order.statusHistory) && order.statusHistory.length > 0 && (
+                    <div className="mt-3 space-y-1 max-h-28 overflow-y-auto pr-1">
+                      {order.statusHistory.slice().reverse().map((entry, idx) => (
+                        <div key={`${order._id}-history-${idx}`} className="text-xs text-gray-600">
+                          <span className="font-medium">{entry.status}</span> • {new Date(entry.date).toLocaleString()}
+                          {entry.note ? ` • ${entry.note}` : ''}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCartStore } from "../stores/useCartStore";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useVisibleCategories } from "../hooks/useVisibleCategories";
 
 interface NavLink {
   name: string;
@@ -36,6 +37,7 @@ const Navbar = () => {
   const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [promoVisible, setPromoVisible] = useState(true);
+  const { enabledCategories } = useVisibleCategories();
 
   // Navigation Links JSON Structure
   const navigationLinks: {
@@ -55,11 +57,10 @@ const Navbar = () => {
       { name: "Blog", path: "/blog", icon: null },
       { name: "Contact us", path: "/contact", icon: "Phone" },
     ],
-    collections: [
-      { name: "Ethnic Elegance", path: "/shop/category/ethnic-elegance" },
-      { name: "Graceful Abayas", path: "/shop/category/graceful-abayas" },
-      // { name: 'Designer Jalabiya', path: '/shop' }
-    ],
+    collections: enabledCategories.map((entry) => ({
+      name: entry.category,
+      path: `/shop/category/${entry.slug}`,
+    })),
     actions: [
       { name: "Search", path: null, icon: "Search", action: "search" },
       { name: "Account", path: "/account", icon: "User" },

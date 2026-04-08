@@ -20,6 +20,17 @@ const orderSchema = new mongoose.Schema({
   awb: { type: String, default: "" },
   tracking_url: { type: String, default: "" },
   return_tracking_details: { type: Array, default: [] },
+  statusHistory: {
+    type: [
+      {
+        status: { type: String, required: true },
+        date: { type: Date, default: Date.now },
+        note: { type: String, default: "" },
+        updatedBy: { type: String, default: "system" },
+      },
+    ],
+    default: [],
+  },
 
   // Payment info
   paymentMethod: { type: String, default: "" },

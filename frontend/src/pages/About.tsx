@@ -3,10 +3,11 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Newsletter from '../components/Newsletter'
 import SEO from '../components/SEO'
+import { PRIMARY_BUTTON_CLASS, SECONDARY_BUTTON_CLASS } from '@/lib/buttonStyles'
 
 function About () {
   return (
-    <div className='min-h-screen bg-white flex flex-col pb-[70px] md:pb-0'>
+    <div className='min-h-screen bg-[#faf6f0] flex flex-col pb-[70px] md:pb-0'>
       <SEO 
         title="About Us - Our Story & Mission"
         description="Learn about Revive Wardrobe - A fashion-forward brand born in the UAE, blending timeless tradition with bold innovation. Discover our commitment to affordable, eco-conscious fashion."
@@ -14,34 +15,47 @@ function About () {
         canonical="/about"
       />
       <Navbar />
-      <div className='container mx-auto px-4 py-8 flex-grow'>
-        <div className='max-w-3xl mx-auto bg-white rounded-lg shadow-sm border p-8'>
-          {/* Logo Section */}
-          <div className='text-center mb-8'>
-            <img 
-              src='/logo.png' 
-              alt='Revive Wardrobe Logo' 
-              className='h-20 md:h-24 mx-auto mb-6'
-            />
-            <h1 className='text-3xl md:text-4xl font-serif mb-6'>About Us</h1>
-            <div className='w-24 h-1 bg-revive-red mx-auto'></div>
-          </div>
-          <div className='prose max-w-none text-gray-700 text-lg'>
-            <p className='mb-4'>
-              Revive Wardrobe is a fashion-forward brand born in the UAE, where timeless tradition meets bold innovation. Our collections reflect a deep appreciation for elegance, cultural identity, and contemporary lifestyles.
-            </p>
-            <p className='mb-4'>
-              Founded with a passion for inclusivity and conscious living, Revive Wardrobe is more than just a brand – it's a movement toward affordable, eco-conscious fashion that feels as good as it looks. Every piece is handpicked with care to ensure style, quality, and lasting value.
-            </p>
-            <p className='mb-4'>
-              At Revive Wardrobe, we believe fashion is not just about clothing — it's a reflection of identity, intimacy, and expression. We believe style is personal, expressive, and ever-evolving. Whether you're dressing for celebration or connection, our diverse collections ensure you feel beautiful, confident, and truly seen.
-            </p>
-            <p>
-              We invite you to explore a wardrobe that blends elegance, ease, and a touch of conscious luxury.
-            </p>
-            <p className='mt-8 font-semibold text-center'>
-              Revive tradition. Celebrate intimacy. Redefine fashion.
-            </p>
+      <div className='container mx-auto px-4 py-10 flex-grow'>
+        <div className='max-w-5xl mx-auto rounded-3xl border border-[#7b4d2e]/15 bg-white shadow-[0_24px_55px_rgba(48,33,24,0.1)] overflow-hidden'>
+          <div className='grid md:grid-cols-[1.2fr_1fr] gap-0'>
+            <div className='p-8 md:p-12'>
+              <p className='text-xs uppercase tracking-[0.2em] text-[#7b4d2e] font-semibold'>Our Story</p>
+              <h1 className='mt-3 text-4xl md:text-5xl font-serif text-[#2d1c15] leading-tight'>Tradition, Revived for Modern Elegance</h1>
+              <div className='w-24 h-1 bg-revive-red mt-6'></div>
+
+              <div className='mt-7 space-y-4 text-[#5b463a] leading-relaxed'>
+                <p>
+                  Revive Wardrobe is a fashion-forward house born in the UAE, where timeless modest dressing meets refined contemporary design.
+                </p>
+                <p>
+                  We create with intention: premium drape, elegant detailing, and silhouettes that let you feel powerful without compromising comfort.
+                </p>
+                <p>
+                  From daily sophistication to celebration looks, each piece is chosen to help you feel confident, graceful, and deeply yourself.
+                </p>
+              </div>
+
+              <div className='mt-8 flex flex-wrap gap-3'>
+                <a href='/shop/category/graceful-abayas' className={`${PRIMARY_BUTTON_CLASS} inline-flex items-center rounded-md px-5 py-3 text-sm font-medium`}>
+                  Shop Abayas
+                </a>
+                <a href='/blog' className={`${SECONDARY_BUTTON_CLASS} inline-flex items-center rounded-md px-5 py-3 text-sm font-medium`}>
+                  Read Our Journal
+                </a>
+              </div>
+            </div>
+
+            <div className='relative min-h-[320px] md:min-h-full'>
+              <img
+                src='https://res.cloudinary.com/dia8x6y6u/image/upload/v1766769973/duag2mafgf57xjzxl28k.jpg'
+                alt='Revive Wardrobe story'
+                className='absolute inset-0 w-full h-full object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent' />
+              <div className='absolute bottom-6 left-6 right-6 rounded-xl border border-white/25 bg-white/10 backdrop-blur-sm p-4 text-white'>
+                <p className='font-serif text-lg'>Revive tradition. Celebrate identity. Redefine fashion.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

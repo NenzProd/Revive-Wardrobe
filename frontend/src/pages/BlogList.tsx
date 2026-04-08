@@ -5,8 +5,7 @@ import { ArrowRight, Calendar, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
 import { getOptimizedImageUrl, getOptimizedSrcSet } from "../lib/image";
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { backendUrl } from "../config/constants";
 
 interface Blog {
   _id: string;
@@ -51,7 +50,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
   });
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+    <div className="bg-white/95 rounded-2xl overflow-hidden border border-[#7b4d2e]/10 shadow-[0_16px_40px_rgba(56,37,25,0.09)] hover:shadow-[0_20px_46px_rgba(56,37,25,0.14)] transition-all duration-300 group">
       <div className="h-56 overflow-hidden">
         <img
           src={src}
@@ -65,7 +64,7 @@ const BlogPost: React.FC<BlogPostProps> = ({
         />
       </div>
       <div className="p-6">
-        <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs mb-3">
+        <span className="inline-block px-3 py-1 bg-[#f2e7d8] text-[#6d4a35] rounded-full text-xs mb-3 font-medium">
           {category}
         </span>
         <div className="flex items-center text-sm text-gray-500 mb-3">
@@ -75,13 +74,13 @@ const BlogPost: React.FC<BlogPostProps> = ({
           </span>
         </div>
         <h3
-          className="text-xl font-serif mb-3 group-hover:text-revive-red transition-colors"
+          className="text-xl font-serif mb-3 group-hover:text-[#a51c30] transition-colors"
           dangerouslySetInnerHTML={{ __html: title }}
         />
         <p className="text-gray-600 mb-4 line-clamp-3">{excerpt}</p>
         <Link
           to={link}
-          className="inline-flex items-center text-revive-red hover:text-revive-black transition-colors"
+          className="inline-flex items-center text-[#a51c30] hover:text-[#2a1b15] transition-colors font-medium"
         >
           Read More <ArrowRight size={16} className="ml-1" />
         </Link>
@@ -150,7 +149,7 @@ const BlogList = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf7f2]">
       <SEO
         title="Fashion Blog - Style Guides & Insights"
         description="Explore Revive Wardrobe's fashion blog. Get style guides, fashion insights, and behind-the-scenes glimpses into our world of elegance."
@@ -169,23 +168,23 @@ const BlogList = () => {
       />
       <Navbar />
       <div className="pb-16">
-        <div className="container mx-auto px-4">
-          {/* Page Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-5xl font-serif mb-4">Our Blog</h1>
-            <div className="w-24 h-1 bg-revive-red mx-auto"></div>
-            <p className="mt-6 text-gray-600 max-w-2xl mx-auto">
-              Fashion insights, style guides, and behind-the-scenes glimpses
-              into our world of elegance.
+        <div className="bg-[radial-gradient(circle_at_top_right,rgba(199,155,122,0.2),transparent_45%),radial-gradient(circle_at_top_left,rgba(165,28,48,0.12),transparent_35%)] py-16 md:py-20 border-b border-[#7b4d2e]/10">
+          <div className="container mx-auto px-4">
+            <p className="text-xs tracking-[0.22em] uppercase text-[#7b4d2e] text-center font-semibold">Editorial Journal</p>
+            <h1 className="text-4xl md:text-6xl font-serif mt-4 text-center text-[#2a1b15]">Stories in Silk, Craft, and Culture</h1>
+            <p className="mt-5 text-center text-[#5e463a] max-w-2xl mx-auto">
+              Style notes, occasion dressing guides, and behind-the-scenes insights from the Revive Wardrobe design room.
             </p>
           </div>
+        </div>
+        <div className="container mx-auto px-4">
           {/* Search Bar */}
-          <div className="max-w-md mx-auto mb-12">
+          <div className="max-w-xl mx-auto mb-12 -mt-8">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search articles..."
-                className="w-full border border-gray-300 rounded-full py-3 px-6 pr-12 focus:outline-none focus:ring-1 focus:ring-revive-red focus:border-revive-red"
+                className="w-full border border-[#7b4d2e]/20 bg-white rounded-full py-3 px-6 pr-12 focus:outline-none focus:ring-1 focus:ring-[#a51c30] focus:border-[#a51c30]"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
