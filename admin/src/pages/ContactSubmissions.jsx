@@ -12,7 +12,7 @@ const ContactSubmissions = ({ token }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${backendUrl}/api/inquiry/contact/list`,
+        `${backendUrl}/api/blog/contact/submissions`,
         {},
         { headers: { token } }
       );

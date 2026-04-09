@@ -12,7 +12,7 @@ const StitchingRequests = ({ token }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${backendUrl}/api/inquiry/stitching/list`,
+        `${backendUrl}/api/blog/stitching/submissions`,
         {},
         { headers: { token } }
       );

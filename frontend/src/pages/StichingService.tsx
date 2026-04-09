@@ -40,7 +40,7 @@ const StichingService = () => {
     setResult("Sending....");
 
     try {
-      const storeRes = await fetch(`${backendUrl}/api/inquiry/stitching`, {
+      const storeRes = await fetch(`${backendUrl}/api/blog/stitching/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

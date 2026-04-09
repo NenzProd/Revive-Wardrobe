@@ -35,7 +35,7 @@ const Contact = () => {
     setResult("Sending....");
 
     try {
-      const storeRes = await fetch(`${backendUrl}/api/inquiry/contact`, {
+      const storeRes = await fetch(`${backendUrl}/api/blog/contact/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
