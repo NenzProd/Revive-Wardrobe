@@ -13,6 +13,8 @@ import Dashboard from "./pages/Dashboard";
 import Blog from "./pages/Blog";
 import AddBlog from "./pages/AddBlog";
 import EditBlog from "./pages/EditBlog";
+import ContactSubmissions from "./pages/ContactSubmissions";
+import StitchingRequests from "./pages/StitchingRequests";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 export const currency = "AED ";
@@ -66,6 +68,8 @@ const App = () => {
                 <Route path="/add" element={hasRoleAccess(role, ["super_admin", "inventory_manager"]) ? <Add token={token} /> : <Navigate to="/" replace />} />
                 <Route path="/list" element={hasRoleAccess(role, ["super_admin", "inventory_manager"]) ? <List token={token} /> : <Navigate to="/" replace />} />
                 <Route path="/orders" element={hasRoleAccess(role, ["super_admin", "operations_manager"]) ? <Orders token={token} /> : <Navigate to="/" replace />} />
+                <Route path="/contact-submissions" element={hasRoleAccess(role, ["super_admin", "operations_manager", "content_manager"]) ? <ContactSubmissions token={token} /> : <Navigate to="/" replace />} />
+                <Route path="/stitching-requests" element={hasRoleAccess(role, ["super_admin", "operations_manager"]) ? <StitchingRequests token={token} /> : <Navigate to="/" replace />} />
                 <Route path="/edit/:id" element={hasRoleAccess(role, ["super_admin", "inventory_manager"]) ? <Edit token={token} /> : <Navigate to="/" replace />} />
                 <Route path="/blog" element={hasRoleAccess(role, ["super_admin", "content_manager"]) ? <Blog token={token} /> : <Navigate to="/" replace />} />
                 <Route path="/addblog" element={hasRoleAccess(role, ["super_admin", "content_manager"]) ? <AddBlog token={token} /> : <Navigate to="/" replace />} />

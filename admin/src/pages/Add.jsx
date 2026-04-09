@@ -27,8 +27,8 @@ const Add = ({ token }) => {
   const [variants, setVariants] = useState([
     {
       sku: '',
-      purchase_price: '',
       retail_price: '',
+      offer_price: '',
       discount: 0,
       weight_unit: 'Kg',
       filter_value: '',
@@ -46,6 +46,38 @@ const Add = ({ token }) => {
     { value: "XXL", label: "XXL (60)" },
   ];
   const generalCategory = deriveGeneralCategory(category);
+
+  const toNumber = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const calculateOfferFromDiscount = (retailPrice, discount) =>
+    Math.max(Math.round(toNumber(retailPrice) - (toNumber(retailPrice) * toNumber(discount)) / 100), 0);
+
+  const calculateDiscountFromOffer = (retailPrice, offerPrice) => {
+    const retail = Math.max(toNumber(retailPrice), 0);
+    const offer = Math.max(toNumber(offerPrice), 0);
+    if (retail <= 0) return 0;
+    return Math.max(Math.round(((retail - offer) / retail) * 100), 0);
+  };
+
+  const updateVariantPricing = (index, updates) => {
+    setVariants((prev) => {
+      const next = [...prev];
+      const current = { ...next[index], ...updates };
+      const retail = toNumber(current.retail_price);
+
+      if (Object.prototype.hasOwnProperty.call(updates, "offer_price")) {
+        current.discount = calculateDiscountFromOffer(retail, current.offer_price);
+      } else {
+        current.offer_price = calculateOfferFromDiscount(retail, current.discount);
+      }
+
+      next[index] = current;
+      return next;
+    });
+  };
 
   // Helper to generate unique SKU per product and size
   function generateSku(slug, filterValue) {
@@ -126,8 +158,8 @@ const Add = ({ token }) => {
         setVariants([
           {
             sku: '',
-            purchase_price: '',
             retail_price: '',
+            offer_price: '',
             discount: 0,
             weight_unit: 'Kg',
             filter_value: '',
@@ -333,30 +365,18 @@ const Add = ({ token }) => {
                     <input type="text" className="w-full px-3 py-2 bg-gray-50" value={generateSku(slug, variant.filter_value)} readOnly />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.purchase_price} onChange={e => {
-                      const v = [...variants]
-                      v[idx].purchase_price = e.target.value
-                      setVariants(v)
-                    }} required />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Retail Price</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.retail_price} onChange={e => updateVariantPricing(idx, { retail_price: e.target.value })} required />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Retail Price</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.retail_price} onChange={e => {
-                      const v = [...variants]
-                      v[idx].retail_price = e.target.value
-                      setVariants(v)
-                    }} required />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Offer Price</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.offer_price} onChange={e => updateVariantPricing(idx, { offer_price: e.target.value })} min="0" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.discount} onChange={e => {
-                      const v = [...variants]
-                      v[idx].discount = e.target.value
-                      setVariants(v)
-                    }} min="0" />
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.discount} onChange={e => updateVariantPricing(idx, { discount: e.target.value })} min="0" max="100" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Weight Unit</label>
@@ -440,8 +460,8 @@ const Add = ({ token }) => {
                   ...variants,
                   {
                     sku: '',
-                    purchase_price: '',
                     retail_price: '',
+                    offer_price: '',
                     discount: 0,
                     weight_unit: 'Kg',
                     filter_value: '',

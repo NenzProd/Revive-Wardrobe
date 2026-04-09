@@ -10,10 +10,21 @@ export const getVariantRetailPrice = (variant?: ProductVariant | null) =>
   Math.max(toNumber(variant?.retail_price), 0);
 
 export const getVariantDiscount = (variant?: ProductVariant | null) =>
-  Math.max(toNumber(variant?.discount), 0);
+  Math.min(Math.max(toNumber(variant?.discount), 0), 100);
+
+export const getVariantOfferPrice = (variant?: ProductVariant | null) => {
+  const retail = getVariantRetailPrice(variant);
+  const explicitOffer = Math.max(toNumber(variant?.offer_price), 0);
+  if (explicitOffer > 0 && explicitOffer <= retail) {
+    return explicitOffer;
+  }
+
+  const discountPercent = getVariantDiscount(variant);
+  return Math.max(Math.round(retail - (retail * discountPercent) / 100), 0);
+};
 
 export const getVariantFinalPrice = (variant?: ProductVariant | null) =>
-  Math.max(getVariantRetailPrice(variant) - getVariantDiscount(variant), 0);
+  getVariantOfferPrice(variant);
 
 export const isVariantSoldOut = (variant?: ProductVariant | null) =>
   toNumber(variant?.stock) === 0;
@@ -62,7 +73,9 @@ export const getProductSalePrice = (
   preferredSize?: string | null
 ) => {
   const variant = getPreferredVariant(product, preferredSize);
-  return getVariantDiscount(variant) > 0 ? getVariantFinalPrice(variant) : undefined;
+  return getVariantFinalPrice(variant) < getVariantRetailPrice(variant)
+    ? getVariantFinalPrice(variant)
+    : undefined;
 };
 
 export const getProductStock = (

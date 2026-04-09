@@ -68,7 +68,7 @@ const Navbar = () => {
       { name: "Cart", path: "/cart", icon: "ShoppingCart", badge: true },
       {
         name: "Phone",
-        path: "tel:+971521919358",
+        path: "tel:+971582447684",
         icon: "Phone",
         action: "call",
       },

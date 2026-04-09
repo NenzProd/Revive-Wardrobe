@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const variantSchema = new mongoose.Schema({
   sku: { type: String, required: true },                 // Required by Depoter
   retail_price: { type: Number },
-  purchase_price: { type: Number },
+  offer_price: { type: Number },
   discount: { type: Number, default: 0 },
   weight_unit: { type: String, enum: ['Kg', 'Lb'], default: 'Kg' },
   filter_value: { type: String },                      // E.g. "XS"

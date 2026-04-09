@@ -2,7 +2,7 @@ export interface ProductVariant {
   sku: string
   barcode: string
   retail_price: number
-  purchase_price?: number
+  offer_price?: number
   discount: number
   weight_unit: string
   filter_value: string

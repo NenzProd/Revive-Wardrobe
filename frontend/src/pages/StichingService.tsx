@@ -6,6 +6,7 @@ import { Scissors, MapPin, Phone, Mail, Send, Package, Ruler, Clock } from "luci
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "../components/SEO";
+import { backendUrl } from "../config/constants";
 
 const StichingService = () => {
   const { toast } = useToast();
@@ -37,72 +38,62 @@ const StichingService = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setResult("Sending....");
-    
-    const submitData = {
-      access_key: "8fe96749-31d0-42ce-805a-fa6b07f765f2",
-      subject: "New Stitching Service Request",
-      name: formData.name,
-      phone: formData.phoneNumber,
-      address_type: formData.addressType,
-      full_address: formData.fullAddress,
-      landmark: formData.landmark,
-      city: formData.city,
-      pin_code: formData.pinCode,
-      service_type: formData.serviceType,
-      item_count: formData.itemCount,
-      message: formData.message,
-    };
 
     try {
-      let response = await fetch("https://api.web3forms.com/submit", {
+      const storeRes = await fetch(`${backendUrl}/api/inquiry/stitching`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(submitData)
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        const formDataToSend = new FormData();
-        Object.entries(submitData).forEach(([key, value]) => {
-          formDataToSend.append(key, value);
-        });
+      const storeData = await storeRes.json();
+      if (!storeRes.ok || !storeData.success) {
+        throw new Error(storeData.message || "Failed to submit request");
+      }
 
-        response = await fetch("https://api.web3forms.com/submit", {
+      // Best-effort mirror to existing Web3Forms workflow.
+      try {
+        await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          body: formDataToSend
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_key: "8fe96749-31d0-42ce-805a-fa6b07f765f2",
+            subject: "New Stitching Service Request",
+            name: formData.name,
+            phone: formData.phoneNumber,
+            address_type: formData.addressType,
+            full_address: formData.fullAddress,
+            landmark: formData.landmark,
+            city: formData.city,
+            pin_code: formData.pinCode,
+            service_type: formData.serviceType,
+            item_count: formData.itemCount,
+            message: formData.message,
+          }),
         });
+      } catch {
+        // Intentionally ignored - data is already stored in our backend.
       }
 
-      const data = await response.json();
-
-      if (data.success) {
-        setResult("Stitching Service Request Submitted Successfully");
-        toast({
-          title: "Request submitted!",
-          description: "We'll contact you within 24 hours to discuss your stitching requirements.",
-        });
-        setFormData({
-          name: "",
-          phoneNumber: "",
-          addressType: "",
-          fullAddress: "",
-          landmark: "",
-          city: "",
-          pinCode: "",
-          serviceType: "",
-          itemCount: "",
-          message: "",
-        });
-      } else {
-        console.log("Error", data);
-        setResult(data.message || "Failed to submit request");
-        toast({
-          title: "Error",
-          description: data.message || "Failed to send request. Please try again.",
-          variant: "destructive",
-        });
-      }
+      setResult("Stitching Service Request Submitted Successfully");
+      toast({
+        title: "Request submitted!",
+        description: "We'll contact you within 24 hours to discuss your stitching requirements.",
+      });
+      setFormData({
+        name: "",
+        phoneNumber: "",
+        addressType: "",
+        fullAddress: "",
+        landmark: "",
+        city: "",
+        pinCode: "",
+        serviceType: "",
+        itemCount: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Error:", error);
       setResult("Unable to connect to server. Please contact us directly at info@revivewardrobe.com or call +971 58 244 7684");

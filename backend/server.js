@@ -12,6 +12,7 @@ import addressRouter from './routes/addressRoute.js'
 import blogRouter from './routes/blogRoute.js'
 import dashboardRouter from './routes/dashboardRoute.js'
 import reviewRouter from './routes/reviewRoute.js'
+import inquiryRouter from './routes/inquiryRoute.js'
 import cron from 'node-cron'
 import { updateAllProductStocks } from './controllers/productController.js'
 import { backfillMissingProductSubCategories } from './utils/productCategory.js'
@@ -42,6 +43,7 @@ app.use('/api/address', addressRouter)
 app.use('/api/blog', blogRouter)
 app.use('/api/dashboard', dashboardRouter)
 app.use('/api/review', reviewRouter)
+app.use('/api/inquiry', inquiryRouter)
 
 app.get('/', (req, res)=>{
     res.send("API Working")

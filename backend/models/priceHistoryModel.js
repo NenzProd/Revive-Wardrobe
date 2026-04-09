@@ -6,7 +6,7 @@ const priceHistorySchema = new mongoose.Schema({
   sku: { type: String, default: "" },
   field: {
     type: String,
-    enum: ["purchase_price", "retail_price", "discount"],
+    enum: ["retail_price", "offer_price", "discount"],
     required: true,
     index: true,
   },

@@ -42,7 +42,6 @@ const ProductDetail = () => {
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [maxStock, setMaxStock] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,7 +49,6 @@ const ProductDetail = () => {
 
   // Fetch product data based on slug
   const { product, loading, error } = useProductBySlug(slug || "");
-  console.log("DEBUG: Product Detail Data:", product);
 
   // Show global loader while product is loading
   usePageLoader(loading);
@@ -70,7 +68,6 @@ const ProductDetail = () => {
       
       setSelectedVariant(defaultVariant);
       setSelectedSize(defaultVariant.filter_value || null);
-      setDisplayPrice(defaultVariant.retail_price);
       setMaxStock(defaultVariant.stock);
       setQuantity(1);
     }
@@ -196,11 +193,8 @@ const ProductDetail = () => {
           const url = `${siteUrl}/product/${product.slug}`;
           const images = Array.isArray(product.image) ? product.image : [];
           const firstVariant = product.variants?.[0];
-          const price = (
-            selectedVariantDiscount > 0
-              ? selectedVariantFinalPrice
-              : (displayPrice ?? firstVariant?.retail_price ?? null)
-          ) as number | null;
+          const activeVariant = selectedVariant || firstVariant;
+          const price = activeVariant ? getVariantFinalPrice(activeVariant) : null;
           const stock = (selectedVariant?.stock ?? firstVariant?.stock ?? null) as number | null;
 
           const schema: Record<string, unknown> = {
@@ -298,7 +292,7 @@ const ProductDetail = () => {
             </div>
 
             <div className="text-2xl font-bold text-revive-red mb-6">
-              {selectedVariantDiscount > 0 ? (
+              {selectedVariantFinalPrice < selectedVariantPrice ? (
                 <div className="flex items-center gap-3">
                   <span>
                     {priceSymbol} {selectedVariantFinalPrice.toLocaleString()}
@@ -306,11 +300,16 @@ const ProductDetail = () => {
                   <span className="text-lg font-medium text-gray-400 line-through">
                     {priceSymbol} {selectedVariantPrice.toLocaleString()}
                   </span>
+                  {selectedVariantDiscount > 0 && (
+                    <span className="text-sm font-semibold text-revive-red">
+                      {selectedVariantDiscount}% OFF
+                    </span>
+                  )}
                 </div>
               ) : (
                 <>
                   {priceSymbol}{" "}
-                  {displayPrice !== null ? displayPrice.toLocaleString() : ""}
+                  {selectedVariantPrice.toLocaleString()}
                 </>
               )}
             </div>
@@ -386,7 +385,6 @@ const ProductDetail = () => {
                         onClick={() => {
                           setSelectedSize(variant.filter_value);
                           setSelectedVariant(variant);
-                          setDisplayPrice(variant.retail_price);
                           setMaxStock(variant.stock);
                           setQuantity(1);
                         }}

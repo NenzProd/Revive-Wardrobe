@@ -149,7 +149,7 @@ const BlogList = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#faf7f2]">
+    <div className="min-h-screen bg-[#f3ece2]">
       <SEO
         title="Fashion Blog - Style Guides & Insights"
         description="Explore Revive Wardrobe's fashion blog. Get style guides, fashion insights, and behind-the-scenes glimpses into our world of elegance."
@@ -168,34 +168,63 @@ const BlogList = () => {
       />
       <Navbar />
       <div className="pb-16">
-        <div className="bg-[radial-gradient(circle_at_top_right,rgba(199,155,122,0.2),transparent_45%),radial-gradient(circle_at_top_left,rgba(165,28,48,0.12),transparent_35%)] py-16 md:py-20 border-b border-[#7b4d2e]/10">
-          <div className="container mx-auto px-4">
-            <p className="text-xs tracking-[0.22em] uppercase text-[#7b4d2e] text-center font-semibold">Editorial Journal</p>
-            <h1 className="text-4xl md:text-6xl font-serif mt-4 text-center text-[#2a1b15]">Stories in Silk, Craft, and Culture</h1>
-            <p className="mt-5 text-center text-[#5e463a] max-w-2xl mx-auto">
-              Style notes, occasion dressing guides, and behind-the-scenes insights from the Revive Wardrobe design room.
-            </p>
-          </div>
-        </div>
-        <div className="container mx-auto px-4">
-          {/* Search Bar */}
-          <div className="max-w-xl mx-auto mb-12 -mt-8">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search articles..."
-                className="w-full border border-[#7b4d2e]/20 bg-white rounded-full py-3 px-6 pr-12 focus:outline-none focus:ring-1 focus:ring-[#a51c30] focus:border-[#a51c30]"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-revive-red transition-colors"
-                disabled
-              >
-                <Search size={18} />
-              </button>
+        <div className="container mx-auto px-4 pt-10 md:pt-14">
+          <div className="bg-[#f8f2e9] border border-[#7b4d2e]/20 rounded-2xl p-4 md:p-8 shadow-[0_20px_45px_rgba(41,25,16,0.08)]">
+            <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-[#7b4d2e]/15">
+              <p className="text-base md:text-lg font-semibold text-[#2a1b15]">Revive Stories</p>
+              <p className="text-xs tracking-[0.2em] uppercase text-[#7b4d2e]/80">Innovation Meets Elegance</p>
+              <div className="ml-auto w-full md:w-64 relative">
+                <input
+                  type="text"
+                  placeholder="Find story..."
+                  className="w-full border border-[#7b4d2e]/20 bg-white rounded-full py-2.5 px-4 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[#a51c30]"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7b4d2e]/60" />
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-[0.9fr_1.1fr_0.9fr] gap-6 mt-6 items-end">
+              <div className="hidden md:block">
+                <div className="rounded-2xl overflow-hidden h-[460px] bg-[#f2d8d6]">
+                  <img
+                    src={blogs[0]?.imageUrl || "/logo_pc.png"}
+                    alt={blogs[0]?.title || "Blog feature"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              <div className="px-1 md:px-4">
+                <p className="text-xs tracking-[0.2em] uppercase text-[#7b4d2e]">Trending Editorial</p>
+                <h1 className="mt-3 text-4xl md:text-6xl leading-[0.9] font-serif text-[#2a1b15]">
+                  Where luxury styling meets modest confidence
+                </h1>
+                <p className="mt-4 text-[#5e463a] max-w-lg">
+                  Curated reads for fabrics, cuts, festive dressing and timeless abaya layering in Dubai.
+                </p>
+                <Link
+                  to={filteredBlogs[0]?.link || "/blog"}
+                  className="inline-flex mt-6 items-center gap-2 rounded-full border border-[#a51c30] text-[#a51c30] px-5 py-2.5 hover:bg-[#a51c30] hover:text-white transition-colors"
+                >
+                  Read Post <ArrowRight size={16} />
+                </Link>
+              </div>
+
+              <div>
+                <div className="rounded-2xl overflow-hidden h-[360px] md:h-[430px] bg-[#f1dfce] border border-[#7b4d2e]/15">
+                  <img
+                    src={blogs[1]?.imageUrl || blogs[0]?.imageUrl || "/logo_pc.png"}
+                    alt={blogs[1]?.title || "Featured style story"}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+        <div className="container mx-auto px-4 mt-10">
           {/* Blog Posts Grid */}
           {loading ? (
             <div className="text-center py-12 text-gray-500">

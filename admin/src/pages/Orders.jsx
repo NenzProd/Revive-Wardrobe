@@ -161,9 +161,13 @@ const Orders = ({token}) => {
                     {(order.line_items || []).map((item, idx) => {
                       const retailPrice = Number(item.retail_price)
                       const discount = Number(item.discount)
-                      const price = Number.isFinite(retailPrice)
-                        ? Math.max(retailPrice - (Number.isFinite(discount) ? discount : 0), 0)
-                        : Number(item.price) || 0;
+                      const itemPrice = Number(item.price)
+                      const calculatedOffer = Number.isFinite(retailPrice)
+                        ? Math.max(retailPrice - (retailPrice * (Number.isFinite(discount) ? discount : 0) / 100), 0)
+                        : 0
+                      const price = Number.isFinite(itemPrice) && itemPrice > 0
+                        ? itemPrice
+                        : calculatedOffer;
                       const quantity = Number(item.quantity) || 0;
                       const subtotal = price * quantity;
                       return (
@@ -183,9 +187,13 @@ const Orders = ({token}) => {
                     Total Price: {currency}{(order.line_items || []).reduce((sum, item) => {
                       const retailPrice = Number(item.retail_price)
                       const discount = Number(item.discount)
-                      const price = Number.isFinite(retailPrice)
-                        ? Math.max(retailPrice - (Number.isFinite(discount) ? discount : 0), 0)
-                        : Number(item.price) || 0
+                      const itemPrice = Number(item.price)
+                      const calculatedOffer = Number.isFinite(retailPrice)
+                        ? Math.max(retailPrice - (retailPrice * (Number.isFinite(discount) ? discount : 0) / 100), 0)
+                        : 0
+                      const price = Number.isFinite(itemPrice) && itemPrice > 0
+                        ? itemPrice
+                        : calculatedOffer
                       return sum + (price * (Number(item.quantity) || 0))
                     }, 0)}
                   </p>

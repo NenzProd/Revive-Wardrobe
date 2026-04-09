@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Send, MessageSquare, Clock, MessageCircle } from "
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "../components/SEO";
+import { backendUrl } from "../config/constants";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -32,59 +33,41 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setResult("Sending....");
-    
-    // Try multiple approaches for better compatibility
-    const submitData = {
-      access_key: "8fe96749-31d0-42ce-805a-fa6b07f765f2",
-      name: formData.name,
-      email: formData.email,
-      subject: formData.subject,
-      message: formData.message,
-    };
 
     try {
-      // First try: JSON approach (often works better)
-      let response = await fetch("https://api.web3forms.com/submit", {
+      const storeRes = await fetch(`${backendUrl}/api/inquiry/contact`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(submitData)
+        body: JSON.stringify(formData),
       });
 
-      // If JSON fails, try FormData approach
-      if (!response.ok) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("access_key", submitData.access_key);
-        formDataToSend.append("name", submitData.name);
-        formDataToSend.append("email", submitData.email);
-        formDataToSend.append("subject", submitData.subject);
-        formDataToSend.append("message", submitData.message);
+      const storeData = await storeRes.json();
+      if (!storeRes.ok || !storeData.success) {
+        throw new Error(storeData.message || "Failed to submit form");
+      }
 
-        response = await fetch("https://api.web3forms.com/submit", {
+      // Best-effort mirror to existing Web3Forms workflow.
+      try {
+        await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          body: formDataToSend
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_key: "8fe96749-31d0-42ce-805a-fa6b07f765f2",
+            ...formData,
+          }),
         });
+      } catch {
+        // Intentionally ignored - data is already stored in our backend.
       }
 
-      const data = await response.json();
-
-      if (data.success) {
-        setResult("Form Submitted Successfully");
-        toast({
-          title: "Message sent!",
-          description: "We'll get back to you within 24 hours.",
-        });
-        setFormData({ name: "", email: "", subject: "", message: "" });
-      } else {
-        console.log("Error", data);
-        setResult(data.message || "Failed to submit form");
-        toast({
-          title: "Error",
-          description: data.message || "Failed to send message. Please try again.",
-          variant: "destructive",
-        });
-      }
+      setResult("Form Submitted Successfully");
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you within 24 hours.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
       console.error("Error:", error);
       
@@ -106,12 +89,14 @@ const Contact = () => {
       title: "Email Us",
       content: "info@revivewardrobe.com",
       description: "Get answers within 24 hours",
+      link: "mailto:info@revivewardrobe.com",
     },
     {
       icon: Phone,
       title: "Call Us",
       content: "+971 58 244 7684",
       description: "Sun-Thu, 9AM-6PM UAE Time",
+      link: "tel:+971582447684",
     },
     {
       icon: MessageCircle,

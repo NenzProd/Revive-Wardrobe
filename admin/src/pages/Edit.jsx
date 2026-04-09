@@ -29,8 +29,8 @@ function Edit({ token }) {
   const [variants, setVariants] = useState([
     {
       sku: '',
-      purchase_price: '',
       retail_price: '',
+      offer_price: '',
       discount: 0,
       weight_unit: 'Kg',
       filter_value: '',
@@ -49,6 +49,21 @@ function Edit({ token }) {
     { value: 'XXL', label: 'XXL (60)' }
   ]
   const generalCategory = deriveGeneralCategory(category)
+
+  const toNumber = (value) => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
+  const calculateOfferFromDiscount = (retailPrice, discount) =>
+    Math.max(Math.round(toNumber(retailPrice) - (toNumber(retailPrice) * toNumber(discount)) / 100), 0)
+
+  const calculateDiscountFromOffer = (retailPrice, offerPrice) => {
+    const retail = Math.max(toNumber(retailPrice), 0)
+    const offer = Math.max(toNumber(offerPrice), 0)
+    if (retail <= 0) return 0
+    return Math.max(Math.round(((retail - offer) / retail) * 100), 0)
+  }
 
   function generateSku(slug, filterValue) {
     if (!slug || !filterValue) return ''
@@ -75,16 +90,23 @@ function Edit({ token }) {
           setType(p.type || 'Stitched')
           setBestseller(!!p.bestseller)
           setSlug(p.slug || '')
-          setVariants(Array.isArray(p.variants) && p.variants.length > 0 ? p.variants : [{
-            sku: '',
-            purchase_price: '',
-            retail_price: '',
-            discount: 0,
-            weight_unit: 'Kg',
-            filter_value: '',
-            min_order_quantity: 1,
-            stock: 0
-          }])
+          setVariants(
+            Array.isArray(p.variants) && p.variants.length > 0
+              ? p.variants.map((variant) => ({
+                  ...variant,
+                  offer_price: variant.offer_price ?? calculateOfferFromDiscount(variant.retail_price, variant.discount),
+                }))
+              : [{
+                  sku: '',
+                  retail_price: '',
+                  offer_price: '',
+                  discount: 0,
+                  weight_unit: 'Kg',
+                  filter_value: '',
+                  min_order_quantity: 1,
+                  stock: 0
+                }]
+          )
           setCurrentImages([
             p.image && p.image[0] ? p.image[0] : null,
             p.image && p.image[1] ? p.image[1] : null,
@@ -128,6 +150,14 @@ function Edit({ token }) {
   function handleVariantChange(idx, field, value) {
     const v = [...variants]
     v[idx][field] = value
+    const retail = toNumber(v[idx].retail_price)
+
+    if (field === 'offer_price') {
+      v[idx].discount = calculateDiscountFromOffer(retail, value)
+    } else if (field === 'discount' || field === 'retail_price') {
+      v[idx].offer_price = calculateOfferFromDiscount(retail, field === 'discount' ? value : v[idx].discount)
+    }
+
     setVariants(v)
   }
 
@@ -180,8 +210,8 @@ function Edit({ token }) {
   function handleAddVariant() {
     setVariants([...variants, {
       sku: '',
-      purchase_price: '',
       retail_price: '',
+      offer_price: '',
       discount: 0,
       weight_unit: 'Kg',
       filter_value: '',
@@ -362,18 +392,18 @@ function Edit({ token }) {
                     <input type="text" className="w-full px-3 py-2 bg-gray-50" value={generateSku(slug, variant.filter_value)} readOnly />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.purchase_price} onChange={e => handleVariantChange(idx, 'purchase_price', e.target.value)} required />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Retail Price</label>
                     <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.retail_price} onChange={e => handleVariantChange(idx, 'retail_price', e.target.value)} required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Offer Price</label>
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.offer_price ?? ''} onChange={e => handleVariantChange(idx, 'offer_price', e.target.value)} min="0" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.discount} onChange={e => handleVariantChange(idx, 'discount', e.target.value)} min="0" />
+                    <input type="number" className="w-full px-3 py-2 bg-gray-50" value={variant.discount} onChange={e => handleVariantChange(idx, 'discount', e.target.value)} min="0" max="100" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Weight Unit</label>

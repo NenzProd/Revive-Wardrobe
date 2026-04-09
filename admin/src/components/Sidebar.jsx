@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, BookText, Menu } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, ListOrdered, ShoppingBag, BookText, Mail, Scissors, Menu } from 'lucide-react'
 import PropTypes from 'prop-types'
 
 const Sidebar = ({ onSidebarToggle, role = 'super_admin' }) => {
@@ -49,57 +49,79 @@ const Sidebar = ({ onSidebarToggle, role = 'super_admin' }) => {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className='flex flex-col gap-2 px-2 py-4 flex-1'>
+        <div className={`flex flex-col gap-2 py-4 flex-1 ${isOpen ? 'px-2' : 'px-1 items-center'}`}>
           <NavLink
             className={({isActive}) =>
-              `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
             }
             to="/"
           >
-            <LayoutDashboard className='w-5 h-5' />
+            <LayoutDashboard className='sidebar-icon w-5 h-5 shrink-0' />
             {isOpen && <span className="transition-all whitespace-nowrap">Dashboard</span>}
           </NavLink>
           {(role === 'super_admin' || role === 'inventory_manager') && (
             <NavLink
               className={({isActive}) =>
-                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
               }
               to="/add"
             >
-              <PlusCircle className='w-5 h-5' />
+              <PlusCircle className='sidebar-icon w-5 h-5 shrink-0' />
               {isOpen && <span className="transition-all whitespace-nowrap">Add Items</span>}
             </NavLink>
           )}
           {(role === 'super_admin' || role === 'inventory_manager') && (
             <NavLink
               className={({isActive}) =>
-                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
               }
               to="/list"
             >
-              <ListOrdered className='w-5 h-5' />
+              <ListOrdered className='sidebar-icon w-5 h-5 shrink-0' />
               {isOpen && <span className="transition-all whitespace-nowrap">List Items</span>}
             </NavLink>
           )}
           {(role === 'super_admin' || role === 'operations_manager') && (
             <NavLink
               className={({isActive}) =>
-                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
               }
               to="/orders"
             >
-              <ShoppingBag className='w-5 h-5' />
+              <ShoppingBag className='sidebar-icon w-5 h-5 shrink-0' />
               {isOpen && <span className="transition-all whitespace-nowrap">Orders</span>}
+            </NavLink>
+          )}
+          {(role === 'super_admin' || role === 'operations_manager' || role === 'content_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/contact-submissions"
+            >
+              <Mail className='sidebar-icon w-5 h-5 shrink-0' />
+              {isOpen && <span className="transition-all whitespace-nowrap">Contact Leads</span>}
+            </NavLink>
+          )}
+          {(role === 'super_admin' || role === 'operations_manager') && (
+            <NavLink
+              className={({isActive}) =>
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+              }
+              to="/stitching-requests"
+            >
+              <Scissors className='sidebar-icon w-5 h-5 shrink-0' />
+              {isOpen && <span className="transition-all whitespace-nowrap">Stitching Leads</span>}
             </NavLink>
           )}
           {(role === 'super_admin' || role === 'content_manager') && (
             <NavLink
               className={({isActive}) =>
-                `flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
+                `sidebar-link flex items-center ${isOpen ? 'justify-start gap-3 px-3 py-3 w-full' : 'justify-center w-12 h-12 mx-auto'} rounded-lg transition-all ${isActive ? 'bg-gray-100 text-gray-900 font-medium shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`
               }
               to="/blog"
             >
-              <BookText className='w-5 h-5' />
+              <BookText className='sidebar-icon w-5 h-5 shrink-0' />
               {isOpen && <span className="transition-all whitespace-nowrap">Blog</span>}
             </NavLink>
           )}

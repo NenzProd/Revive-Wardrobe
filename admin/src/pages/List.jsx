@@ -11,15 +11,15 @@ import { deriveGeneralCategory } from '../utils/productCategory'
 
 const STATIC_BULK_FIELDS = [
   { value: 'stock', label: 'Stock', type: 'number' },
-  { value: 'purchase_price', label: 'Purchase Price', type: 'number' },
   { value: 'retail_price', label: 'Retail Price', type: 'number' },
+  { value: 'offer_price', label: 'Offer Price', type: 'number' },
   { value: 'discount', label: 'Discount (%)', type: 'number' },
   { value: 'filter_value', label: 'Size', type: 'text' },
 ]
 
-const getVariantDisplayPrice = (product) => {
+const getVariantPricing = (product) => {
   const variants = Array.isArray(product?.variants) ? product.variants : []
-  if (variants.length === 0) return 0
+  if (variants.length === 0) return { retail: 0, offer: 0, discount: 0 }
 
   const preferred =
     variants.find((v) => Number(v?.retail_price) > 0 && Number(v?.stock) > 0) ||
@@ -27,8 +27,10 @@ const getVariantDisplayPrice = (product) => {
     variants[0]
 
   const retail = Math.max(Number(preferred?.retail_price) || 0, 0)
-  const discount = Math.max(Number(preferred?.discount) || 0, 0)
-  return Math.max(retail - discount, 0)
+  const discount = Math.min(Math.max(Number(preferred?.discount) || 0, 0), 100)
+  const explicitOffer = Math.max(Number(preferred?.offer_price) || 0, 0)
+  const offer = explicitOffer > 0 && explicitOffer <= retail ? explicitOffer : Math.max(Math.round(retail - (retail * discount / 100)), 0)
+  return { retail, offer, discount }
 }
 
 const List = ({ token }) => {
@@ -481,7 +483,19 @@ const List = ({ token }) => {
                   <div className="text-xs text-gray-400">{deriveGeneralCategory(item.category, item.sub_category)}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{currency}{getVariantDisplayPrice(item)}</div>
+                  {(() => {
+                    const pricing = getVariantPricing(item)
+                    if (pricing.discount > 0 && pricing.offer < pricing.retail) {
+                      return (
+                        <div>
+                          <div className="text-sm font-medium text-gray-900 line-through">{currency}{pricing.retail}</div>
+                          <div className="text-sm font-semibold text-emerald-700">{currency}{pricing.offer}</div>
+                          <div className="text-xs text-red-600">{pricing.discount}% OFF</div>
+                        </div>
+                      )
+                    }
+                    return <div className="text-sm font-medium text-gray-900">{currency}{pricing.retail}</div>
+                  })()}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <ul className="space-y-1">

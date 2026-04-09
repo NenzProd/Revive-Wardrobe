@@ -1,7 +1,6 @@
 import productModel from "../models/productModel.js";
 import {
   getPreferredVariant,
-  getVariantDiscount,
   getVariantFinalPrice,
   getVariantRetailPrice,
   normalizeStock,
@@ -71,7 +70,6 @@ export const normalizeProductDocument = (product) => {
   const primaryVariant = getPreferredVariant(variants);
   const price = getVariantRetailPrice(primaryVariant);
   const salePrice = getVariantFinalPrice(primaryVariant);
-  const discount = getVariantDiscount(primaryVariant);
   const isSoldOut =
     Array.isArray(variants) &&
     variants.length > 0 &&
@@ -81,8 +79,8 @@ export const normalizeProductDocument = (product) => {
     ...productObject,
     ...normalizeProductCategoryFields(productObject || {}),
     price,
-    salePrice: discount > 0 ? salePrice : undefined,
-    isSale: discount > 0,
+    salePrice: salePrice < price ? salePrice : undefined,
+    isSale: salePrice < price,
     isSoldOut,
   };
 };

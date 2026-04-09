@@ -70,6 +70,7 @@ const buildValidatedLineItems = async (lineItems = []) => {
       quantity: quantity.toString(),
       price: unitPrice.toString(),
       retail_price: retailPrice.toString(),
+      offer_price: unitPrice.toString(),
       discount: discount.toString(),
       linetotal: lineTotal.toString(),
     });

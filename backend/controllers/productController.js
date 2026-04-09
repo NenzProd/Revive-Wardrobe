@@ -3,14 +3,14 @@ import { v2 as cloudinary } from "cloudinary"
 import productModel from "../models/productModel.js"
 import categoryVisibilityModel from "../models/categoryVisibilityModel.js"
 import priceHistoryModel from "../models/priceHistoryModel.js"
-import { normalizeStock } from "../utils/pricing.js"
+import { normalizeStock, calculatePricing } from "../utils/pricing.js"
 import {
   normalizeProductCategoryFields,
   normalizeProductDocument,
   deriveGeneralCategory,
 } from "../utils/productCategory.js"
 
-const TRACKED_PRICE_FIELDS = ["purchase_price", "retail_price", "discount"]
+const TRACKED_PRICE_FIELDS = ["retail_price", "offer_price", "discount"]
 const DEFAULT_CATEGORY_VISIBILITY = [
   { category: "Graceful Abayas", slug: "graceful-abayas", enabled: true, sortOrder: 1 },
   { category: "Ethnic Elegance", slug: "ethnic-elegance", enabled: true, sortOrder: 2 },
@@ -30,6 +30,52 @@ const toSlug = (value = "") =>
 const toNumber = (value) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : 0
+}
+
+const normalizeVariantPricing = (variant = {}, previousVariant = null) => {
+  const safeVariant = { ...variant }
+  delete safeVariant.purchase_price
+  const retail_price = Math.max(toNumber(variant.retail_price), 0)
+  const incomingDiscount = variant.discount
+  const incomingOfferPrice = variant.offer_price
+
+  const hasOfferInput =
+    incomingOfferPrice !== undefined &&
+    incomingOfferPrice !== null &&
+    String(incomingOfferPrice).trim() !== ""
+
+  const hasDiscountInput =
+    incomingDiscount !== undefined &&
+    incomingDiscount !== null &&
+    String(incomingDiscount).trim() !== ""
+
+  let pricing
+  if (hasOfferInput && retail_price > 0) {
+    pricing = calculatePricing({
+      retailPrice: retail_price,
+      offerPrice: incomingOfferPrice,
+    })
+  } else if (hasDiscountInput && retail_price > 0) {
+    pricing = calculatePricing({
+      retailPrice: retail_price,
+      discount: incomingDiscount,
+    })
+  } else if (previousVariant && retail_price > 0) {
+    pricing = calculatePricing({
+      retailPrice: retail_price,
+      offerPrice: previousVariant.offer_price,
+      discount: previousVariant.discount,
+    })
+  } else {
+    pricing = calculatePricing({ retailPrice: retail_price })
+  }
+
+  return {
+    ...safeVariant,
+    retail_price,
+    offer_price: pricing.offerPrice,
+    discount: pricing.discount,
+  }
 }
 
 const getAdminMeta = (req) => ({
@@ -125,7 +171,7 @@ const addProduct = async (req, res) => {
         }
         // Normalize incoming stock so invalid values do not break sold-out logic.
         parsedVariants = parsedVariants.map(v => ({
-          ...v,
+          ...normalizeVariantPricing(v),
           stock: normalizeStock(v.stock)
         }))
 
@@ -234,10 +280,13 @@ const editProduct = async (req, res) => {
       }
     }
     // Normalize incoming stock so invalid values do not break sold-out logic.
-    parsedVariants = parsedVariants.map(v => ({
-      ...v,
-      stock: normalizeStock(v.stock)
-    }))
+    parsedVariants = parsedVariants.map(v => {
+      const previousVariant = previousVariantMap.get(v?.sku || "")
+      return {
+        ...normalizeVariantPricing(v, previousVariant || null),
+        stock: normalizeStock(v.stock),
+      }
+    })
 
     // Update MongoDB
     const normalizedCategories = normalizeProductCategoryFields({
@@ -322,13 +371,13 @@ const bulkUpdateProducts = async (req, res) => {
       return res.json({ success: false, message: 'No field specified' })
     }
 
-    const allowedFields = ['category', 'stock', 'purchase_price', 'retail_price', 'discount', 'filter_value']
+    const allowedFields = ['category', 'stock', 'retail_price', 'offer_price', 'discount', 'filter_value']
     if (!allowedFields.includes(field)) {
       return res.json({ success: false, message: `Invalid field: ${field}` })
     }
 
     const productLevelFields = ['category']
-    const variantLevelFields = ['stock', 'purchase_price', 'retail_price', 'discount', 'filter_value']
+    const variantLevelFields = ['stock', 'retail_price', 'offer_price', 'discount', 'filter_value']
 
     let updatedCount = 0
 
@@ -355,12 +404,22 @@ const bulkUpdateProducts = async (req, res) => {
         )
         for (const variant of product.variants) {
           let newValue = value
-          if (['stock', 'purchase_price', 'retail_price', 'discount'].includes(field)) {
+          if (['stock', 'retail_price', 'offer_price', 'discount'].includes(field)) {
             newValue = Number(value)
           }
           if (field === 'stock' && newValue < 0) newValue = 0
           if (field === 'discount' && newValue < 0) newValue = 0
           variant[field] = newValue
+
+          if (field === 'retail_price' || field === 'offer_price' || field === 'discount') {
+            const pricing = calculatePricing({
+              retailPrice: variant.retail_price,
+              offerPrice: field === 'offer_price' ? newValue : variant.offer_price,
+              discount: field === 'discount' ? newValue : variant.discount,
+            })
+            variant.offer_price = pricing.offerPrice
+            variant.discount = pricing.discount
+          }
           changed = true
         }
         if (changed) {

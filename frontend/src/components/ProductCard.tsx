@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
   const price = getProductDisplayPrice(product);
   const salePrice = getProductFinalPrice(product);
   const discount = getVariantDiscount(primaryVariant);
-  const isSale = discount > 0;
+  const isSale = salePrice < price;
   const isNew = false; // This would need to be determined by date or a separate field
   
   const wishlist = useCartStore(state => state.wishlist);
@@ -137,11 +137,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
             <div>
               {isSale && salePrice < price ? (
                 <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
                   <p className="text-sm text-gray-500 line-through">{priceSymbol} {price.toLocaleString()}</p>
+                  <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
                 </div>
               ) : (
                 <p className="text-lg font-semibold text-revive-red">{priceSymbol} {price.toLocaleString()}</p>
+              )}
+              {isSale && discount > 0 && (
+                <p className="text-xs text-revive-red font-semibold mt-1">{discount}% OFF</p>
               )}
             </div>
             
@@ -235,9 +238,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'grid' }) =
         
         <div className="flex justify-center items-center">
           {isSale && salePrice < price ? (
-            <div className="flex items-center gap-2">
-              <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
-              <p className="text-sm text-gray-500 line-through">{priceSymbol} {price.toLocaleString()}</p>
+            <div className="text-center">
+              <div className="flex items-center gap-2 justify-center">
+                <p className="text-sm text-gray-500 line-through">{priceSymbol} {price.toLocaleString()}</p>
+                <p className="text-lg font-semibold text-revive-red">{priceSymbol} {salePrice.toLocaleString()}</p>
+              </div>
+              {discount > 0 && <p className="text-xs text-revive-red font-semibold">{discount}% OFF</p>}
             </div>
           ) : (
             <p className="text-lg font-semibold text-revive-red">{priceSymbol} {price.toLocaleString()}</p>

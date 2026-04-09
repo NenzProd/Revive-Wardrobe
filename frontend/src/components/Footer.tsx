@@ -61,7 +61,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/shop"
+                  href="/shop/category/graceful-abayas"
                   className="hover:text-revive-gold transition-colors"
                 >
                   Collections
